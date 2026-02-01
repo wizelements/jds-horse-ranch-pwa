@@ -1,6 +1,0 @@
-# Block Vercel preview from indexing - all authority goes to jdshorseranch.com
-User-agent: *
-Disallow: /
-
-Host: jdshorseranch.com
-Sitemap: https://jdshorseranch.com/sitemap.xml
