@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  background: linear-gradient(135deg, #f5e6d3 0%, #ede0ce 100%);
+}
+
+.call-btn {
+  @apply px-6 py-3 bg-ranch-brown text-white font-bold rounded-lg hover:bg-opacity-90 transition-all shadow-lg;
+}
+
+.service-card {
+  @apply bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow;
+}
+
+.section {
+  @apply py-12 px-4 max-w-6xl mx-auto;
+}
