@@ -10,6 +10,12 @@ const config = {
       },
     ],
   },
+  eslint: {
+    ignoreDuringBuilds: false,
+  },
+  typescript: {
+    ignoreBuildErrors: false,
+  },
 };
 
 export default config;
