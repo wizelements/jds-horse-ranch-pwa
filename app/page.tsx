@@ -6,6 +6,7 @@ import Experience from "@/components/Experience";
 import Services from "@/components/Services";
 import Gallery from "@/components/Gallery";
 import Testimonials from "@/components/Testimonials";
+import FAQ from "@/components/FAQ";
 import Contact from "@/components/Contact";
 import AccessibilityToolbar from "@/components/AccessibilityToolbar";
 import { logContact } from "@/lib/api";
@@ -35,6 +36,7 @@ export default function Home() {
         <Services onCall={handleCall} isLoading={isLoading} />
         <Gallery />
         <Testimonials />
+        <FAQ />
         <Contact onCall={handleCall} isLoading={isLoading} />
       </main>
     </>
