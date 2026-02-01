@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import RegisterSW from "./register-sw";
 
 export const metadata: Metadata = {
   title: "JD's Horse Ranch - Atlanta Horseback Riding",
@@ -35,8 +36,12 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="JD's Horse Ranch" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
+        <meta name="theme-color" content="#8B6F47" />
       </head>
-      <body className="bg-ranch-cream text-ranch-dark">{children}</body>
+      <body className="bg-ranch-cream text-ranch-dark">
+        <RegisterSW />
+        {children}
+      </body>
     </html>
   );
 }
