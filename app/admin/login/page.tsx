@@ -43,7 +43,7 @@ export default function AdminLoginPage() {
           Admin Login
         </h1>
         <p className="text-gray-600 text-center mb-6">
-          JD's Horse Ranch Management
+          JD&apos;s Horse Ranch Management
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">

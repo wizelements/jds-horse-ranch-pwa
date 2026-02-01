@@ -13,7 +13,7 @@ export default function Experience() {
             width="100%"
             height="100%"
             src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-            title="JD's Horse Ranch - The Experience"
+            title="JD&apos;s Horse Ranch - The Experience"
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
@@ -22,7 +22,7 @@ export default function Experience() {
         </div>
 
         <p className="text-gray-700 text-center text-lg max-w-3xl mx-auto">
-          Discover what makes JD's Horse Ranch special. From riding lessons to scenic trail rides,
+          Discover what makes JD&apos;s Horse Ranch special. From riding lessons to scenic trail rides,
           experience the peace and joy of horseback riding in the Georgia countryside.
         </p>
       </div>

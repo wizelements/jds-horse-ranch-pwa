@@ -17,7 +17,7 @@ export default async function AdminLayout({
       <nav className="bg-ranch-dark text-white shadow">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold">JD's Ranch Admin</h1>
+            <h1 className="text-2xl font-bold">JD&apos;s Ranch Admin</h1>
             <a
               href="/admin/logout"
               className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded text-sm"

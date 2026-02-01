@@ -9,7 +9,7 @@ export default function Hero({ onCall, isLoading }: HeroProps) {
   return (
     <section className="relative w-full h-screen bg-gradient-to-br from-ranch-brown to-ranch-dark flex flex-col justify-center items-center text-center text-white px-4">
       <div className="max-w-2xl">
-        <h1 className="text-5xl md:text-6xl font-bold mb-4">JD's Horse Ranch</h1>
+        <h1 className="text-5xl md:text-6xl font-bold mb-4">JD&apos;s Horse Ranch</h1>
         <p className="text-xl md:text-2xl mb-6 text-gray-200">
           Atlanta Horseback Riding
         </p>

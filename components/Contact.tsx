@@ -77,7 +77,7 @@ export default function Contact({ onCall, isLoading }: ContactProps) {
       </div>
 
       <p className="text-center text-gray-400 text-sm mt-12">
-        © 2026 JD's Horse Ranch. All rights reserved.
+        © 2026 JD&apos;s Horse Ranch. All rights reserved.
       </p>
     </section>
   );
