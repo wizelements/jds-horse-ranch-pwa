@@ -36,7 +36,8 @@ export const metadata: Metadata = {
     images: ["/og-image.jpg"],
   },
   robots: {
-    index: true,
+    // Block Vercel preview from indexing, allow main domain
+    index: process.env.VERCEL_URL ? false : true,
     follow: true,
     "max-snippet": -1,
     "max-image-preview": "large",

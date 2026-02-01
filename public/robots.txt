@@ -1,23 +1,6 @@
+# Block Vercel preview from indexing - all authority goes to jdshorseranch.com
 User-agent: *
-Allow: /
-Allow: /api/
-Disallow: /admin/
-Disallow: /.next/
-Disallow: /node_modules/
+Disallow: /
 
-# Crawl delay
-Crawl-delay: 1
-
-# Sitemaps
+Host: jdshorseranch.com
 Sitemap: https://jdshorseranch.com/sitemap.xml
-Sitemap: https://jdshorseranch.com/sitemap-0.xml
-
-# Google-specific
-User-agent: Googlebot
-Allow: /
-Crawl-delay: 0
-
-# Bing-specific
-User-agent: Bingbot
-Allow: /
-Crawl-delay: 1
