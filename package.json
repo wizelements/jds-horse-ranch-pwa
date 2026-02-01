@@ -1,26 +1,38 @@
 {
   "name": "jds-horse-ranch-pwa",
   "version": "1.0.0",
-  "description": "JD's Horse Ranch - PWA with smart call routing",
+  "description": "JD's Horse Ranch - PWA with smart call routing and contact logging",
+  "author": "DevSolo",
+  "license": "MIT",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint --fix",
+    "type-check": "tsc --noEmit",
+    "test": "echo 'Add tests with: npm install --save-dev jest'",
+    "format": "prettier --write \"**/*.{ts,tsx,md,json,yml}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,md,json,yml}\""
   },
   "dependencies": {
-    "next": "14",
-    "react": "^18",
-    "react-dom": "^18",
+    "next": "^14.2.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
     "firebase": "^10.7.0"
   },
   "devDependencies": {
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "autoprefixer": "^10",
-    "postcss": "^8",
-    "tailwindcss": "^3",
-    "typescript": "^5"
+    "@types/node": "^20.10.0",
+    "@types/react": "^18.2.45",
+    "@types/react-dom": "^18.2.18",
+    "autoprefixer": "^10.4.16",
+    "eslint": "^8.56.0",
+    "eslint-config-next": "^14.2.0",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.17.0",
+    "npm": ">=9.0.0"
   }
 }

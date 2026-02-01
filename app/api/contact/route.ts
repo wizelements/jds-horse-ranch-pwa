@@ -13,14 +13,49 @@ const contactLogs: ContactLog[] = [];
 
 export async function POST(req: NextRequest) {
   try {
-    const { type, source } = await req.json();
+    // Validate content type
+    const contentType = req.headers.get("content-type");
+    if (!contentType?.includes("application/json")) {
+      return NextResponse.json(
+        { error: "Content-Type must be application/json" },
+        { status: 400 }
+      );
+    }
+
+    // Parse request body
+    let body;
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json(
+        { error: "Invalid JSON in request body" },
+        { status: 400 }
+      );
+    }
+
+    const { type, source } = body;
+
+    // Validate required fields
+    if (!type || !["call", "email"].includes(type)) {
+      return NextResponse.json(
+        { error: "Invalid type. Must be 'call' or 'email'" },
+        { status: 400 }
+      );
+    }
+
+    if (!source) {
+      return NextResponse.json(
+        { error: "Source is required" },
+        { status: 400 }
+      );
+    }
 
     const log: ContactLog = {
       timestamp: new Date().toISOString(),
-      type,
-      source,
+      type: type as "call" | "email",
+      source: String(source).substring(0, 500), // Limit to 500 chars
       userAgent: req.headers.get("user-agent") || "unknown",
-      ip: req.headers.get("x-forwarded-for") || req.ip || "unknown",
+      ip: (req.headers.get("x-forwarded-for") || req.ip || "unknown").split(",")[0].trim(),
     };
 
     contactLogs.push(log);
@@ -33,7 +68,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error("Contact logging error:", error);
     return NextResponse.json(
-      { error: "Failed to log contact" },
+      { error: "Failed to log contact", details: String(error) },
       { status: 500 }
     );
   }
@@ -41,8 +76,19 @@ export async function POST(req: NextRequest) {
 
 export async function GET() {
   // For development: view recent contacts
-  return NextResponse.json({
-    total: contactLogs.length,
-    recent: contactLogs.slice(-10),
-  });
+  return NextResponse.json(
+    {
+      total: contactLogs.length,
+      recent: contactLogs.slice(-10),
+      note: "In-memory storage. Persists only during deployment. Use database for permanent storage.",
+    },
+    { headers: { "Cache-Control": "no-cache" } }
+  );
+}
+
+export async function OPTIONS() {
+  return NextResponse.json(
+    { message: "Use POST to log contact, GET to view logs" },
+    { status: 405 }
+  );
 }

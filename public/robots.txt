@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://jds-horse-ranch-pwa.vercel.app/sitemap.xml
