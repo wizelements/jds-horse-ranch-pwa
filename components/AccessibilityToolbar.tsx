@@ -57,7 +57,7 @@ export default function AccessibilityToolbar() {
   };
 
   const toggleContrast = () => {
-    const newSettings = {
+    const newSettings: AccessibilitySettings = {
       ...settings,
       contrast: settings.contrast === "normal" ? "high" : "normal",
     };
