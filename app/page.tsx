@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import Hero from "@/components/Hero";
+import Experience from "@/components/Experience";
 import Services from "@/components/Services";
 import Gallery from "@/components/Gallery";
 import Testimonials from "@/components/Testimonials";
 import Contact from "@/components/Contact";
+import AccessibilityToolbar from "@/components/AccessibilityToolbar";
 import { logContact } from "@/lib/api";
 
 export default function Home() {
@@ -25,12 +27,16 @@ export default function Home() {
   };
 
   return (
-    <main>
-      <Hero onCall={handleCall} isLoading={isLoading} />
-      <Services onCall={handleCall} isLoading={isLoading} />
-      <Gallery />
-      <Testimonials />
-      <Contact onCall={handleCall} isLoading={isLoading} />
-    </main>
+    <>
+      <AccessibilityToolbar />
+      <main>
+        <Hero onCall={handleCall} isLoading={isLoading} />
+        <Experience />
+        <Services onCall={handleCall} isLoading={isLoading} />
+        <Gallery />
+        <Testimonials />
+        <Contact onCall={handleCall} isLoading={isLoading} />
+      </main>
+    </>
   );
 }

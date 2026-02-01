@@ -1,15 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-
-interface ContactLog {
-  timestamp: string;
-  type: "call" | "email";
-  source: string;
-  userAgent: string;
-  ip: string;
-}
-
-// Simple in-memory log (replace with database in production)
-const contactLogs: ContactLog[] = [];
+import { logContact } from "@/lib/supabase";
 
 export async function POST(req: NextRequest) {
   try {
@@ -50,21 +40,28 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const log: ContactLog = {
-      timestamp: new Date().toISOString(),
-      type: type as "call" | "email",
-      source: String(source).substring(0, 500), // Limit to 500 chars
-      userAgent: req.headers.get("user-agent") || "unknown",
-      ip: (req.headers.get("x-forwarded-for") || req.ip || "unknown").split(",")[0].trim(),
-    };
+    const ipAddress = (req.headers.get("x-forwarded-for") || req.ip || "unknown")
+      .split(",")[0]
+      .trim();
+    const userAgent = req.headers.get("user-agent") || "unknown";
 
-    contactLogs.push(log);
-    console.log("Contact logged:", log);
+    // Log to Supabase
+    await logContact({
+      type: type as "call" | "email",
+      source: String(source).substring(0, 500),
+      userAgent,
+      ipAddress,
+    });
+
+    console.log("Contact logged:", { type, source, ipAddress });
 
     // TODO: Send push notification to JD via Firebase
-    // await sendPushToOwner(log);
+    // await sendPushToOwner({ type, source, ipAddress });
 
-    return NextResponse.json({ success: true, log }, { status: 201 });
+    return NextResponse.json(
+      { success: true, message: "Contact logged successfully" },
+      { status: 201 }
+    );
   } catch (error) {
     console.error("Contact logging error:", error);
     return NextResponse.json(
@@ -74,21 +71,9 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET() {
-  // For development: view recent contacts
-  return NextResponse.json(
-    {
-      total: contactLogs.length,
-      recent: contactLogs.slice(-10),
-      note: "In-memory storage. Persists only during deployment. Use database for permanent storage.",
-    },
-    { headers: { "Cache-Control": "no-cache" } }
-  );
-}
-
 export async function OPTIONS() {
   return NextResponse.json(
-    { message: "Use POST to log contact, GET to view logs" },
+    { message: "Use POST to log contact" },
     { status: 405 }
   );
 }
