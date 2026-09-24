@@ -54,11 +54,6 @@ for (const [table, columns] of Object.entries(tables)) {
     if (!present.includes("id")) continue;
 
     const placeholders = present.map(() => "?").join(", ");
-    const updates = present
-      .filter((column) => column !== "id")
-      .map((column) => `${column} = excluded.${column}`)
-      .join(", ");
-
     const conflictTarget = table === "settings" ? "key" : "id";
     const conflictUpdates = present
       .filter((column) => column !== conflictTarget)
