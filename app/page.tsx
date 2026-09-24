@@ -4,6 +4,7 @@ import { useState } from "react";
 import Hero from "@/components/Hero";
 import Experience from "@/components/Experience";
 import Services from "@/components/Services";
+import BookingRequest from "@/components/BookingRequest";
 import Gallery from "@/components/Gallery";
 import Testimonials from "@/components/Testimonials";
 import FAQ from "@/components/FAQ";
@@ -18,10 +19,10 @@ export default function Home() {
     setIsLoading(true);
     try {
       await logContact("call", window.location.pathname);
-      window.location.href = "tel:(404) 981-2361";
+      window.location.href = "tel:+14049812361";
     } catch (error) {
       console.error("Failed to log contact", error);
-      window.location.href = "tel:(404) 981-2361";
+      window.location.href = "tel:+14049812361";
     } finally {
       setIsLoading(false);
     }
@@ -34,6 +35,7 @@ export default function Home() {
         <Hero onCall={handleCall} isLoading={isLoading} />
         <Experience />
         <Services onCall={handleCall} isLoading={isLoading} />
+        <BookingRequest />
         <Gallery />
         <Testimonials />
         <FAQ />
