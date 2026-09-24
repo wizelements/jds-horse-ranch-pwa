@@ -4,7 +4,7 @@ import {
   recordBookingEvent,
   updateInquiry,
 } from "@/lib/bookingStore";
-import { sendCustomerMessage } from "@/lib/communications";
+import { sendOperationalMessage } from "@/lib/communications";
 import { verifySquareSignature } from "@/lib/square";
 
 export const runtime = "nodejs";
@@ -68,12 +68,17 @@ export async function POST(req: NextRequest) {
 
     try {
       const when = booked.approved_start_at
-        ? new Date(booked.approved_start_at).toLocaleString("en-US", { timeZone: "America/New_York" })
+        ? new Date(booked.approved_start_at).toLocaleString("en-US", {
+            timeZone: "America/New_York",
+            dateStyle: "medium",
+            timeStyle: "short",
+          })
         : "the approved time";
-      await sendCustomerMessage(
-        booked,
-        `Payment verified. Your JD's Horse Ranch booking is confirmed for ${when}. Keep this message and follow any instructions JD gave you directly.`
-      );
+      await sendOperationalMessage(booked, {
+        body: `Payment verified. Your JD's Horse Ranch booking is confirmed for ${when}. Keep this message and follow any instructions JD gave you directly.`,
+        whatsappTemplateEnv: "WHATSAPP_CONFIRMATION_TEMPLATE_NAME",
+        whatsappParameters: [when],
+      });
       booked = await updateInquiry(booked.id, { confirmation_sent_at: new Date().toISOString() });
     } catch (error) {
       console.error("Booking confirmation delivery failed:", error);
