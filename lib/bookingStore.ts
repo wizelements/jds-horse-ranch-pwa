@@ -38,6 +38,7 @@ export interface BookingInquiry {
   paid_at: string | null;
   booked_at: string | null;
   completed_at: string | null;
+  confirmation_sent_at: string | null;
   reminder_sent_at: string | null;
   followup_sent_at: string | null;
   created_at: string;
@@ -226,6 +227,18 @@ export async function expireStaleHolds() {
   return (data || []) as BookingInquiry[];
 }
 
+export async function listPendingConfirmations(limit = 50) {
+  const { data, error } = await db()
+    .from("booking_inquiries")
+    .select("*")
+    .eq("status", "BOOKED")
+    .is("confirmation_sent_at", null)
+    .order("booked_at", { ascending: true })
+    .limit(limit);
+  if (error) throw error;
+  return (data || []) as BookingInquiry[];
+}
+
 export async function listReminderCandidates(fromIso: string, toIso: string) {
   const { data, error } = await db()
     .from("booking_inquiries")
@@ -234,6 +247,19 @@ export async function listReminderCandidates(fromIso: string, toIso: string) {
     .is("reminder_sent_at", null)
     .gte("approved_start_at", fromIso)
     .lte("approved_start_at", toIso);
+  if (error) throw error;
+  return (data || []) as BookingInquiry[];
+}
+
+export async function listFollowupCandidates(beforeIso: string, limit = 50) {
+  const { data, error } = await db()
+    .from("booking_inquiries")
+    .select("*")
+    .eq("status", "COMPLETED")
+    .is("followup_sent_at", null)
+    .lte("completed_at", beforeIso)
+    .order("completed_at", { ascending: true })
+    .limit(limit);
   if (error) throw error;
   return (data || []) as BookingInquiry[];
 }
