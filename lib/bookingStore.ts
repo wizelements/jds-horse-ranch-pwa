@@ -1,4 +1,7 @@
-import { getSupabaseAdmin } from "@/lib/supabase";
+import "server-only";
+import { randomUUID } from "crypto";
+import type { InValue, Row } from "@libsql/client";
+import { getTurso } from "@/lib/turso";
 
 export type BookingChannel = "whatsapp" | "sms" | "web" | "voice";
 export type InquiryStatus =
@@ -45,33 +48,89 @@ export interface BookingInquiry {
   updated_at: string;
 }
 
-function db() {
-  return getSupabaseAdmin();
+function nullableString(value: unknown) {
+  return value == null ? null : String(value);
+}
+
+function nullableNumber(value: unknown) {
+  return value == null ? null : Number(value);
+}
+
+function bookingFromRow(row: Row): BookingInquiry {
+  const r = { ...row } as Record<string, unknown>;
+  return {
+    id: String(r.id),
+    channel: r.channel as BookingChannel,
+    preferred_channel: r.preferred_channel as BookingChannel,
+    customer_phone: String(r.customer_phone),
+    customer_name: nullableString(r.customer_name),
+    email: nullableString(r.email),
+    service_requested: nullableString(r.service_requested),
+    rider_count: nullableNumber(r.rider_count),
+    rider_details: nullableString(r.rider_details),
+    requested_datetime_text: nullableString(r.requested_datetime_text),
+    alternate_datetime_text: nullableString(r.alternate_datetime_text),
+    experience: nullableString(r.experience),
+    qualification_notes: nullableString(r.qualification_notes),
+    marketing_consent:
+      r.marketing_consent === true ||
+      r.marketing_consent === 1 ||
+      r.marketing_consent === "1",
+    status: r.status as InquiryStatus,
+    intake_step: String(r.intake_step),
+    hold_expires_at: nullableString(r.hold_expires_at),
+    approved_start_at: nullableString(r.approved_start_at),
+    approval_note: nullableString(r.approval_note),
+    approved_amount_cents: nullableNumber(r.approved_amount_cents),
+    square_payment_link_id: nullableString(r.square_payment_link_id),
+    square_order_id: nullableString(r.square_order_id),
+    square_payment_url: nullableString(r.square_payment_url),
+    paid_at: nullableString(r.paid_at),
+    booked_at: nullableString(r.booked_at),
+    completed_at: nullableString(r.completed_at),
+    confirmation_sent_at: nullableString(r.confirmation_sent_at),
+    reminder_sent_at: nullableString(r.reminder_sent_at),
+    followup_sent_at: nullableString(r.followup_sent_at),
+    created_at: String(r.created_at),
+    updated_at: String(r.updated_at),
+  };
+}
+
+function dbValue(value: unknown): InValue {
+  if (value === undefined) return null;
+  if (typeof value === "boolean") return value ? 1 : 0;
+  if (
+    value === null ||
+    typeof value === "string" ||
+    typeof value === "number" ||
+    typeof value === "bigint"
+  ) {
+    return value;
+  }
+  return String(value);
 }
 
 export async function getActiveInquiry(phone: string) {
-  const { data, error } = await db()
-    .from("booking_inquiries")
-    .select("*")
-    .eq("customer_phone", phone)
-    .in("status", ["COLLECTING_INFORMATION", "PENDING_JD", "AWAITING_PAYMENT"])
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  if (error) throw error;
-  return (data || null) as BookingInquiry | null;
+  const result = await getTurso().execute({
+    sql: `SELECT * FROM booking_inquiries
+      WHERE customer_phone = ?
+        AND status IN ('COLLECTING_INFORMATION', 'PENDING_JD', 'AWAITING_PAYMENT')
+      ORDER BY created_at DESC
+      LIMIT 1`,
+    args: [phone],
+  });
+  return result.rows.length ? bookingFromRow(result.rows[0]) : null;
 }
 
 export async function getLatestInquiry(phone: string) {
-  const { data, error } = await db()
-    .from("booking_inquiries")
-    .select("*")
-    .eq("customer_phone", phone)
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  if (error) throw error;
-  return (data || null) as BookingInquiry | null;
+  const result = await getTurso().execute({
+    sql: `SELECT * FROM booking_inquiries
+      WHERE customer_phone = ?
+      ORDER BY created_at DESC
+      LIMIT 1`,
+    args: [phone],
+  });
+  return result.rows.length ? bookingFromRow(result.rows[0]) : null;
 }
 
 export async function createConversationInquiry(input: {
@@ -79,20 +138,27 @@ export async function createConversationInquiry(input: {
   phone: string;
   profileName?: string;
 }) {
-  const { data, error } = await db()
-    .from("booking_inquiries")
-    .insert({
-      channel: input.channel,
-      preferred_channel: input.channel,
-      customer_phone: input.phone,
-      customer_name: input.profileName || null,
-      status: "COLLECTING_INFORMATION",
-      intake_step: input.profileName ? "service" : "name",
-    })
-    .select("*")
-    .single();
-  if (error) throw error;
-  return data as BookingInquiry;
+  const id = randomUUID();
+  const now = new Date().toISOString();
+
+  await getTurso().execute({
+    sql: `INSERT INTO booking_inquiries (
+      id, channel, preferred_channel, customer_phone, customer_name,
+      status, intake_step, marketing_consent, created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, 'COLLECTING_INFORMATION', ?, 0, ?, ?)`,
+    args: [
+      id,
+      input.channel,
+      input.channel,
+      input.phone,
+      input.profileName || null,
+      input.profileName ? "service" : "name",
+      now,
+      now,
+    ],
+  });
+
+  return (await getInquiry(id));
 }
 
 export async function createWebInquiry(input: {
@@ -109,73 +175,115 @@ export async function createWebInquiry(input: {
   marketingConsent: boolean;
   preferredChannel: "whatsapp" | "sms";
 }) {
+  const id = randomUUID();
+  const now = new Date().toISOString();
   const holdExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
-  const { data, error } = await db()
-    .from("booking_inquiries")
-    .insert({
-      channel: "web",
-      preferred_channel: input.preferredChannel,
-      customer_phone: input.customerPhone,
-      customer_name: input.customerName,
-      email: input.email || null,
-      service_requested: input.serviceRequested,
-      rider_count: input.riderCount,
-      rider_details: input.riderDetails,
-      requested_datetime_text: input.requestedDatetimeText,
-      alternate_datetime_text: input.alternateDatetimeText || null,
-      experience: input.experience,
-      qualification_notes: input.qualificationNotes || null,
-      marketing_consent: input.marketingConsent,
-      status: "PENDING_JD",
-      intake_step: "complete",
-      hold_expires_at: holdExpiresAt,
-    })
-    .select("*")
-    .single();
-  if (error) throw error;
-  return data as BookingInquiry;
+
+  await getTurso().execute({
+    sql: `INSERT INTO booking_inquiries (
+      id, channel, preferred_channel, customer_phone, customer_name, email,
+      service_requested, rider_count, rider_details, requested_datetime_text,
+      alternate_datetime_text, experience, qualification_notes, marketing_consent,
+      status, intake_step, hold_expires_at, created_at, updated_at
+    ) VALUES (?, 'web', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'PENDING_JD', 'complete', ?, ?, ?)`,
+    args: [
+      id,
+      input.preferredChannel,
+      input.customerPhone,
+      input.customerName,
+      input.email || null,
+      input.serviceRequested,
+      input.riderCount,
+      input.riderDetails,
+      input.requestedDatetimeText,
+      input.alternateDatetimeText || null,
+      input.experience,
+      input.qualificationNotes || null,
+      input.marketingConsent ? 1 : 0,
+      holdExpiresAt,
+      now,
+      now,
+    ],
+  });
+
+  return getInquiry(id);
 }
 
-export async function updateInquiry(id: string, patch: Partial<BookingInquiry>) {
-  const { data, error } = await db()
-    .from("booking_inquiries")
-    .update({ ...patch, updated_at: new Date().toISOString() })
-    .eq("id", id)
-    .select("*")
-    .single();
-  if (error) throw error;
-  return data as BookingInquiry;
+const MUTABLE_FIELDS = new Set([
+  "customer_name",
+  "email",
+  "service_requested",
+  "rider_count",
+  "rider_details",
+  "requested_datetime_text",
+  "alternate_datetime_text",
+  "experience",
+  "qualification_notes",
+  "marketing_consent",
+  "status",
+  "intake_step",
+  "hold_expires_at",
+  "approved_start_at",
+  "approval_note",
+  "approved_amount_cents",
+  "square_payment_link_id",
+  "square_order_id",
+  "square_payment_url",
+  "paid_at",
+  "booked_at",
+  "completed_at",
+  "confirmation_sent_at",
+  "reminder_sent_at",
+  "followup_sent_at",
+]);
+
+export async function updateInquiry(
+  id: string,
+  patch: Partial<BookingInquiry>
+) {
+  const entries = Object.entries(patch).filter(
+    ([key, value]) => MUTABLE_FIELDS.has(key) && value !== undefined
+  );
+  if (!entries.length) return getInquiry(id);
+
+  const args: InValue[] = entries.map(([, value]) => dbValue(value));
+  args.push(new Date().toISOString(), id);
+
+  const result = await getTurso().execute({
+    sql: `UPDATE booking_inquiries
+      SET ${entries.map(([key]) => `${key} = ?`).join(", ")}, updated_at = ?
+      WHERE id = ?
+      RETURNING *`,
+    args,
+  });
+
+  if (!result.rows.length) throw new Error("Booking inquiry not found");
+  return bookingFromRow(result.rows[0]);
 }
 
 export async function getInquiry(id: string) {
-  const { data, error } = await db()
-    .from("booking_inquiries")
-    .select("*")
-    .eq("id", id)
-    .single();
-  if (error) throw error;
-  return data as BookingInquiry;
+  const result = await getTurso().execute({
+    sql: "SELECT * FROM booking_inquiries WHERE id = ? LIMIT 1",
+    args: [id],
+  });
+  if (!result.rows.length) throw new Error("Booking inquiry not found");
+  return bookingFromRow(result.rows[0]);
 }
 
 export async function getInquiryBySquareOrderId(orderId: string) {
-  const { data, error } = await db()
-    .from("booking_inquiries")
-    .select("*")
-    .eq("square_order_id", orderId)
-    .limit(1)
-    .maybeSingle();
-  if (error) throw error;
-  return (data || null) as BookingInquiry | null;
+  const result = await getTurso().execute({
+    sql: "SELECT * FROM booking_inquiries WHERE square_order_id = ? LIMIT 1",
+    args: [orderId],
+  });
+  return result.rows.length ? bookingFromRow(result.rows[0]) : null;
 }
 
 export async function listInquiries(limit = 100) {
-  const { data, error } = await db()
-    .from("booking_inquiries")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(limit);
-  if (error) throw error;
-  return (data || []) as BookingInquiry[];
+  const result = await getTurso().execute({
+    sql: "SELECT * FROM booking_inquiries ORDER BY created_at DESC LIMIT ?",
+    args: [limit],
+  });
+  return result.rows.map(bookingFromRow);
 }
 
 export async function recordMessage(input: {
@@ -187,18 +295,36 @@ export async function recordMessage(input: {
   body?: string | null;
   rawPayload?: unknown;
 }) {
-  const { error } = await db().from("communication_messages").insert({
-    provider_message_id: input.providerMessageId || null,
-    inquiry_id: input.inquiryId || null,
-    channel: input.channel,
-    direction: input.direction,
-    phone: input.phone,
-    body: input.body || null,
-    raw_payload: input.rawPayload || null,
-  });
-  if (!error) return true;
-  if (error.code === "23505") return false;
-  throw error;
+  try {
+    await getTurso().execute({
+      sql: `INSERT INTO communication_messages (
+        id, provider_message_id, inquiry_id, channel, direction, phone, body,
+        raw_payload, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      args: [
+        randomUUID(),
+        input.providerMessageId || null,
+        input.inquiryId || null,
+        input.channel,
+        input.direction,
+        input.phone,
+        input.body || null,
+        input.rawPayload == null ? null : JSON.stringify(input.rawPayload),
+        new Date().toISOString(),
+      ],
+    });
+    return true;
+  } catch (error) {
+    const candidate = error as { code?: string; message?: string };
+    const message = candidate.message || "";
+    if (
+      candidate.code?.startsWith("SQLITE_CONSTRAINT") ||
+      message.includes("UNIQUE constraint failed")
+    ) {
+      return false;
+    }
+    throw error;
+  }
 }
 
 export async function recordBookingEvent(input: {
@@ -207,60 +333,68 @@ export async function recordBookingEvent(input: {
   actor?: string;
   metadata?: unknown;
 }) {
-  const { error } = await db().from("booking_events").insert({
-    inquiry_id: input.inquiryId,
-    event_type: input.eventType,
-    actor: input.actor || "system",
-    metadata: input.metadata || {},
+  await getTurso().execute({
+    sql: `INSERT INTO booking_events
+      (id, inquiry_id, event_type, actor, metadata, created_at)
+      VALUES (?, ?, ?, ?, ?, ?)`,
+    args: [
+      randomUUID(),
+      input.inquiryId,
+      input.eventType,
+      input.actor || "system",
+      JSON.stringify(input.metadata || {}),
+      new Date().toISOString(),
+    ],
   });
-  if (error) throw error;
 }
 
 export async function expireStaleHolds() {
   const now = new Date().toISOString();
-  const { data, error } = await db()
-    .from("booking_inquiries")
-    .update({ status: "EXPIRED", updated_at: now })
-    .eq("status", "PENDING_JD")
-    .lt("hold_expires_at", now)
-    .select("*");
-  if (error) throw error;
-  return (data || []) as BookingInquiry[];
+  const result = await getTurso().execute({
+    sql: `UPDATE booking_inquiries
+      SET status = 'EXPIRED', updated_at = ?
+      WHERE status = 'PENDING_JD'
+        AND hold_expires_at IS NOT NULL
+        AND hold_expires_at < ?
+      RETURNING *`,
+    args: [now, now],
+  });
+  return result.rows.map(bookingFromRow);
 }
 
 export async function listPendingConfirmations(limit = 50) {
-  const { data, error } = await db()
-    .from("booking_inquiries")
-    .select("*")
-    .eq("status", "BOOKED")
-    .is("confirmation_sent_at", null)
-    .order("booked_at", { ascending: true })
-    .limit(limit);
-  if (error) throw error;
-  return (data || []) as BookingInquiry[];
+  const result = await getTurso().execute({
+    sql: `SELECT * FROM booking_inquiries
+      WHERE status = 'BOOKED' AND confirmation_sent_at IS NULL
+      ORDER BY booked_at ASC
+      LIMIT ?`,
+    args: [limit],
+  });
+  return result.rows.map(bookingFromRow);
 }
 
 export async function listReminderCandidates(fromIso: string, toIso: string) {
-  const { data, error } = await db()
-    .from("booking_inquiries")
-    .select("*")
-    .eq("status", "BOOKED")
-    .is("reminder_sent_at", null)
-    .gte("approved_start_at", fromIso)
-    .lte("approved_start_at", toIso);
-  if (error) throw error;
-  return (data || []) as BookingInquiry[];
+  const result = await getTurso().execute({
+    sql: `SELECT * FROM booking_inquiries
+      WHERE status = 'BOOKED'
+        AND reminder_sent_at IS NULL
+        AND approved_start_at >= ?
+        AND approved_start_at <= ?`,
+    args: [fromIso, toIso],
+  });
+  return result.rows.map(bookingFromRow);
 }
 
 export async function listFollowupCandidates(beforeIso: string, limit = 50) {
-  const { data, error } = await db()
-    .from("booking_inquiries")
-    .select("*")
-    .eq("status", "COMPLETED")
-    .is("followup_sent_at", null)
-    .lte("completed_at", beforeIso)
-    .order("completed_at", { ascending: true })
-    .limit(limit);
-  if (error) throw error;
-  return (data || []) as BookingInquiry[];
+  const result = await getTurso().execute({
+    sql: `SELECT * FROM booking_inquiries
+      WHERE status = 'COMPLETED'
+        AND followup_sent_at IS NULL
+        AND completed_at IS NOT NULL
+        AND completed_at <= ?
+      ORDER BY completed_at ASC
+      LIMIT ?`,
+    args: [beforeIso, limit],
+  });
+  return result.rows.map(bookingFromRow);
 }
