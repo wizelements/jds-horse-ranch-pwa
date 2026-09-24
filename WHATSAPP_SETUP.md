@@ -23,23 +23,52 @@ Terminal outcomes: `DECLINED`, `CANCELLED`, `EXPIRED`.
 - Optional Twilio SMS: `/api/sms/webhook`
 - Voice remains intentionally outside V1 until the text reservation path is proven.
 
-All channels write to the same `booking_inquiries` table.
+All channels write to the same Turso `booking_inquiries` table.
 
-## Database
+## Database — Turso / libSQL
 
-Apply:
+Turso is the primary database for the entire application:
+
+- booking inquiries
+- communication history
+- booking event/audit history
+- contact logs
+- services
+- testimonials
+- gallery metadata
+- site settings
+
+Required server environment:
 
 ```
-supabase/migrations/002_whatsapp_intake.sql
+TURSO_DATABASE_URL=libsql://...
+TURSO_AUTH_TOKEN=...
 ```
 
-Despite the historical filename, this migration now creates the complete shared reservation model:
+Apply the canonical schema:
 
-- `booking_inquiries`
-- `communication_messages`
-- `booking_events`
+```
+npm run db:migrate
+```
 
-RLS is enabled with no public policies. Server routes use `SUPABASE_SERVICE_ROLE_KEY`.
+That executes `turso/schema.sql`.
+
+If the existing production Supabase database contains data that must be preserved, set temporary legacy credentials:
+
+```
+LEGACY_SUPABASE_URL=
+LEGACY_SUPABASE_SERVICE_ROLE_KEY=
+```
+
+Then run:
+
+```
+npm run db:migrate:legacy
+```
+
+The one-time importer copies compatible records into Turso. Remove the legacy credentials immediately after migration.
+
+Supabase is **not** used as the application database after this cutover. It remains optional only for the existing gallery image bucket; image metadata is stored in Turso.
 
 ## Square
 
@@ -49,7 +78,7 @@ JD's approval action calls Square Checkout:
 POST /v2/online-checkout/payment-links
 ```
 
-The request creates a booking-specific hosted checkout using the JD-approved amount. The resulting Square order ID and payment-link ID are persisted on the inquiry.
+The request creates a booking-specific hosted checkout using the JD-approved amount. The resulting Square order ID and payment-link ID are persisted in Turso.
 
 Configure Square webhooks for:
 
@@ -74,18 +103,11 @@ https://jdshorseranch.com/api/whatsapp/webhook
 
 The GET handshake uses `WHATSAPP_VERIFY_TOKEN`. POST requests require a valid `X-Hub-Signature-256` generated with `WHATSAPP_APP_SECRET`.
 
-Interactive bot replies use text messages. Proactive lifecycle messages use approved WhatsApp templates. Configure these template names:
-
-- `WHATSAPP_PAYMENT_TEMPLATE_NAME` — body vars: approved time, Square URL
-- `WHATSAPP_DECLINE_TEMPLATE_NAME` — body var: JD note/reason
-- `WHATSAPP_CONFIRMATION_TEMPLATE_NAME` — body var: confirmed time
-- `WHATSAPP_REMINDER_TEMPLATE_NAME` — body var: confirmed time
-- `WHATSAPP_EXPIRED_TEMPLATE_NAME` — no body vars
-- `WHATSAPP_FOLLOWUP_TEMPLATE_NAME` — body var: review URL when used
+Interactive bot replies use text messages. Proactive lifecycle messages use approved WhatsApp templates.
 
 ## SMS
 
-SMS is optional and uses Twilio Programmable Messaging. Configure the incoming message webhook as:
+SMS is optional and uses Twilio Programmable Messaging.
 
 ```
 https://jdshorseranch.com/api/sms/webhook
@@ -101,12 +123,7 @@ Vercel Cron calls:
 GET /api/cron/booking-lifecycle
 ```
 
-hourly. The route requires `Authorization: Bearer $CRON_SECRET` and performs:
-
-- expiration of unapproved 24-hour holds
-- retry of booking confirmations that previously failed delivery
-- reminders approximately 24 hours before the approved start
-- post-ride follow-up after JD marks a ride complete
+The route requires `Authorization: Bearer $CRON_SECRET` and handles hold expiry, confirmation retries, reminders, and completed-ride follow-up.
 
 ## Admin
 
@@ -122,26 +139,28 @@ Then **Approve + create Square payment** creates the booking-specific checkout a
 
 There is intentionally no manual "mark paid" action. Payment settlement is Square-verified.
 
-## Required production environment
-
-Copy the variable names from `.env.example` into Vercel Production and Preview environments as appropriate. Never commit actual values.
-
 ## Security closure required before production
 
-A local environment file was historically tracked in the repository. Removing the file from the current tree does not invalidate credentials that may have appeared in Git history. Rotate every credential that was ever stored there before production promotion.
+A local environment file was historically tracked in the repository. Removing it from the current tree does not invalidate credentials that may have appeared in Git history. Rotate every credential that was ever stored there before production promotion.
 
-Admin sessions are now stateless HMAC-signed cookies rather than process memory, so serverless restarts do not invalidate legitimate sessions. The application intentionally ignores the historical admin variable names and requires `ADMIN_PASSWORD_HASH_V2`, `ADMIN_PASSWORD_SALT_V2`, and `SESSION_TOKEN_SECRET_V2`.
+Admin sessions require fresh V2 credentials:
+
+- `ADMIN_PASSWORD_HASH_V2`
+- `ADMIN_PASSWORD_SALT_V2`
+- `SESSION_TOKEN_SECRET_V2`
 
 ## Activation checklist
 
 1. Rotate any historically committed secrets.
-2. Apply migration 002.
-3. Set Supabase service role key.
-4. Configure Square access token, location, webhook signature key, and webhook subscription.
-5. Configure WhatsApp business credentials and approved operational templates.
-6. Optionally configure Twilio SMS.
-7. Set a strong `CRON_SECRET`.
-8. Generate fresh admin credentials and set `ADMIN_PASSWORD_HASH_V2`, `ADMIN_PASSWORD_SALT_V2`, and `SESSION_TOKEN_SECRET_V2`. Do not reuse historical values.
-9. Deploy a preview and run type-check/build.
-10. Test: web request, WhatsApp intake, hold expiration, JD approval, Square checkout, signed Square payment webhook, confirmation, reminder, completion, follow-up.
-11. Promote only after the full path passes.
+2. Create/select the Turso database and obtain a fresh database URL/token.
+3. Set `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` in Preview and Production.
+4. Run `npm run db:migrate`.
+5. If needed, run the one-time Supabase→Turso migration and then remove the legacy credentials.
+6. Configure the optional gallery storage credentials.
+7. Configure Square access token, location, webhook signature key, and webhook subscription.
+8. Configure WhatsApp credentials and approved operational templates.
+9. Optionally configure Twilio SMS.
+10. Set a strong `CRON_SECRET`.
+11. Generate fresh V2 admin credentials.
+12. Verify CI, preview build, and the complete customer → JD → Square → confirmation lifecycle.
+13. Promote only after the full path passes.
