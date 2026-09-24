@@ -12,13 +12,13 @@ export const runtime = "nodejs";
 
 export async function POST(
   req: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   if (!(await verifyAdminSession())) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const inquiry = await getInquiry(context.params.id);
+  const { id } = await context.params;\n  const inquiry = await getInquiry(id);
   const body = await req.json();
   const action = String(body.action || "");
 
