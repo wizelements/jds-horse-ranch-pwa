@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { logContact } from "@/lib/supabase";
+import { logContact } from "@/lib/turso";
 
 export async function POST(req: NextRequest) {
   try {
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
       .trim();
     const userAgent = req.headers.get("user-agent") || "unknown";
 
-    // Log to Supabase
+    // Log to Turso
     await logContact({
       type: type as "call" | "email",
       source: String(source).substring(0, 500),
