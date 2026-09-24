@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyAdminSession } from "@/lib/auth";
-import { supabase } from "@/lib/supabase";
+import { getSupabaseAdmin } from "@/lib/supabase";
 
 export async function POST(req: NextRequest) {
   try {
@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     const filename = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${ext}`;
 
     // Upload to Supabase Storage
-    const { data, error: uploadError } = await supabase.storage
+    const { data, error: uploadError } = await getSupabaseAdmin().storage
       .from("gallery-photos")
       .upload(filename, file, {
         contentType: file.type,
@@ -38,12 +38,12 @@ export async function POST(req: NextRequest) {
     if (uploadError) throw uploadError;
 
     // Get public URL
-    const { data: urlData } = supabase.storage
+    const { data: urlData } = getSupabaseAdmin().storage
       .from("gallery-photos")
       .getPublicUrl(filename);
 
     // Save metadata to database
-    const { data: photoData, error: dbError } = await supabase
+    const { data: photoData, error: dbError } = await getSupabaseAdmin()
       .from("gallery_photos")
       .insert([
         {
