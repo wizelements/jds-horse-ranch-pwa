@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import type { Service } from "@/lib/supabase";
+import type { Service } from "@/lib/types";
 
 export default function ServicesPage() {
   const [services, setServices] = useState<Service[]>([]);
