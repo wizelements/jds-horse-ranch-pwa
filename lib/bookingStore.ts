@@ -105,7 +105,7 @@ function dbValue(value: unknown): InValue {
     typeof value === "number" ||
     typeof value === "bigint"
   ) {
-    return value;
+    return value as InValue;
   }
   return String(value);
 }
