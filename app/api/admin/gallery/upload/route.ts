@@ -1,64 +1,74 @@
+import { randomUUID } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { verifyAdminSession } from "@/lib/auth";
-import { getSupabaseAdmin } from "@/lib/supabase";
+import { createGalleryPhoto } from "@/lib/turso";
+import { getGalleryStorage } from "@/lib/storage";
+
+const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
+const ALLOWED_TYPES = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+]);
 
 export async function POST(req: NextRequest) {
   try {
-    const isAuth = await verifyAdminSession();
-    if (!isAuth) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+    if (!(await verifyAdminSession())) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const formData = await req.formData();
-    const file = formData.get("file") as File;
-    const title = (formData.get("title") as string) || "Untitled";
+    const file = formData.get("file");
+    const title = String(formData.get("title") || "Untitled").trim().slice(0, 255);
 
-    if (!file) {
+    if (!(file instanceof File)) {
+      return NextResponse.json({ error: "No file provided" }, { status: 400 });
+    }
+    if (!ALLOWED_TYPES.has(file.type)) {
       return NextResponse.json(
-        { error: "No file provided" },
+        { error: "Only JPG, PNG, WEBP, or GIF images are allowed" },
+        { status: 400 }
+      );
+    }
+    if (file.size > MAX_IMAGE_BYTES) {
+      return NextResponse.json(
+        { error: "Image must be 8 MB or smaller" },
         { status: 400 }
       );
     }
 
-    // Generate unique filename
-    const ext = file.name.split(".").pop();
-    const filename = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${ext}`;
+    const extension =
+      file.type === "image/jpeg"
+        ? "jpg"
+        : file.type.split("/")[1].replace("jpeg", "jpg");
+    const filename = `${Date.now()}-${randomUUID()}.${extension}`;
 
-    // Upload to Supabase Storage
-    const { data, error: uploadError } = await getSupabaseAdmin().storage
+    const storage = getGalleryStorage();
+    const { error: uploadError } = await storage.storage
       .from("gallery-photos")
       .upload(filename, file, {
         contentType: file.type,
         upsert: false,
+        cacheControl: "31536000",
       });
 
     if (uploadError) throw uploadError;
 
-    // Get public URL
-    const { data: urlData } = getSupabaseAdmin().storage
+    const { data: urlData } = storage.storage
       .from("gallery-photos")
       .getPublicUrl(filename);
 
-    // Save metadata to database
-    const { data: photoData, error: dbError } = await getSupabaseAdmin()
-      .from("gallery_photos")
-      .insert([
-        {
-          title,
-          image_url: urlData.publicUrl,
-          display_order: 0,
-          active: true,
-        },
-      ])
-      .select()
-      .single();
-
-    if (dbError) throw dbError;
-
-    return NextResponse.json({ photo: photoData }, { status: 201 });
+    try {
+      const photo = await createGalleryPhoto({
+        title,
+        image_url: urlData.publicUrl,
+      });
+      return NextResponse.json({ photo }, { status: 201 });
+    } catch (error) {
+      await storage.storage.from("gallery-photos").remove([filename]);
+      throw error;
+    }
   } catch (error) {
     console.error("Error uploading photo:", error);
     return NextResponse.json(
