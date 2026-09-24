@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { updateTestimonial } from "@/lib/supabase";
+import {
+  deleteTestimonial,
+  updateTestimonial,
+} from "@/lib/turso";
 import { verifyAdminSession } from "@/lib/auth";
-import { supabase } from "@/lib/supabase";
 
 export async function PATCH(
   req: NextRequest,
@@ -9,12 +11,8 @@ export async function PATCH(
 ) {
   try {
     const { id } = await params;
-    const isAuth = await verifyAdminSession();
-    if (!isAuth) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+    if (!(await verifyAdminSession())) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await req.json();
@@ -31,26 +29,16 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  req: NextRequest,
+  _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
-    const isAuth = await verifyAdminSession();
-    if (!isAuth) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+    if (!(await verifyAdminSession())) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { error } = await supabase
-      .from("testimonials")
-      .delete()
-      .eq("id", id);
-
-    if (error) throw error;
-
+    await deleteTestimonial(id);
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error deleting testimonial:", error);
