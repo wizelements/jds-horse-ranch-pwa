@@ -1,6 +1,11 @@
 "use client";
 
-export default function Hero() {
+interface HeroProps {
+  onCall: () => void;
+  isLoading: boolean;
+}
+
+export default function Hero({ onCall, isLoading }: HeroProps) {
   const whatsappNumber =
     process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "14049812361";
   const whatsappHref = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
@@ -17,11 +22,12 @@ export default function Hero() {
           JD&apos;s Horse Ranch
         </h1>
         <p className="mb-4 text-2xl text-gray-100 md:text-3xl">
-          Start your riding request on WhatsApp
+          Start your riding request
         </p>
         <p className="mx-auto mb-8 max-w-2xl text-lg leading-relaxed text-gray-300">
-          Our WhatsApp reservation assistant collects the basics, sends your
-          request to JD for review, and keeps your booking updates in one place.
+          Send your rider details once. JD personally reviews every request,
+          confirms the final time and price with you, and payment comes only
+          after his approval.
         </p>
 
         <div className="mx-auto max-w-2xl rounded-3xl bg-white/10 p-6 shadow-2xl backdrop-blur md:p-8">
@@ -32,28 +38,39 @@ export default function Hero() {
             7555 Jones Rd. Fairburn, GA
           </h2>
 
-          <a
-            href={whatsappHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block w-full rounded-2xl bg-green-600 px-6 py-5 text-xl font-bold text-white transition hover:bg-green-700"
-          >
-            Start on WhatsApp
-          </a>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <a
+              href={whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block rounded-2xl bg-green-600 px-6 py-5 text-xl font-bold text-white transition hover:bg-green-700"
+            >
+              Start on WhatsApp
+            </a>
+            <button
+              onClick={onCall}
+              disabled={isLoading}
+              className="rounded-2xl bg-white px-6 py-5 text-xl font-bold text-ranch-dark transition hover:bg-gray-100 disabled:opacity-60"
+            >
+              {isLoading ? "Connecting..." : "Call JD"}
+            </button>
+          </div>
 
           <div className="mt-6 grid gap-3 text-left text-sm text-gray-100 sm:grid-cols-3">
             <div className="rounded-xl bg-black/20 p-4">
-              <strong className="block text-white">1. Tell us about you</strong>
-              Name, email, service, date, and rider height/weight.
+              <strong className="block text-white">1. Send the request</strong>
+              Name, service, date, and each rider&apos;s age, height, weight,
+              and experience.
             </div>
             <div className="rounded-xl bg-black/20 p-4">
-              <strong className="block text-white">2. JD reviews it</strong>
-              JD confirms the time and price before payment is requested.
+              <strong className="block text-white">2. Speak with JD</strong>
+              Your preferred spot is held up to 24 hours while JD personally
+              reviews, confirms, or adjusts the request.
             </div>
             <div className="rounded-xl bg-black/20 p-4">
-              <strong className="block text-white">3. Confirm + connect</strong>
-              After payment confirms the appointment, you&apos;ll get JD&apos;s
-              number for a personal rider conversation.
+              <strong className="block text-white">3. Pay after approval</strong>
+              Only after JD approves does the system send your
+              booking-specific Square checkout link.
             </div>
           </div>
         </div>
