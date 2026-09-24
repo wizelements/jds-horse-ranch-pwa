@@ -42,6 +42,12 @@ for (const [table, columns] of Object.entries(tables)) {
     continue;
   }
 
+  if (table === "services" && (data || []).length > 0) {
+    await turso.execute(
+      "DELETE FROM services WHERE id IN ('service-riding-lessons','service-trail-rides','service-special-events')"
+    );
+  }
+
   let copied = 0;
   for (const row of data || []) {
     const present = columns.filter((column) => Object.prototype.hasOwnProperty.call(row, column));
@@ -53,10 +59,16 @@ for (const [table, columns] of Object.entries(tables)) {
       .map((column) => `${column} = excluded.${column}`)
       .join(", ");
 
+    const conflictTarget = table === "settings" ? "key" : "id";
+    const conflictUpdates = present
+      .filter((column) => column !== conflictTarget)
+      .map((column) => `${column} = excluded.${column}`)
+      .join(", ");
+
     await turso.execute({
       sql: `INSERT INTO ${table} (${present.join(", ")})
         VALUES (${placeholders})
-        ON CONFLICT(id) DO UPDATE SET ${updates}`,
+        ON CONFLICT(${conflictTarget}) DO UPDATE SET ${conflictUpdates}`,
       args: present.map((column) => convert(row[column])),
     });
     copied += 1;
