@@ -65,7 +65,19 @@ export async function getActiveInquiry(phone: string) {
     .from("booking_inquiries")
     .select("*")
     .eq("customer_phone", phone)
-    .in("status", ["COLLECTING_INFORMATION", "PENDING_JD", "AWAITING_PAYMENT", "BOOKED"])
+    .in("status", ["COLLECTING_INFORMATION", "PENDING_JD", "AWAITING_PAYMENT"])
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  return (data || null) as BookingInquiry | null;
+}
+
+export async function getLatestInquiry(phone: string) {
+  const { data, error } = await db()
+    .from("booking_inquiries")
+    .select("*")
+    .eq("customer_phone", phone)
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
