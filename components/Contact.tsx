@@ -6,11 +6,17 @@ interface ContactProps {
 }
 
 export default function Contact({ onCall, isLoading }: ContactProps) {
+  const whatsappNumber =
+    process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "14049812361";
+  const whatsappHref = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
+    "Hi, I'd like to request a riding appointment at JD's Horse Ranch."
+  )}`;
+
   return (
     <section className="section bg-ranch-dark text-white">
       <h2 className="text-4xl font-bold text-center mb-12">Get In Touch</h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
         <div className="text-center">
           <h3 className="text-xl font-bold mb-4">Address</h3>
           <p className="text-gray-300">
@@ -37,6 +43,21 @@ export default function Contact({ onCall, isLoading }: ContactProps) {
             (404) 981-2361
           </button>
           <p className="text-gray-300 text-sm mt-2">BY APPOINTMENT ONLY</p>
+        </div>
+
+        <div className="text-center">
+          <h3 className="text-xl font-bold mb-4">WhatsApp Booking Bot</h3>
+          <a
+            href={whatsappHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block bg-green-600 hover:bg-green-700 text-white font-bold px-5 py-3 rounded-lg transition"
+          >
+            Start on WhatsApp
+          </a>
+          <p className="text-gray-300 text-sm mt-3">
+            Collects your request for JD to personally review before payment.
+          </p>
         </div>
 
         <div className="text-center">
