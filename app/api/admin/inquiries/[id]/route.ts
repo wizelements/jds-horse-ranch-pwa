@@ -5,7 +5,7 @@ import {
   recordBookingEvent,
   updateInquiry,
 } from "@/lib/bookingStore";
-import { sendCustomerMessage } from "@/lib/communications";
+import { sendOperationalMessage } from "@/lib/communications";
 import { createSquarePaymentLink } from "@/lib/square";
 
 export const runtime = "nodejs";
@@ -39,7 +39,7 @@ export async function POST(
     }
 
     const paymentLink = await createSquarePaymentLink(inquiry, amountCents);
-    let approved = await updateInquiry(inquiry.id, {
+    const approved = await updateInquiry(inquiry.id, {
       status: "AWAITING_PAYMENT",
       approved_start_at: approvedStartAt.toISOString(),
       approval_note: note || null,
@@ -67,10 +67,11 @@ export async function POST(
     });
 
     try {
-      await sendCustomerMessage(
-        approved,
-        `JD approved your riding request for ${when}. Complete your booking-specific Square payment here: ${paymentLink.url}. Your booking becomes confirmed only after Square reports the payment as completed.`
-      );
+      await sendOperationalMessage(approved, {
+        body: `JD approved your riding request for ${when}. Complete your booking-specific Square payment here: ${paymentLink.url}. Your booking becomes confirmed only after Square reports the payment as completed.`,
+        whatsappTemplateEnv: "WHATSAPP_PAYMENT_TEMPLATE_NAME",
+        whatsappParameters: [when, paymentLink.url],
+      });
       await recordBookingEvent({
         inquiryId: approved.id,
         eventType: "payment_link_delivered",
@@ -96,7 +97,7 @@ export async function POST(
           status: approved.status,
           paymentUrl: paymentLink.url,
           delivery: "failed",
-          warning: "Payment link was created but automated delivery failed.",
+          warning: "Square payment was created, but automated delivery needs attention.",
         },
         { status: 202 }
       );
@@ -119,12 +120,14 @@ export async function POST(
       metadata: reason ? { reason } : {},
     });
     try {
-      await sendCustomerMessage(
-        declined,
-        reason
-          ? `JD reviewed your request and cannot confirm it as submitted. Note: ${reason}. Reply BOOK to start another request.`
-          : "JD reviewed your request and cannot confirm it as submitted. Reply BOOK to start another request with a different date or details."
-      );
+      const message = reason
+        ? `JD reviewed your request and cannot confirm it as submitted. Note: ${reason}. Reply BOOK to start another request.`
+        : "JD reviewed your request and cannot confirm it as submitted. Reply BOOK to start another request.";
+      await sendOperationalMessage(declined, {
+        body: message,
+        whatsappTemplateEnv: "WHATSAPP_DECLINE_TEMPLATE_NAME",
+        whatsappParameters: [reason || "Please contact JD for another date or option."],
+      });
     } catch (error) {
       await recordBookingEvent({
         inquiryId: declined.id,
@@ -137,9 +140,7 @@ export async function POST(
   }
 
   if (action === "cancel") {
-    const cancelled = await updateInquiry(inquiry.id, {
-      status: "CANCELLED",
-    });
+    const cancelled = await updateInquiry(inquiry.id, { status: "CANCELLED" });
     await recordBookingEvent({
       inquiryId: cancelled.id,
       eventType: "cancelled_by_admin",
