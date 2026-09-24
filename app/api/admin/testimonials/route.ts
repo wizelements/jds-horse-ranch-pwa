@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getTestimonials } from "@/lib/supabase";
 import { verifyAdminSession } from "@/lib/auth";
-import { supabase } from "@/lib/supabase";
+import { getSupabaseAdmin } from "@/lib/supabase";
 
 export async function GET(req: NextRequest) {
   try {
@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await getSupabaseAdmin()
       .from("testimonials")
       .insert([
         {
