@@ -1,163 +1,109 @@
-# JD's Horse Ranch PWA
+# JD's Horse Ranch Reservation Assistant
 
-Progressive Web App for JD's Horse Ranch with smart call logging and push notifications.
+Production-oriented Next.js PWA for JD's Horse Ranch with governed reservation intake, JD approval, booking-specific Square checkout, WhatsApp/SMS communication, lifecycle reminders, and a Turso/libSQL database.
 
-**🔴 LIVE**: https://jds-horse-ranch-pwa.vercel.app
+## Governing booking rule
 
-## Features
+JD remains the approval authority.
 
-- ✅ Mobile-first responsive design (matches original site)
-- ✅ Offline gallery & service info (service worker caching)
-- ✅ One-tap calling with contact logging (timestamp, IP, user-agent)
-- ✅ Installable PWA (Add to Home Screen on mobile)
-- ✅ Push notifications ready (Firebase config needed)
-- ✅ Fast load times (<1s First Contentful Paint)
-- ✅ Full-page gallery with lightbox
-- ✅ Customer testimonials
-- ✅ Maps integration
+```
+Customer request
+→ 24-hour provisional hold
+→ JD conversation/review
+→ JD approves final time + amount
+→ booking-specific Square checkout
+→ Square webhook verifies completed payment
+→ booking confirmed
+→ reminder
+→ ride
+→ follow-up
+```
 
-## Quick Start
+No customer receives a payment request before JD approves.
+
+## Database
+
+**Turso is the database source of truth.**
+
+Required variables:
+
+```
+TURSO_DATABASE_URL=libsql://...
+TURSO_AUTH_TOKEN=...
+```
+
+Apply/verify the schema:
 
 ```bash
-# Install dependencies
-npm install
+npm run db:migrate
+npm run db:verify
+```
 
-# Local development
-npm run dev
-# Open http://localhost:3000
+The canonical schema is `turso/schema.sql`.
 
-# Build for production
+A one-time legacy importer is available for existing Supabase records:
+
+```bash
+LEGACY_SUPABASE_URL=...
+LEGACY_SUPABASE_SERVICE_ROLE_KEY=...
+npm run db:migrate:legacy
+```
+
+Remove those legacy credentials after migration.
+
+Supabase is not used as the application database. The existing gallery may continue using a Supabase Storage bucket for image objects; gallery metadata is stored in Turso.
+
+## Core capabilities
+
+- Website reservation intake
+- WhatsApp Cloud API intake
+- Optional Twilio SMS intake
+- Unified Turso reservation record
+- Rider age/height/weight collection
+- Preferred and alternate date/time
+- Separate marketing consent
+- 24-hour provisional hold
+- JD admin decision queue
+- JD-controlled final time and price
+- Booking-specific Square Checkout
+- Signed Square webhook payment verification
+- Automatic hold expiry
+- Confirmation retry
+- ~24-hour ride reminders
+- Post-ride follow-up
+- Durable signed admin sessions
+- Audit/event history
+- Contact logging
+- Service/testimonial/gallery administration
+
+## Development
+
+```bash
+npm ci
+npm run db:verify
+npm run lint
+npm run type-check
 npm run build
-
-# Start production server
-npm start
+npm run dev
 ```
 
-## Deploy
+## Release gates
 
-```bash
-# GitHub (already connected)
-git push origin main
+CI requires:
 
-# Vercel auto-deploys or use:
-vercel --prod --yes
-```
+1. reproducible `npm ci`
+2. production dependency audit
+3. lint
+4. executable Turso schema verification
+5. TypeScript check
+6. production Next.js build
 
-## Project Structure
+The feature is intentionally kept off production until external credentials, Turso migration, Square webhook verification, and real messaging E2E tests pass.
 
-```
-app/
-  page.tsx              # Home page
-  api/
-    contact/route.ts    # Contact logging API
-  layout.tsx            # Root layout
-  globals.css           # Global styles
+## Environment
 
-components/
-  Hero.tsx              # Hero section with CTA
-  Services.tsx          # Service cards
-  Gallery.tsx           # Photo gallery
-  Testimonials.tsx      # Customer testimonials
-  Contact.tsx           # Contact section
+See `.env.example` and `WHATSAPP_SETUP.md` for the current production variables and activation sequence.
 
-lib/
-  api.ts                # API helpers
+## Production site
 
-public/
-  manifest.json         # PWA manifest
-```
-
-## API Routes
-
-### POST /api/contact
-Log a contact attempt (call or email).
-
-**Request:**
-```json
-{
-  "type": "call",
-  "source": "/path"
-}
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "log": {
-    "timestamp": "2026-01-31T...",
-    "type": "call",
-    "source": "/",
-    "userAgent": "...",
-    "ip": "..."
-  }
-}
-```
-
-### GET /api/contact
-Retrieve recent contact logs (dev only).
-
-## Next Steps
-
-### Priority 1: Firebase Push Notifications
-- [ ] Set up Firebase Cloud Messaging
-- [ ] Add push notification handler to service worker
-- [ ] Test notifications on mobile
-
-### Priority 2: Persistent Contact Logging
-- [ ] Integrate Supabase or MongoDB for contact logs
-- [ ] Update `/api/contact` to save to database
-- [ ] Create admin dashboard to view contacts
-
-### Priority 3: Analytics
-- [ ] Add Google Analytics
-- [ ] Track call button clicks
-- [ ] Monitor user engagement by section
-
-## Setup Instructions
-
-See [DEPLOYMENT.md](DEPLOYMENT.md) for:
-- Firebase Cloud Messaging setup
-- Environment variables configuration
-- Persistent database integration
-- Admin dashboard creation
-
-## API Reference
-
-### POST /api/contact
-Log a contact attempt when user clicks call button.
-
-**Request:**
-```json
-{
-  "type": "call",
-  "source": "/"
-}
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "log": {
-    "timestamp": "2026-02-01T02:00:00Z",
-    "type": "call",
-    "source": "/",
-    "userAgent": "Mozilla/5.0...",
-    "ip": "203.0.113.45"
-  }
-}
-```
-
-### GET /api/contact
-View recent contact logs (dev endpoint).
-
-**Response:**
-```json
-{
-  "total": 5,
-  "recent": [
-    { "timestamp": "...", "type": "call", "source": "/", "ip": "..." }
-  ]
-}
-```
+Current public baseline: https://jds-horse-ranch-pwa.vercel.app
