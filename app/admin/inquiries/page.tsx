@@ -1,23 +1,27 @@
 import InquiryActions from "@/components/admin/InquiryActions";
-import { listWhatsAppInquiries } from "@/lib/whatsappStore";
+import { BookingInquiry, listInquiries } from "@/lib/bookingStore";
+
+function money(cents: number | null) {
+  return cents ? new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(cents / 100) : "—";
+}
 
 export default async function InquiriesPage() {
-  let inquiries = [];
+  let inquiries: BookingInquiry[] = [];
   let error: string | null = null;
 
   try {
-    inquiries = await listWhatsAppInquiries(100);
+    inquiries = await listInquiries(100);
   } catch (err) {
     console.error(err);
     error =
-      "Could not load WhatsApp inquiries. Apply migration 002 and configure SUPABASE_SERVICE_ROLE_KEY.";
+      "Could not load reservation inquiries. Apply migration 002 and configure the server-side Supabase service role key.";
   }
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-gray-900 mb-2">WhatsApp Inquiries</h1>
+      <h1 className="text-3xl font-bold text-gray-900 mb-2">Reservation Queue</h1>
       <p className="text-gray-600 mb-6">
-        JD remains the approval authority. Payment is sent only after JD speaks with the customer and approves the request.
+        One queue for web, WhatsApp, and SMS. JD must personally approve the final time and amount before a Square payment request is created.
       </p>
 
       {error && (
@@ -30,35 +34,63 @@ export default async function InquiriesPage() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b bg-gray-50">
-              <th className="text-left p-3">Created</th>
+              <th className="text-left p-3">Request</th>
               <th className="text-left p-3">Customer</th>
               <th className="text-left p-3">Riders</th>
-              <th className="text-left p-3">Requested time</th>
+              <th className="text-left p-3">Timing</th>
               <th className="text-left p-3">Status</th>
-              <th className="text-left p-3">24h hold</th>
-              <th className="text-left p-3">Action</th>
+              <th className="text-left p-3">Payment</th>
+              <th className="text-left p-3">JD action</th>
             </tr>
           </thead>
           <tbody>
             {inquiries.map((item) => (
               <tr key={item.id} className="border-b align-top">
-                <td className="p-3 text-gray-600">
-                  {new Date(item.created_at).toLocaleString()}
+                <td className="p-3 min-w-[170px]">
+                  <div className="font-medium">{item.service_requested || "Service not set"}</div>
+                  <div className="text-xs text-gray-500">{item.channel} · {new Date(item.created_at).toLocaleString()}</div>
+                  <div className="mt-2 text-xs text-gray-600">{item.experience || ""}</div>
+                  {item.qualification_notes && (
+                    <div className="mt-1 text-xs text-gray-600">Notes: {item.qualification_notes}</div>
+                  )}
                 </td>
-                <td className="p-3">
+                <td className="p-3 min-w-[160px]">
                   <div className="font-medium">{item.customer_name || "—"}</div>
                   <div className="text-gray-500">{item.customer_phone}</div>
+                  <div className="text-gray-500 break-all">{item.email || ""}</div>
                 </td>
-                <td className="p-3">
-                  <div>{item.rider_count || "—"}</div>
-                  <div className="text-xs text-gray-500 max-w-xs">{item.rider_details || ""}</div>
+                <td className="p-3 min-w-[180px]">
+                  <div className="font-medium">{item.rider_count || "—"} rider(s)</div>
+                  <div className="text-xs text-gray-500 whitespace-pre-wrap">{item.rider_details || ""}</div>
                 </td>
-                <td className="p-3 max-w-xs">{item.requested_datetime_text || "—"}</td>
-                <td className="p-3 font-medium">{item.status}</td>
-                <td className="p-3 text-gray-600">
-                  {item.hold_expires_at
-                    ? new Date(item.hold_expires_at).toLocaleString()
-                    : "—"}
+                <td className="p-3 min-w-[190px]">
+                  <div><span className="font-medium">Requested:</span> {item.requested_datetime_text || "—"}</div>
+                  <div className="mt-1 text-xs text-gray-500">Alternate: {item.alternate_datetime_text || "—"}</div>
+                  {item.approved_start_at && (
+                    <div className="mt-2 text-xs font-semibold text-green-800">
+                      Approved: {new Date(item.approved_start_at).toLocaleString()}
+                    </div>
+                  )}
+                  {item.hold_expires_at && item.status === "PENDING_JD" && (
+                    <div className="mt-2 text-xs text-amber-700">
+                      Hold ends: {new Date(item.hold_expires_at).toLocaleString()}
+                    </div>
+                  )}
+                </td>
+                <td className="p-3 font-semibold">{item.status}</td>
+                <td className="p-3 min-w-[150px]">
+                  <div>{money(item.approved_amount_cents)}</div>
+                  {item.square_payment_url && (
+                    <a
+                      href={item.square_payment_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-ranch-brown underline"
+                    >
+                      Open Square checkout
+                    </a>
+                  )}
+                  {item.paid_at && <div className="text-xs text-green-700 mt-1">Verified paid</div>}
                 </td>
                 <td className="p-3">
                   <InquiryActions id={item.id} status={item.status} />
@@ -68,7 +100,7 @@ export default async function InquiriesPage() {
             {!inquiries.length && !error && (
               <tr>
                 <td className="p-6 text-gray-500" colSpan={7}>
-                  No WhatsApp inquiries yet.
+                  No reservation requests yet.
                 </td>
               </tr>
             )}
