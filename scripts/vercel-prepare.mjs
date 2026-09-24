@@ -1,28 +1,20 @@
-import { createClient } from "@libsql/client";
-
 if (!process.env.VERCEL) {
   console.log("Integration prepare: skipped outside Vercel");
   process.exit(0);
 }
 
 const present = (name) => Boolean(process.env[name]?.trim());
-const tursoConfigured =
-  present("TURSO_DATABASE_URL") && present("TURSO_AUTH_TOKEN");
 
-if (!tursoConfigured) {
+const whatsappConfigured =
+  present("WHATSAPP_VERIFY_TOKEN") &&
+  present("WHATSAPP_APP_SECRET") &&
+  present("WHATSAPP_ACCESS_TOKEN") &&
+  present("WHATSAPP_PHONE_NUMBER_ID");
+
+if (!whatsappConfigured) {
   throw new Error(
-    "Turso is required for Vercel deployments. Configure TURSO_DATABASE_URL and TURSO_AUTH_TOKEN for this environment."
+    "WhatsApp Preview variables are incomplete. Configure WHATSAPP_VERIFY_TOKEN, WHATSAPP_APP_SECRET, WHATSAPP_ACCESS_TOKEN, and WHATSAPP_PHONE_NUMBER_ID."
   );
 }
 
-const db = createClient({
-  url: process.env.TURSO_DATABASE_URL,
-  authToken: process.env.TURSO_AUTH_TOKEN,
-});
-
-try {
-  await db.execute("SELECT 1");
-  console.log("Integration prepare: TURSO_REACHABLE=true");
-} finally {
-  db.close();
-}
+console.log("Integration prepare: WHATSAPP_CONFIGURED=true");
