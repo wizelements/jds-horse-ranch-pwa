@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { updateService } from "@/lib/supabase";
+import { updateService } from "@/lib/turso";
 import { verifyAdminSession } from "@/lib/auth";
 
 export async function PATCH(
