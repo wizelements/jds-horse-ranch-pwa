@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Contact } from "@/lib/supabase";
+import type { Contact } from "@/lib/supabase";
 
 export default function ContactsPage() {
   const [contacts, setContacts] = useState<Contact[]>([]);
