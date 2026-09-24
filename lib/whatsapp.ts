@@ -6,6 +6,31 @@ function required(name: string): string {
   return value;
 }
 
+async function sendWhatsAppPayload(payload: Record<string, unknown>) {
+  const phoneNumberId = required("WHATSAPP_PHONE_NUMBER_ID");
+  const accessToken = required("WHATSAPP_ACCESS_TOKEN");
+  const graphVersion = process.env.WHATSAPP_GRAPH_VERSION || "v26.0";
+
+  const response = await fetch(
+    `https://graph.facebook.com/${graphVersion}/${phoneNumberId}/messages`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+      cache: "no-store",
+    }
+  );
+
+  const result = await response.json();
+  if (!response.ok) {
+    throw new Error(`WhatsApp send failed (${response.status}): ${JSON.stringify(result)}`);
+  }
+  return result;
+}
+
 export function verifyMetaSignature(rawBody: string, signatureHeader: string | null) {
   if (!signatureHeader?.startsWith("sha256=")) return false;
 
@@ -25,33 +50,43 @@ export function verifyMetaSignature(rawBody: string, signatureHeader: string | n
 }
 
 export async function sendWhatsAppText(to: string, body: string) {
-  const phoneNumberId = required("WHATSAPP_PHONE_NUMBER_ID");
-  const accessToken = required("WHATSAPP_ACCESS_TOKEN");
-  const graphVersion = process.env.WHATSAPP_GRAPH_VERSION || "v26.0";
+  return sendWhatsAppPayload({
+    messaging_product: "whatsapp",
+    recipient_type: "individual",
+    to,
+    type: "text",
+    text: { body, preview_url: false },
+  });
+}
 
-  const response = await fetch(
-    `https://graph.facebook.com/${graphVersion}/${phoneNumberId}/messages`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
+export async function sendWhatsAppTemplate(
+  to: string,
+  templateName: string,
+  bodyParameters: string[] = []
+) {
+  const components = bodyParameters.length
+    ? [
+        {
+          type: "body",
+          parameters: bodyParameters.map((text) => ({
+            type: "text",
+            text,
+          })),
+        },
+      ]
+    : undefined;
+
+  return sendWhatsAppPayload({
+    messaging_product: "whatsapp",
+    recipient_type: "individual",
+    to,
+    type: "template",
+    template: {
+      name: templateName,
+      language: {
+        code: process.env.WHATSAPP_TEMPLATE_LANGUAGE || "en_US",
       },
-      body: JSON.stringify({
-        messaging_product: "whatsapp",
-        recipient_type: "individual",
-        to,
-        type: "text",
-        text: { body, preview_url: false },
-      }),
-      cache: "no-store",
-    }
-  );
-
-  if (!response.ok) {
-    const details = await response.text();
-    throw new Error(`WhatsApp send failed (${response.status}): ${details}`);
-  }
-
-  return response.json();
+      ...(components ? { components } : {}),
+    },
+  });
 }
