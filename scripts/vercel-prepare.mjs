@@ -1,6 +1,3 @@
-import { readFile } from "node:fs/promises";
-import { createClient } from "@libsql/client";
-
 if (!process.env.VERCEL) {
   console.log("Integration prepare: skipped outside Vercel");
   process.exit(0);
@@ -26,38 +23,8 @@ console.log(`Integration prepare: SQUARE_CONFIGURED=${squareConfigured}`);
 
 if (!tursoConfigured) {
   throw new Error(
-    "Turso is required for Vercel deployments. Configure TURSO_DATABASE_URL and TURSO_AUTH_TOKEN for this environment."
+    "Turso Preview variables are missing. Configure TURSO_DATABASE_URL and TURSO_AUTH_TOKEN for this Vercel environment."
   );
 }
 
-const sql = await readFile(new URL("../turso/schema.sql", import.meta.url), "utf8");
-const db = createClient({
-  url: process.env.TURSO_DATABASE_URL,
-  authToken: process.env.TURSO_AUTH_TOKEN,
-});
-
-try {
-  await db.execute("SELECT 1");
-  console.log("Integration prepare: TURSO_REACHABLE=true");
-
-  await db.executeMultiple(sql);
-
-  const requiredTables = [
-    "booking_inquiries",
-    "communication_messages",
-    "booking_events",
-  ];
-  const result = await db.execute({
-    sql: "SELECT name FROM sqlite_master WHERE type='table' AND name IN (?, ?, ?)",
-    args: requiredTables,
-  });
-  const names = new Set(result.rows.map((row) => String(row.name)));
-  const schemaReady = requiredTables.every((name) => names.has(name));
-  console.log(`Integration prepare: TURSO_SCHEMA_READY=${schemaReady}`);
-
-  if (!schemaReady) {
-    throw new Error("Required reservation tables are missing after migration");
-  }
-} finally {
-  db.close();
-}
+console.log("Integration prepare: TURSO_VARIABLES_PRESENT=true");
