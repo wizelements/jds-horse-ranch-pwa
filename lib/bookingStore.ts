@@ -1,4 +1,4 @@
-import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import { getSupabaseAdmin } from "@/lib/supabase";
 
 export type BookingChannel = "whatsapp" | "sms" | "web" | "voice";
 export type InquiryStatus =
@@ -45,19 +45,8 @@ export interface BookingInquiry {
   updated_at: string;
 }
 
-let client: SupabaseClient | null = null;
-
 function db() {
-  if (client) return client;
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !serviceRoleKey) {
-    throw new Error("Booking engine requires NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY");
-  }
-  client = createClient(url, serviceRoleKey, {
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
-  return client;
+  return getSupabaseAdmin();
 }
 
 export async function getActiveInquiry(phone: string) {
