@@ -25,8 +25,9 @@ console.log(`Integration prepare: WHATSAPP_CONFIGURED=${whatsappConfigured}`);
 console.log(`Integration prepare: SQUARE_CONFIGURED=${squareConfigured}`);
 
 if (!tursoConfigured) {
-  console.log("Integration prepare: Turso migration skipped");
-  process.exit(0);
+  throw new Error(
+    "Turso is required for Vercel deployments. Configure TURSO_DATABASE_URL and TURSO_AUTH_TOKEN for this environment."
+  );
 }
 
 const sql = await readFile(new URL("../turso/schema.sql", import.meta.url), "utf8");
