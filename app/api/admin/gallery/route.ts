@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getGalleryPhotos } from "@/lib/supabase";
+import { getGalleryPhotos } from "@/lib/turso";
 import { verifyAdminSession } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
