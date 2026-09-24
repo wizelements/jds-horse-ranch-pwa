@@ -30,7 +30,7 @@ export function statusMessage(inquiry: BookingInquiry) {
     case "COMPLETED":
       return "This booking is complete. Thank you for riding with JD's Horse Ranch.";
     default:
-      return `This request is ${inquiry.status.toLowerCase().replaceAll("_", " ")}.`;
+      return `This request is ${inquiry.status.toLowerCase().replace(/_/g, " ")}.`;
   }
 }
 
