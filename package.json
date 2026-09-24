@@ -13,7 +13,8 @@
     "test": "npm run type-check",
     "format": "prettier --write \"**/*.{ts,tsx,md,json,yml}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,md,json,yml}\"",
-    "db:migrate": "node scripts/turso-migrate.mjs"
+    "db:migrate": "node scripts/turso-migrate.mjs",
+    "db:migrate:legacy": "node scripts/migrate-supabase-to-turso.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.1",
