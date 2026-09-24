@@ -63,7 +63,8 @@ export async function processBookingMessage(input: {
   }
 
   if (lower === "status") {
-    if (!inquiry) {
+    const latest = inquiry || (await getLatestInquiry(input.phone));
+    if (!latest) {
       inquiry = await createConversationInquiry({
         channel: input.channel,
         phone: input.phone,
@@ -72,8 +73,8 @@ export async function processBookingMessage(input: {
       await reply(inquiry, "No prior active request was found. I started a new request. What service are you interested in: riding lesson, trail ride, or special event?");
       return inquiry;
     }
-    await reply(inquiry, statusMessage(inquiry));
-    return inquiry;
+    await reply(latest, statusMessage(latest));
+    return latest;
   }
 
   if (lower === "cancel" && inquiry) {
