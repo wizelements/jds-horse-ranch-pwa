@@ -16,7 +16,8 @@ export default function BookingRequest() {
     setSubmitting(true);
     setState({ kind: "idle" });
 
-    const form = new FormData(event.currentTarget);
+    const formElement = event.currentTarget;
+    const form = new FormData(formElement);
     const payload = {
       customerName: form.get("customerName"),
       phone: form.get("phone"),
@@ -46,7 +47,7 @@ export default function BookingRequest() {
         inquiryId: result.inquiryId,
         holdExpiresAt: result.holdExpiresAt || null,
       });
-      event.currentTarget.reset();
+      formElement.reset();
     } catch (error) {
       setState({
         kind: "error",
