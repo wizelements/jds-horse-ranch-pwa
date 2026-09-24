@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { updateGalleryPhoto } from "@/lib/supabase";
 import { verifyAdminSession } from "@/lib/auth";
-import { supabase } from "@/lib/supabase";
+import { getSupabaseAdmin } from "@/lib/supabase";
 
 export async function PATCH(
   req: NextRequest,
@@ -45,7 +45,7 @@ export async function DELETE(
     }
 
     // Get photo to find filename
-    const { data: photo, error: fetchError } = await supabase
+    const { data: photo, error: fetchError } = await getSupabaseAdmin()
       .from("gallery_photos")
       .select("image_url")
       .eq("id", id)
@@ -58,11 +58,11 @@ export async function DELETE(
 
     // Delete from storage
     if (filename) {
-      await supabase.storage.from("gallery-photos").remove([filename]);
+      await getSupabaseAdmin().storage.from("gallery-photos").remove([filename]);
     }
 
     // Delete from database
-    const { error: deleteError } = await supabase
+    const { error: deleteError } = await getSupabaseAdmin()
       .from("gallery_photos")
       .delete()
       .eq("id", id);
