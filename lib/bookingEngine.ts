@@ -3,6 +3,7 @@ import {
   BookingInquiry,
   createConversationInquiry,
   getActiveInquiry,
+  getLatestInquiry,
   recordBookingEvent,
   updateInquiry,
 } from "@/lib/bookingStore";
@@ -70,7 +71,12 @@ export async function processBookingMessage(input: {
         phone: input.phone,
         profileName: input.profileName,
       });
-      await reply(inquiry, "No prior active request was found. I started a new request. What service are you interested in: riding lesson, trail ride, or special event?");
+      await reply(
+        inquiry,
+        inquiry.intake_step === "name"
+          ? "No prior request was found, so I started a new one. What is your full name?"
+          : `No prior request was found, so I started a new one. Hi ${inquiry.customer_name}. What service are you interested in: riding lesson, trail ride, or special event?`
+      );
       return inquiry;
     }
     await reply(latest, statusMessage(latest));
