@@ -5,9 +5,10 @@ import { supabase } from "@/lib/supabase";
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const isAuth = await verifyAdminSession();
     if (!isAuth) {
       return NextResponse.json(
@@ -17,7 +18,7 @@ export async function PATCH(
     }
 
     const body = await req.json();
-    await updateGalleryPhoto(params.id, body);
+    await updateGalleryPhoto(id, body);
 
     return NextResponse.json({ success: true });
   } catch (error) {
@@ -31,9 +32,10 @@ export async function PATCH(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const isAuth = await verifyAdminSession();
     if (!isAuth) {
       return NextResponse.json(
@@ -46,7 +48,7 @@ export async function DELETE(
     const { data: photo, error: fetchError } = await supabase
       .from("gallery_photos")
       .select("image_url")
-      .eq("id", params.id)
+      .eq("id", id)
       .single();
 
     if (fetchError) throw fetchError;
@@ -63,7 +65,7 @@ export async function DELETE(
     const { error: deleteError } = await supabase
       .from("gallery_photos")
       .delete()
-      .eq("id", params.id);
+      .eq("id", id);
 
     if (deleteError) throw deleteError;
 
