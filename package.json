@@ -14,7 +14,8 @@
     "format": "prettier --write \"**/*.{ts,tsx,md,json,yml}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,md,json,yml}\"",
     "db:migrate": "node scripts/turso-migrate.mjs",
-    "db:migrate:legacy": "node scripts/migrate-supabase-to-turso.mjs"
+    "db:migrate:legacy": "node scripts/migrate-supabase-to-turso.mjs",
+    "db:verify": "node scripts/verify-turso-schema.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.1",
