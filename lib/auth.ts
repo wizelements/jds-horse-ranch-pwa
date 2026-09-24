@@ -1,9 +1,9 @@
 import { cookies } from "next/headers";
 import crypto from "crypto";
 
-const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || "";
-const ADMIN_PASSWORD_SALT = process.env.ADMIN_PASSWORD_SALT || "";
-const SESSION_TOKEN_SECRET = process.env.SESSION_TOKEN_SECRET || "";
+const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH_V2 || "";
+const ADMIN_PASSWORD_SALT = process.env.ADMIN_PASSWORD_SALT_V2 || "";
+const SESSION_TOKEN_SECRET = process.env.SESSION_TOKEN_SECRET_V2 || "";
 const SESSION_COOKIE = "admin_session";
 const SESSION_TTL_SECONDS = 24 * 60 * 60;
 
@@ -14,10 +14,10 @@ function safeEqual(a: string, b: string) {
 }
 
 export function hashPassword(password: string): string {
-  if (ADMIN_PASSWORD_SALT) {
-    return crypto.scryptSync(password, ADMIN_PASSWORD_SALT, 64).toString("hex");
+  if (!ADMIN_PASSWORD_SALT) {
+    throw new Error("ADMIN_PASSWORD_SALT_V2 is not configured");
   }
-  return crypto.createHash("sha256").update(password).digest("hex");
+  return crypto.scryptSync(password, ADMIN_PASSWORD_SALT, 64).toString("hex");
 }
 
 function signSession(payload: string) {
@@ -27,6 +27,7 @@ function signSession(payload: string) {
 function createSessionToken() {
   const payload = Buffer.from(
     JSON.stringify({
+      v: 2,
       admin: true,
       exp: Math.floor(Date.now() / 1000) + SESSION_TTL_SECONDS,
       nonce: crypto.randomBytes(16).toString("hex"),
@@ -42,15 +43,19 @@ function verifySessionToken(token: string) {
 
   try {
     const decoded = JSON.parse(Buffer.from(payload, "base64url").toString("utf8"));
-    return decoded?.admin === true && Number(decoded.exp) > Math.floor(Date.now() / 1000);
+    return (
+      decoded?.v === 2 &&
+      decoded?.admin === true &&
+      Number(decoded.exp) > Math.floor(Date.now() / 1000)
+    );
   } catch {
     return false;
   }
 }
 
 export async function loginAdmin(password: string): Promise<boolean> {
-  if (!ADMIN_PASSWORD_HASH || !SESSION_TOKEN_SECRET) {
-    console.warn("Admin credentials/session secret are not fully configured. Admin access disabled.");
+  if (!ADMIN_PASSWORD_HASH || !ADMIN_PASSWORD_SALT || !SESSION_TOKEN_SECRET) {
+    console.warn("V2 admin credentials/session secret are not fully configured. Admin access disabled.");
     return false;
   }
 
