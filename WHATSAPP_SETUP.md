@@ -130,7 +130,7 @@ Copy the variable names from `.env.example` into Vercel Production and Preview e
 
 A local environment file was historically tracked in the repository. Removing the file from the current tree does not invalidate credentials that may have appeared in Git history. Rotate every credential that was ever stored there before production promotion.
 
-Admin sessions are now stateless HMAC-signed cookies rather than process memory, so serverless restarts do not invalidate legitimate sessions.
+Admin sessions are now stateless HMAC-signed cookies rather than process memory, so serverless restarts do not invalidate legitimate sessions. The application intentionally ignores the historical admin variable names and requires `ADMIN_PASSWORD_HASH_V2`, `ADMIN_PASSWORD_SALT_V2`, and `SESSION_TOKEN_SECRET_V2`.
 
 ## Activation checklist
 
@@ -141,7 +141,7 @@ Admin sessions are now stateless HMAC-signed cookies rather than process memory,
 5. Configure WhatsApp business credentials and approved operational templates.
 6. Optionally configure Twilio SMS.
 7. Set a strong `CRON_SECRET`.
-8. Set `SESSION_TOKEN_SECRET` and admin password credentials.
+8. Generate fresh admin credentials and set `ADMIN_PASSWORD_HASH_V2`, `ADMIN_PASSWORD_SALT_V2`, and `SESSION_TOKEN_SECRET_V2`. Do not reuse historical values.
 9. Deploy a preview and run type-check/build.
 10. Test: web request, WhatsApp intake, hold expiration, JD approval, Square checkout, signed Square payment webhook, confirmation, reminder, completion, follow-up.
 11. Promote only after the full path passes.
