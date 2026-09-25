@@ -14,7 +14,7 @@ export default async function InquiriesPage() {
   } catch (err) {
     console.error(err);
     error =
-      "Could not load reservation inquiries. Apply migration 002 and configure the server-side Supabase service role key.";
+      "Could not load reservation inquiries. Verify the Turso environment variables and run the current Turso migration.";
   }
 
   return (
@@ -52,6 +52,16 @@ export default async function InquiriesPage() {
                   <div className="mt-2 text-xs text-gray-600">{item.experience || ""}</div>
                   {item.qualification_notes && (
                     <div className="mt-1 text-xs text-gray-600">Notes: {item.qualification_notes}</div>
+                  )}
+                  {item.reschedule_request_text && (
+                    <div className="mt-2 rounded bg-amber-50 p-2 text-xs text-amber-900">
+                      Change requested: {item.reschedule_request_text}
+                    </div>
+                  )}
+                  {item.automation_paused && (
+                    <div className="mt-2 rounded bg-blue-50 p-2 text-xs font-semibold text-blue-900">
+                      Human follow-up requested
+                    </div>
                   )}
                 </td>
                 <td className="p-3 min-w-[160px]">
@@ -93,7 +103,13 @@ export default async function InquiriesPage() {
                   {item.paid_at && <div className="text-xs text-green-700 mt-1">Verified paid</div>}
                 </td>
                 <td className="p-3">
-                  <InquiryActions id={item.id} status={item.status} />
+                  <InquiryActions
+                    id={item.id}
+                    status={item.status}
+                    automationPaused={item.automation_paused}
+                    rescheduleRequestText={item.reschedule_request_text}
+                    customerServiceWindowExpiresAt={item.customer_service_window_expires_at}
+                  />
                 </td>
               </tr>
             ))}
