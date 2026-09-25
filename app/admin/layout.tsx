@@ -31,6 +31,7 @@ export default async function AdminLayout({
       <div className="max-w-7xl mx-auto px-4 py-8">
         <aside className="mb-8 flex gap-4 flex-wrap">
           <NavLink href="/admin/dashboard" label="Dashboard" />
+          <NavLink href="/admin/inquiries" label="Reservation Queue" />
           <NavLink href="/admin/services" label="Services" />
           <NavLink href="/admin/testimonials" label="Testimonials" />
           <NavLink href="/admin/gallery" label="Gallery" />

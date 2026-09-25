@@ -1,92 +1,85 @@
 import { cookies } from "next/headers";
 import crypto from "crypto";
 
-const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || "";
-const SESSION_TOKEN_SECRET = process.env.SESSION_TOKEN_SECRET || "dev-secret-change-in-prod";
+const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH_V2 || "";
+const ADMIN_PASSWORD_SALT = process.env.ADMIN_PASSWORD_SALT_V2 || "";
+const SESSION_TOKEN_SECRET = process.env.SESSION_TOKEN_SECRET_V2 || "";
+const SESSION_COOKIE = "admin_session";
+const SESSION_TTL_SECONDS = 24 * 60 * 60;
 
-/**
- * Hash a password for storage/comparison
- * In production, use bcrypt. For MVP, using simple SHA256.
- */
+function safeEqual(a: string, b: string) {
+  const left = Buffer.from(a);
+  const right = Buffer.from(b);
+  return left.length === right.length && crypto.timingSafeEqual(left, right);
+}
+
 export function hashPassword(password: string): string {
-  return crypto.createHash("sha256").update(password).digest("hex");
+  if (!ADMIN_PASSWORD_SALT) {
+    throw new Error("ADMIN_PASSWORD_SALT_V2 is not configured");
+  }
+  return crypto.scryptSync(password, ADMIN_PASSWORD_SALT, 64).toString("hex");
 }
 
-/**
- * Verify admin password and create session
- */
-export async function loginAdmin(password: string): Promise<boolean> {
-  if (!ADMIN_PASSWORD_HASH) {
-    console.warn("ADMIN_PASSWORD_HASH not configured. Admin access disabled.");
-    return false;
-  }
+function signSession(payload: string) {
+  return crypto.createHmac("sha256", SESSION_TOKEN_SECRET).update(payload).digest("base64url");
+}
 
-  const hash = hashPassword(password);
-  if (hash === ADMIN_PASSWORD_HASH) {
-    // Create session token
-    const token = crypto.randomBytes(32).toString("hex");
-    const sessionData = JSON.stringify({
+function createSessionToken() {
+  const payload = Buffer.from(
+    JSON.stringify({
+      v: 2,
       admin: true,
-      createdAt: Date.now(),
-      expiresAt: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
-    });
-
-    const cookieStore = await cookies();
-    cookieStore.set("admin_session", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 24 * 60 * 60, // 24 hours
-    });
-
-    // Store token data somewhere (in prod: use secure session store)
-    // For MVP: store in memory (will clear on deployment)
-    (global as any).adminSessions = (global as any).adminSessions || {};
-    (global as any).adminSessions[token] = sessionData;
-
-    return true;
-  }
-
-  return false;
+      exp: Math.floor(Date.now() / 1000) + SESSION_TTL_SECONDS,
+      nonce: crypto.randomBytes(16).toString("hex"),
+    })
+  ).toString("base64url");
+  return `${payload}.${signSession(payload)}`;
 }
 
-/**
- * Verify admin session is valid
- */
-export async function verifyAdminSession(): Promise<boolean> {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("admin_session")?.value;
-
-  if (!token) return false;
-
-  const sessions = (global as any).adminSessions || {};
-  const sessionData = sessions[token];
-
-  if (!sessionData) return false;
+function verifySessionToken(token: string) {
+  if (!SESSION_TOKEN_SECRET || !token.includes(".")) return false;
+  const [payload, signature] = token.split(".", 2);
+  if (!payload || !signature || !safeEqual(signSession(payload), signature)) return false;
 
   try {
-    const data = JSON.parse(sessionData);
-    if (data.expiresAt < Date.now()) {
-      delete sessions[token];
-      return false;
-    }
-    return true;
+    const decoded = JSON.parse(Buffer.from(payload, "base64url").toString("utf8"));
+    return (
+      decoded?.v === 2 &&
+      decoded?.admin === true &&
+      Number(decoded.exp) > Math.floor(Date.now() / 1000)
+    );
   } catch {
     return false;
   }
 }
 
-/**
- * Logout admin session
- */
-export async function logoutAdmin(): Promise<void> {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("admin_session")?.value;
-
-  if (token) {
-    const sessions = (global as any).adminSessions || {};
-    delete sessions[token];
+export async function loginAdmin(password: string): Promise<boolean> {
+  if (!ADMIN_PASSWORD_HASH || !ADMIN_PASSWORD_SALT || !SESSION_TOKEN_SECRET) {
+    console.warn("V2 admin credentials/session secret are not fully configured. Admin access disabled.");
+    return false;
   }
 
-  cookieStore.delete("admin_session");
+  const hash = hashPassword(password);
+  if (!safeEqual(hash, ADMIN_PASSWORD_HASH)) return false;
+
+  const cookieStore = await cookies();
+  cookieStore.set(SESSION_COOKIE, createSessionToken(), {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: SESSION_TTL_SECONDS,
+    path: "/",
+  });
+  return true;
+}
+
+export async function verifyAdminSession(): Promise<boolean> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(SESSION_COOKIE)?.value;
+  return token ? verifySessionToken(token) : false;
+}
+
+export async function logoutAdmin(): Promise<void> {
+  const cookieStore = await cookies();
+  cookieStore.delete(SESSION_COOKIE);
 }

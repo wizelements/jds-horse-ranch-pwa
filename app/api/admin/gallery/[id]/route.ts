@@ -1,24 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
-import { updateGalleryPhoto } from "@/lib/supabase";
+import {
+  deleteGalleryPhoto,
+  getGalleryPhoto,
+  updateGalleryPhoto,
+} from "@/lib/turso";
 import { verifyAdminSession } from "@/lib/auth";
-import { supabase } from "@/lib/supabase";
+import { getGalleryStorage } from "@/lib/storage";
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const isAuth = await verifyAdminSession();
-    if (!isAuth) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+    const { id } = await params;
+    if (!(await verifyAdminSession())) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await req.json();
-    await updateGalleryPhoto(params.id, body);
-
+    await updateGalleryPhoto(id, body);
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error updating gallery photo:", error);
@@ -30,43 +30,31 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
+  _req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const isAuth = await verifyAdminSession();
-    if (!isAuth) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+    const { id } = await params;
+    if (!(await verifyAdminSession())) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Get photo to find filename
-    const { data: photo, error: fetchError } = await supabase
-      .from("gallery_photos")
-      .select("image_url")
-      .eq("id", params.id)
-      .single();
+    const photo = await getGalleryPhoto(id);
+    if (!photo) {
+      return NextResponse.json({ error: "Photo not found" }, { status: 404 });
+    }
 
-    if (fetchError) throw fetchError;
-
-    // Extract filename from URL
-    const filename = photo.image_url.split("/").pop();
-
-    // Delete from storage
+    const filename = photo.image_url.split("/").pop()?.split("?")[0] || null;
     if (filename) {
-      await supabase.storage.from("gallery-photos").remove([filename]);
+      const { error: storageError } = await getGalleryStorage()
+        .storage.from("gallery-photos")
+        .remove([filename]);
+      if (storageError) {
+        console.warn("Gallery object delete failed:", storageError.message);
+      }
     }
 
-    // Delete from database
-    const { error: deleteError } = await supabase
-      .from("gallery_photos")
-      .delete()
-      .eq("id", params.id);
-
-    if (deleteError) throw deleteError;
-
+    await deleteGalleryPhoto(id);
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error deleting gallery photo:", error);

@@ -1,4 +1,4 @@
-import { getContacts } from "@/lib/supabase";
+import { getContacts } from "@/lib/turso";
 
 export default async function DashboardPage() {
   let recentContacts = [];

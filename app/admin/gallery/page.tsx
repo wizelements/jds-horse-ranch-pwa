@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { GalleryPhoto } from "@/lib/supabase";
+import type { GalleryPhoto } from "@/lib/types";
 import Image from "next/image";
 
 export default function GalleryPage() {

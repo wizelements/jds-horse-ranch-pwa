@@ -1,16 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getTestimonials } from "@/lib/supabase";
+import {
+  createTestimonial,
+  getTestimonials,
+} from "@/lib/turso";
 import { verifyAdminSession } from "@/lib/auth";
-import { supabase } from "@/lib/supabase";
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
-    const isAuth = await verifyAdminSession();
-    if (!isAuth) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+    if (!(await verifyAdminSession())) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const testimonials = await getTestimonials();
@@ -26,41 +24,29 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const isAuth = await verifyAdminSession();
-    if (!isAuth) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+    if (!(await verifyAdminSession())) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await req.json();
-    const { customer_name, text, rating } = body;
+    const customerName = String(body.customer_name || "").trim().slice(0, 255);
+    const text = String(body.text || "").trim().slice(0, 4000);
+    const rating = Math.min(5, Math.max(1, Number(body.rating || 5)));
 
-    if (!customer_name || !text) {
+    if (!customerName || !text) {
       return NextResponse.json(
         { error: "Name and text required" },
         { status: 400 }
       );
     }
 
-    const { data, error } = await supabase
-      .from("testimonials")
-      .insert([
-        {
-          customer_name,
-          text,
-          rating: rating || 5,
-          display_order: 0,
-          active: true,
-        },
-      ])
-      .select()
-      .single();
+    const testimonial = await createTestimonial({
+      customer_name: customerName,
+      text,
+      rating,
+    });
 
-    if (error) throw error;
-
-    return NextResponse.json({ testimonial: data }, { status: 201 });
+    return NextResponse.json({ testimonial }, { status: 201 });
   } catch (error) {
     console.error("Error creating testimonial:", error);
     return NextResponse.json(

@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { updateService } from "@/lib/supabase";
+import { updateService } from "@/lib/turso";
 import { verifyAdminSession } from "@/lib/auth";
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const isAuth = await verifyAdminSession();
     if (!isAuth) {
       return NextResponse.json(
@@ -16,7 +17,7 @@ export async function PATCH(
     }
 
     const body = await req.json();
-    await updateService(params.id, body);
+    await updateService(id, body);
 
     return NextResponse.json({ success: true });
   } catch (error) {
