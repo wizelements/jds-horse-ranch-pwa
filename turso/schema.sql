@@ -68,6 +68,13 @@ CREATE TABLE IF NOT EXISTS booking_inquiries (
   experience TEXT,
   qualification_notes TEXT,
   marketing_consent INTEGER NOT NULL DEFAULT 0 CHECK (marketing_consent IN (0,1)),
+  marketing_opt_out_at TEXT,
+  automation_paused INTEGER NOT NULL DEFAULT 0 CHECK (automation_paused IN (0,1)),
+  human_takeover_requested_at TEXT,
+  reschedule_requested_at TEXT,
+  reschedule_request_text TEXT,
+  last_customer_message_at TEXT,
+  customer_service_window_expires_at TEXT,
   status TEXT NOT NULL DEFAULT 'COLLECTING_INFORMATION'
     CHECK (status IN (
       'COLLECTING_INFORMATION','PENDING_JD','AWAITING_PAYMENT','BOOKED',
@@ -112,6 +119,18 @@ CREATE TABLE IF NOT EXISTS booking_events (
   created_at TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS communication_status_events (
+  id TEXT PRIMARY KEY,
+  provider_message_id TEXT NOT NULL,
+  inquiry_id TEXT REFERENCES booking_inquiries(id) ON DELETE SET NULL,
+  phone TEXT,
+  status TEXT NOT NULL,
+  error_code TEXT,
+  error_message TEXT,
+  raw_payload TEXT,
+  created_at TEXT NOT NULL
+);
+
 CREATE INDEX IF NOT EXISTS idx_contacts_created_at ON contacts(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_services_display_order ON services(display_order);
 CREATE INDEX IF NOT EXISTS idx_gallery_photos_display_order ON gallery_photos(display_order);
@@ -122,6 +141,8 @@ CREATE INDEX IF NOT EXISTS idx_booking_inquiries_hold ON booking_inquiries(statu
 CREATE INDEX IF NOT EXISTS idx_booking_inquiries_start ON booking_inquiries(status, approved_start_at);
 CREATE INDEX IF NOT EXISTS idx_communication_inquiry ON communication_messages(inquiry_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_booking_events_inquiry ON booking_events(inquiry_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_communication_status_message ON communication_status_events(provider_message_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_communication_status_inquiry ON communication_status_events(inquiry_id, created_at DESC);
 
 INSERT OR IGNORE INTO services
   (id, name, description, price_min, price_max, duration_minutes, age_requirement, display_order, active, created_at, updated_at)
