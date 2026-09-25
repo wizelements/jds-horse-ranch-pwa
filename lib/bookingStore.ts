@@ -29,6 +29,13 @@ export interface BookingInquiry {
   experience: string | null;
   qualification_notes: string | null;
   marketing_consent: boolean;
+  marketing_opt_out_at: string | null;
+  automation_paused: boolean;
+  human_takeover_requested_at: string | null;
+  reschedule_requested_at: string | null;
+  reschedule_request_text: string | null;
+  last_customer_message_at: string | null;
+  customer_service_window_expires_at: string | null;
   status: InquiryStatus;
   intake_step: string;
   hold_expires_at: string | null;
@@ -76,6 +83,16 @@ function bookingFromRow(row: Row): BookingInquiry {
       r.marketing_consent === true ||
       r.marketing_consent === 1 ||
       r.marketing_consent === "1",
+    marketing_opt_out_at: nullableString(r.marketing_opt_out_at),
+    automation_paused:
+      r.automation_paused === true ||
+      r.automation_paused === 1 ||
+      r.automation_paused === "1",
+    human_takeover_requested_at: nullableString(r.human_takeover_requested_at),
+    reschedule_requested_at: nullableString(r.reschedule_requested_at),
+    reschedule_request_text: nullableString(r.reschedule_request_text),
+    last_customer_message_at: nullableString(r.last_customer_message_at),
+    customer_service_window_expires_at: nullableString(r.customer_service_window_expires_at),
     status: r.status as InquiryStatus,
     intake_step: String(r.intake_step),
     hold_expires_at: nullableString(r.hold_expires_at),
@@ -220,6 +237,13 @@ const MUTABLE_FIELDS = new Set([
   "experience",
   "qualification_notes",
   "marketing_consent",
+  "marketing_opt_out_at",
+  "automation_paused",
+  "human_takeover_requested_at",
+  "reschedule_requested_at",
+  "reschedule_request_text",
+  "last_customer_message_at",
+  "customer_service_window_expires_at",
   "status",
   "intake_step",
   "hold_expires_at",
@@ -397,4 +421,40 @@ export async function listFollowupCandidates(beforeIso: string, limit = 50) {
     args: [beforeIso, limit],
   });
   return result.rows.map(bookingFromRow);
+}
+
+
+export async function recordMessageStatus(input: {
+  providerMessageId: string;
+  phone?: string | null;
+  status: string;
+  errorCode?: string | null;
+  errorMessage?: string | null;
+  rawPayload?: unknown;
+}) {
+  const message = await getTurso().execute({
+    sql: "SELECT inquiry_id FROM communication_messages WHERE provider_message_id = ? LIMIT 1",
+    args: [input.providerMessageId],
+  });
+  const inquiryId = message.rows.length
+    ? nullableString((message.rows[0] as Record<string, unknown>).inquiry_id)
+    : null;
+
+  await getTurso().execute({
+    sql: `INSERT INTO communication_status_events (
+      id, provider_message_id, inquiry_id, phone, status, error_code,
+      error_message, raw_payload, created_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    args: [
+      randomUUID(),
+      input.providerMessageId,
+      inquiryId,
+      input.phone || null,
+      input.status,
+      input.errorCode || null,
+      input.errorMessage || null,
+      input.rawPayload == null ? null : JSON.stringify(input.rawPayload),
+      new Date().toISOString(),
+    ],
+  });
 }

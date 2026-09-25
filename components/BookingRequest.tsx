@@ -4,7 +4,7 @@ export default function BookingRequest() {
   const whatsappNumber =
     process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "14049812361";
   const whatsappHref = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
-    "Hi, I'd like to start a riding request."
+    "Hi, I'd like to start a riding request at JD's Horse Ranch."
   )}`;
 
   return (
@@ -15,27 +15,28 @@ export default function BookingRequest() {
             Simple reservation flow
           </p>
           <h2 className="mt-2 text-4xl font-bold text-ranch-dark">
-            No long form. Just message the ranch.
+            No long form. Start in WhatsApp.
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-gray-600">
             WhatsApp is the main reservation desk. The assistant gathers only
             the information JD needs to review your request and keeps the
-            conversation available from inquiry through confirmation.
+            conversation together from inquiry through confirmation and
+            reminders.
           </p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
           <div className="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm">
             <h3 className="text-xl font-bold text-ranch-dark">
-              What the bot asks for
+              What the assistant asks for
             </h3>
             <ul className="mt-4 space-y-3 text-gray-700">
               <li>• Your name</li>
-              <li>• Email address</li>
-              <li>• Whether you want occasional ranch offers by email</li>
               <li>• Riding service and preferred date/time</li>
               <li>• Number of riders</li>
-              <li>• Height and weight for each rider</li>
+              <li>• Age, height, and weight for each rider</li>
+              <li>• Riding experience and preparation notes</li>
+              <li>• Optional email and separate marketing preference</li>
             </ul>
           </div>
 
@@ -45,13 +46,10 @@ export default function BookingRequest() {
             </h3>
             <ol className="mt-4 space-y-3 text-gray-700">
               <li>1. JD reviews the request.</li>
-              <li>2. JD confirms the time and price.</li>
-              <li>3. The bot sends your secure Square payment link.</li>
-              <li>4. Once payment is verified, the appointment is confirmed.</li>
-              <li>
-                5. Your confirmation gives you JD&apos;s phone number so you can
-                connect personally before the ride.
-              </li>
+              <li>2. JD approves, adjusts, or declines it.</li>
+              <li>3. If approved, the bot sends your secure Square payment link.</li>
+              <li>4. Square independently verifies payment.</li>
+              <li>5. Confirmation and reminders are sent in the same WhatsApp conversation.</li>
             </ol>
           </div>
         </div>
@@ -61,12 +59,12 @@ export default function BookingRequest() {
             href={whatsappHref}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block rounded-2xl bg-green-600 px-8 py-4 text-lg font-bold text-white transition hover:bg-green-700"
+            className="inline-block rounded-2xl bg-green-600 px-8 py-4 text-lg font-bold text-white transition hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-200"
           >
-            Message JD&apos;s Horse Ranch on WhatsApp
+            Start Booking on WhatsApp
           </a>
           <p className="mt-3 text-sm text-gray-500">
-            The phone call comes after your appointment is confirmed.
+            No payment is requested until JD approves your reservation.
           </p>
         </div>
       </div>

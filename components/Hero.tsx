@@ -1,16 +1,15 @@
 "use client";
 
-interface HeroProps {
-  onCall: () => void;
-  isLoading: boolean;
-}
-
-export default function Hero({ onCall, isLoading }: HeroProps) {
+function whatsappUrl(message: string) {
   const whatsappNumber =
     process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "14049812361";
-  const whatsappHref = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
-    "Hi, I'd like to request a riding appointment at JD's Horse Ranch."
-  )}`;
+  return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+}
+
+export default function Hero() {
+  const whatsappHref = whatsappUrl(
+    "Hi, I'd like to start a riding request at JD's Horse Ranch."
+  );
 
   return (
     <section className="relative flex min-h-screen w-full items-center justify-center bg-gradient-to-br from-ranch-brown to-ranch-dark px-4 py-16 text-center text-white">
@@ -22,12 +21,12 @@ export default function Hero({ onCall, isLoading }: HeroProps) {
           JD&apos;s Horse Ranch
         </h1>
         <p className="mb-4 text-2xl text-gray-100 md:text-3xl">
-          Start your riding request
+          Start your riding request on WhatsApp
         </p>
         <p className="mx-auto mb-8 max-w-2xl text-lg leading-relaxed text-gray-300">
-          Send your rider details once. JD personally reviews every request,
-          confirms the final time and price with you, and payment comes only
-          after his approval.
+          Tell our reservation assistant who is riding and when you would like
+          to come. JD personally reviews every request before a time and price
+          are finalized. Payment is requested only after approval.
         </p>
 
         <div className="mx-auto max-w-2xl rounded-3xl bg-white/10 p-6 shadow-2xl backdrop-blur md:p-8">
@@ -38,38 +37,34 @@ export default function Hero({ onCall, isLoading }: HeroProps) {
             7555 Jones Rd. Fairburn, GA
           </h2>
 
-          <div className="grid gap-3 sm:grid-cols-2">
-            <a
-              href={whatsappHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block rounded-2xl bg-green-600 px-6 py-5 text-xl font-bold text-white transition hover:bg-green-700"
-            >
-              Start on WhatsApp
-            </a>
-            <button
-              onClick={onCall}
-              disabled={isLoading}
-              className="rounded-2xl bg-white px-6 py-5 text-xl font-bold text-ranch-dark transition hover:bg-gray-100 disabled:opacity-60"
-            >
-              {isLoading ? "Connecting..." : "Call JD"}
-            </button>
-          </div>
+          <a
+            href={whatsappHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block w-full rounded-2xl bg-green-600 px-6 py-5 text-xl font-bold text-white transition hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-300"
+          >
+            Start Booking on WhatsApp
+          </a>
+
+          <p className="mt-3 text-sm text-gray-200">
+            Your request, JD&apos;s decision, payment link, confirmation, and
+            reminders stay in the same WhatsApp conversation.
+          </p>
 
           <div className="mt-6 grid gap-3 text-left text-sm text-gray-100 sm:grid-cols-3">
             <div className="rounded-xl bg-black/20 p-4">
-              <strong className="block text-white">1. Send the request</strong>
-              Name, service, date, and each rider&apos;s age, height, weight,
-              and experience.
+              <strong className="block text-white">1. Send your request</strong>
+              Choose a service and provide each rider&apos;s age, height,
+              weight, experience, and preferred date.
             </div>
             <div className="rounded-xl bg-black/20 p-4">
-              <strong className="block text-white">2. Speak with JD</strong>
-              Your preferred spot is held up to 24 hours while JD personally
-              reviews, confirms, or adjusts the request.
+              <strong className="block text-white">2. JD reviews it</strong>
+              JD personally approves, adjusts, or declines the request. Any
+              update comes back to you in WhatsApp.
             </div>
             <div className="rounded-xl bg-black/20 p-4">
               <strong className="block text-white">3. Pay after approval</strong>
-              Only after JD approves does the system send your
+              Only after JD approves does the system send your secure,
               booking-specific Square checkout link.
             </div>
           </div>

@@ -1,62 +1,53 @@
-import { readFile } from "node:fs/promises";
-import { createClient } from "@libsql/client";
-
 if (!process.env.VERCEL) {
-  console.log("Integration prepare: skipped outside Vercel");
+  console.log("Deployment preflight: skipped outside Vercel");
   process.exit(0);
 }
 
+const environment = process.env.VERCEL_ENV || "preview";
 const present = (name) => Boolean(process.env[name]?.trim());
 
-const tursoConfigured =
-  present("TURSO_DATABASE_URL") && present("TURSO_AUTH_TOKEN");
+const requiredProduction = [
+  "NEXT_PUBLIC_SITE_URL",
+  "NEXT_PUBLIC_WHATSAPP_NUMBER",
+  "TURSO_DATABASE_URL",
+  "TURSO_AUTH_TOKEN",
+  "ADMIN_PASSWORD_HASH_V2",
+  "ADMIN_PASSWORD_SALT_V2",
+  "SESSION_TOKEN_SECRET_V2",
+  "WHATSAPP_VERIFY_TOKEN",
+  "WHATSAPP_APP_SECRET",
+  "WHATSAPP_ACCESS_TOKEN",
+  "WHATSAPP_PHONE_NUMBER_ID",
+  "WHATSAPP_GRAPH_VERSION",
+  "WHATSAPP_PAYMENT_TEMPLATE_NAME",
+  "WHATSAPP_DECLINE_TEMPLATE_NAME",
+  "WHATSAPP_CONFIRMATION_TEMPLATE_NAME",
+  "WHATSAPP_REMINDER_TEMPLATE_NAME",
+  "WHATSAPP_EXPIRED_TEMPLATE_NAME",
+  "WHATSAPP_FOLLOWUP_TEMPLATE_NAME",
+  "WHATSAPP_UPDATE_TEMPLATE_NAME",
+  "SQUARE_ACCESS_TOKEN",
+  "SQUARE_LOCATION_ID",
+  "SQUARE_WEBHOOK_SIGNATURE_KEY",
+  "SQUARE_WEBHOOK_NOTIFICATION_URL",
+  "CRON_SECRET",
+];
 
-const whatsappConfigured =
-  present("WHATSAPP_VERIFY_TOKEN") &&
-  present("WHATSAPP_APP_SECRET") &&
-  present("WHATSAPP_ACCESS_TOKEN") &&
-  present("WHATSAPP_PHONE_NUMBER_ID");
+const missing = requiredProduction.filter((name) => !present(name));
 
-if (!tursoConfigured) {
+if (environment === "production" && missing.length) {
   throw new Error(
-    "Turso is required: configure TURSO_DATABASE_URL and TURSO_AUTH_TOKEN."
+    `Production deployment is missing required configuration: ${missing.join(", ")}`
   );
 }
 
-if (!whatsappConfigured) {
-  throw new Error(
-    "WhatsApp is required: configure WHATSAPP_VERIFY_TOKEN, WHATSAPP_APP_SECRET, WHATSAPP_ACCESS_TOKEN, and WHATSAPP_PHONE_NUMBER_ID."
+if (missing.length) {
+  console.warn(
+    `Preview deployment: production integrations are intentionally not required. Missing: ${missing.join(", ")}`
   );
 }
 
-const sql = await readFile(new URL("../turso/schema.sql", import.meta.url), "utf8");
-const db = createClient({
-  url: process.env.TURSO_DATABASE_URL,
-  authToken: process.env.TURSO_AUTH_TOKEN,
-});
-
-try {
-  await db.execute("SELECT 1");
-  await db.executeMultiple(sql);
-
-  const requiredTables = [
-    "booking_inquiries",
-    "communication_messages",
-    "booking_events",
-  ];
-  const result = await db.execute({
-    sql: "SELECT name FROM sqlite_master WHERE type='table' AND name IN (?, ?, ?)",
-    args: requiredTables,
-  });
-  const names = new Set(result.rows.map((row) => String(row.name)));
-
-  if (!requiredTables.every((name) => names.has(name))) {
-    throw new Error("Required reservation tables are missing after Turso migration.");
-  }
-
-  console.log("Integration prepare: TURSO_REACHABLE=true");
-  console.log("Integration prepare: TURSO_SCHEMA_READY=true");
-  console.log("Integration prepare: WHATSAPP_CONFIGURED=true");
-} finally {
-  db.close();
-}
+console.log(`Deployment preflight PASS for ${environment}`);
+console.log(
+  "Database migrations are not run during Vercel builds; run npm run db:migrate as an explicit deployment step."
+);
