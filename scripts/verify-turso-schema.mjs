@@ -20,6 +20,7 @@ const requiredTables = [
   "booking_inquiries",
   "communication_messages",
   "booking_events",
+  "communication_status_events",
 ];
 
 const result = await db.execute(
