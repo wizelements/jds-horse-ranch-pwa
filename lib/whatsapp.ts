@@ -9,7 +9,7 @@ function required(name: string): string {
 async function sendWhatsAppPayload(payload: Record<string, unknown>) {
   const phoneNumberId = required("WHATSAPP_PHONE_NUMBER_ID");
   const accessToken = required("WHATSAPP_ACCESS_TOKEN");
-  const graphVersion = process.env.WHATSAPP_GRAPH_VERSION || "v26.0";
+  const graphVersion = required("WHATSAPP_GRAPH_VERSION");
 
   const response = await fetch(
     `https://graph.facebook.com/${graphVersion}/${phoneNumberId}/messages`,
