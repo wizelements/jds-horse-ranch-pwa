@@ -2,7 +2,7 @@
 
 export default function Experience() {
   return (
-    <section className="py-16 bg-white">
+    <section id="about-ranch" className="py-16 bg-white">
       <div className="max-w-5xl mx-auto px-4">
         <h2 className="text-3xl md:text-4xl font-bold text-ranch-dark text-center mb-12">
           The Experience
