@@ -12,7 +12,7 @@ export default function Contact() {
   );
 
   return (
-    <section className="section bg-ranch-dark text-white">
+    <section id="plan-visit" className="section bg-ranch-dark text-white">
       <h2 className="mb-4 text-center text-4xl font-bold">Contact & Location</h2>
       <p className="mx-auto mb-12 max-w-2xl text-center text-gray-300">
         Booking is handled through WhatsApp so your request, JD&apos;s review,
