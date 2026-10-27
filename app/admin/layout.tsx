@@ -1,3 +1,6 @@
+export const dynamic = "force-dynamic";
+export const metadata = { manifest: "/ranch-manifest.json", robots: { index: false, follow: false } };
+
 import { verifyAdminSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
