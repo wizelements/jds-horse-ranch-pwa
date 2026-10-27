@@ -1,92 +1,32 @@
-interface ServiceCardProps {
-  title: string;
-  description: string;
-  pricing: string[];
-  
-  ctaLabel: string;
-}
-
-function ServiceCard({
-  title,
-  description,
-  pricing,
-  ctaLabel,
-}: ServiceCardProps) {
-  return (
-    <div className="service-card flex h-full flex-col">
-      <h3 className="mb-3 text-2xl font-bold text-ranch-brown">{title}</h3>
-      <p className="mb-4 text-gray-700">{description}</p>
-
-      <div className="mb-4">
-        <p className="mb-2 font-semibold text-ranch-dark">Pricing:</p>
-        <ul className="space-y-1">
-          {pricing.map((price) => (
-            <li key={price} className="text-gray-700">
-              • {price}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <div className="mb-6">
-        <p className="text-sm text-gray-600">
-          <em>
-            Deposits are non-refundable. Rescheduling requires at least 24
-            hours&apos; notice and remains subject to JD&apos;s approval.
-          </em>
-        </p>
-      </div>
-
-      <a
-        href="#request-ride"
-        className="mt-auto block w-full rounded-xl bg-ranch-dark px-5 py-4 text-center font-bold text-white transition hover:opacity-90 focus:outline-none focus:ring-4 focus:ring-green-200"
-      >
-        {ctaLabel}
-      </a>
-    </div>
-  );
-}
-
+import Image from "next/image";
+const rides = [
+  {n:"01",name:"Riding lessons",lead:"Find your confidence in the saddle.",desc:"From first-time riders to those ready to grow their skills, riding lessons are personally reviewed and arranged by JD.",price:"1 hour from $85",detail:"Children 9 & under · 30 minutes · $45",image:"https://jds-horse-ranch-v1751084549.websitepro-cdn.com/wp-content/uploads/2020/09/image1.jpeg",alt:"A scene from JD's Horse Ranch"},
+  {n:"02",name:"Guided trail rides",lead:"Take the scenic route.",desc:"Leave the everyday behind and enjoy the natural surroundings on a guided ride for yourself, a friend, or a small group.",price:"1 rider · $85",detail:"2 riders · $160   /   3 riders · $245",image:"https://jds-horse-ranch-v1751084549.websitepro-cdn.com/wp-content/uploads/2020/09/image2.jpeg",alt:"Horseback riding at JD's Horse Ranch"},
+  {n:"03",name:"Special occasions",lead:"Make moments worth remembering.",desc:"Birthdays, photo shoots, video projects, and more. Share your ideas with JD to arrange the details together.",price:"Horse rental · $200 / hour",detail:"Event details personally reviewed",image:"https://jds-horse-ranch-v1751084549.websitepro-cdn.com/wp-content/uploads/2020/09/image3.jpeg",alt:"A horse ranch moment in Georgia"}
+];
 export default function Services() {
-  return (
-    <section id="experiences" className="section bg-white">
-      <h2 className="mb-4 text-center text-4xl font-bold text-ranch-brown">
-        Our Services
-      </h2>
-      <p className="mx-auto mb-12 max-w-2xl text-center text-gray-600">
-        Choose the experience you want, then submit your request on this website.
-        JD reviews every request before anything is confirmed.
-      </p>
-
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-        <ServiceCard
-          title="Riding Lessons"
-          description="Come experience an amazing time of your life, memories you will have forever. Whether you want to start a new hobby, or just always wanted to go horseback riding, JD's Horse Ranch can help create that space for you."
-          pricing={[
-            "1 hour – Starting at $85",
-            "Children 9 years old and under – 30 minutes for $45",
-          ]}
-          ctaLabel="Request a Lesson"
-        />
-
-        <ServiceCard
-          title="Trail Rides"
-          description="Beautiful natural trails with amazing sights. Request a guided ride for yourself, a friend, or someone special and create an unforgettable memory."
-          pricing={[
-            "Guided 1 hour trail ride for 1 – $85",
-            "Guided 1 hour trail ride for 2 – $160",
-            "Guided 1 hour trail ride for 3 – $245",
-          ]}
-          ctaLabel="Request a Trail Ride"
-        />
-
-        <ServiceCard
-          title="Special Events"
-          description="Make birthdays, video shoots, photo shoots, and other special occasions more memorable with a horse experience tailored by JD."
-          pricing={["1 hour horse rental – $200"]}
-          ctaLabel="Ask About an Event"
-        />
+  return <section id="experiences" className="section-space bg-white">
+    <div className="wrap-wide">
+      <header className="mb-12 flex flex-col justify-between gap-8 lg:mb-16 lg:flex-row lg:items-end">
+        <div><p className="overline mb-5 text-[#8d7351]">Ways to ride</p><h2 className="font-editorial text-[clamp(3rem,6vw,6.3rem)] leading-[1.06] tracking-[-.055em] text-[#183329]">Your time. <em>Your experience.</em></h2></div>
+        <p className="max-w-xs text-[15px] leading-7 text-[#606d63]">Choose what brings you here. JD personally reviews every request before confirming a time and final price.</p>
+      </header>
+      <div className="grid gap-6 lg:grid-cols-3">
+        {rides.map(ride=><article key={ride.n} className="group flex flex-col border border-[#e7e2d8] bg-[#fdfcf9]">
+          <div className="relative aspect-[1.23/1] overflow-hidden bg-[#d5dccf]">
+            <Image src={ride.image} alt={ride.alt} fill sizes="(max-width:1024px) 100vw,33vw" className="photo-zoom object-cover"/>
+            <span className="absolute left-5 top-5 flex h-10 w-10 items-center justify-center bg-[#f9f5ea] font-editorial text-lg text-[#183329]">{ride.n}</span>
+          </div>
+          <div className="flex flex-1 flex-col px-6 pb-8 pt-8 sm:px-8">
+            <h3 className="font-editorial text-[clamp(2rem,3vw,2.6rem)] leading-tight tracking-[-.045em] text-[#183329]">{ride.name}</h3>
+            <p className="mt-4 text-[15px] font-semibold text-[#8b7454]">{ride.lead}</p>
+            <p className="mt-4 flex-1 text-sm leading-7 text-[#667068]">{ride.desc}</p>
+            <div className="mt-8 border-t border-[#e4dfd4] pt-5"><p className="text-sm font-bold text-[#273b30]">{ride.price}</p><p className="mt-1 text-xs leading-5 text-[#697168]">{ride.detail}</p></div>
+            <a href="#request-ride" className="mt-7 flex items-center justify-between border-b border-[#87978a] pb-3 text-[11px] font-bold uppercase tracking-[.14em] text-[#183329] hover:border-[#ad946b] hover:text-[#806745]">Request this experience <span aria-hidden="true" className="text-lg font-normal">↗</span></a>
+          </div>
+        </article>)}
       </div>
-    </section>
-  );
+      <p className="mt-7 text-center text-xs leading-6 text-[#697168]">By appointment only. Deposits are non-refundable. Rescheduling requires at least 24 hours&apos; notice and JD&apos;s approval.</p>
+    </div>
+  </section>;
 }
