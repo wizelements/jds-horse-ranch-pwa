@@ -11,12 +11,12 @@ const faqItems: FAQItem[] = [
   {
     question: "Do I need experience to go horseback riding at JD's Horse Ranch?",
     answer:
-      "No experience is necessary. JD's Horse Ranch welcomes first-time and experienced riders. When you start your request on WhatsApp, share each rider's experience so JD can review the request and prepare appropriately.",
+      "No experience is necessary. JD's Horse Ranch welcomes first-time and experienced riders. When you submit a ride request on this website, share each rider's experience so JD can review the request and prepare appropriately.",
   },
   {
     question: "What are your horseback riding hours?",
     answer:
-      "JD's Horse Ranch operates by appointment only. Start your request through the WhatsApp reservation assistant and send the date and approximate time you prefer. JD reviews availability before anything is confirmed.",
+      "JD's Horse Ranch operates by appointment only. Submit a ride request on this website and send the date and approximate time you prefer. JD reviews availability before anything is confirmed.",
   },
   {
     question: "How much do horseback riding lessons cost?",
@@ -26,27 +26,27 @@ const faqItems: FAQItem[] = [
   {
     question: "What should I wear for horseback riding?",
     answer:
-      "Wear long pants, closed-toe shoes or boots, and comfortable clothing suitable for the weather. Avoid loose or dangling items. If JD has additional preparation instructions for your appointment, they will be sent in your WhatsApp conversation.",
+      "Wear long pants, closed-toe shoes or boots, and comfortable clothing suitable for the weather. Avoid loose or dangling items. If JD has additional preparation instructions for your appointment, JD will share them with you.",
   },
   {
     question: "How is rider size and horse fit handled?",
     answer:
-      "The reservation assistant asks for each rider's age, height, and weight so JD has the information needed to review rider and horse fit. The assistant does not make an automatic safety decision; JD reviews the request before approval.",
+      "The website request form asks for each rider's age, height, and weight so JD has the information needed to review rider and horse fit. The assistant does not make an automatic safety decision; JD reviews the request before approval.",
   },
   {
     question: "Can I request a private trail ride?",
     answer:
-      "Yes. Guided trail rides are available for 1, 2, or 3 riders. Choose Trail Ride on WhatsApp, provide the rider details and preferred date, and JD will review the request.",
+      "Yes. Guided trail rides are available for 1, 2, or 3 riders. Choose Trail Ride on the request form, provide the rider details and preferred date, and JD will review the request.",
   },
   {
     question: "Do you offer special events and group experiences?",
     answer:
-      "Yes. JD's Horse Ranch can consider birthday parties, photo shoots, video productions, and other special events. Start a Special Event request on WhatsApp and describe what you are planning so JD can review the details.",
+      "Yes. JD's Horse Ranch can consider birthday parties, photo shoots, video productions, and other special events. Start a Special Event request on the website and describe what you are planning so JD can review the details.",
   },
   {
     question: "What is the cancellation and rescheduling policy?",
     answer:
-      "Deposits are non-refundable. Rescheduling requires at least 24 hours' notice and is subject to JD's approval and availability. Reply in the same WhatsApp conversation if you need to request a change.",
+      "Deposits are non-refundable. Rescheduling requires at least 24 hours' notice and is subject to JD's approval and availability. Contact JD directly to request a change.",
   },
   {
     question: "Where is JD's Horse Ranch located?",
@@ -56,7 +56,7 @@ const faqItems: FAQItem[] = [
   {
     question: "How do I book a riding lesson or trail ride?",
     answer:
-      "Use the Start Booking on WhatsApp button on this site. The reservation assistant collects the service, rider details, experience, and preferred date. JD then reviews the request. If approved, your booking-specific Square payment link is sent in WhatsApp and the reservation is confirmed only after payment is verified.",
+      "Use the ride request form on this site to share the service, rider details, experience, and preferred date. JD reviews the request and contacts you with a decision. If approved, JD shares a secure Square payment link; the reservation is confirmed only after payment is verified.",
   },
 ];
 

@@ -22,7 +22,7 @@ async function reply(inquiry: BookingInquiry, body: string) {
 }
 
 async function newInquiry(input: {
-  channel: Extract<BookingChannel, "whatsapp" | "sms">;
+  channel: Extract<BookingChannel, "sms">;
   phone: string;
   profileName?: string;
 }) {
@@ -52,7 +52,7 @@ export function statusMessage(inquiry: BookingInquiry) {
     case "COLLECTING_INFORMATION":
       return "Your booking request is still being collected. Reply to the last question to continue.";
     case "PENDING_JD":
-      return "Your request is with JD for personal review. You do not need to call. JD's decision or any requested adjustment will be sent here in WhatsApp. No payment is due yet.";
+      return "Your request is with JD for personal review. You do not need to call. JD's decision or any requested adjustment will be sent by text message. No payment is due yet.";
     case "AWAITING_PAYMENT":
       return "JD approved the request. Your booking-specific Square payment is awaiting completion. The reservation is not confirmed until Square verifies payment.";
     case "BOOKED":
@@ -65,7 +65,7 @@ export function statusMessage(inquiry: BookingInquiry) {
 }
 
 export async function processBookingMessage(input: {
-  channel: Extract<BookingChannel, "whatsapp" | "sms">;
+  channel: Extract<BookingChannel, "sms">;
   phone: string;
   profileName?: string;
   text: string;
@@ -95,7 +95,7 @@ export async function processBookingMessage(input: {
     });
     await reply(
       inquiry,
-      "Promotional WhatsApp messages are now off. This does not cancel an active reservation or prevent necessary booking updates."
+      "Promotional text messages are now off. This does not cancel an active reservation or prevent necessary booking updates."
     );
     return inquiry;
   }
@@ -399,7 +399,7 @@ export async function processBookingMessage(input: {
       });
       await reply(
         inquiry,
-        "Your request is ready for JD. You do not need to call. JD will review the riders, requested time, and service, then send the decision or any adjustment here in WhatsApp. No payment is due until JD approves."
+        "Your request is ready for JD. You do not need to call. JD will review the riders, requested time, and service, then send the decision or any adjustment by text message. No payment is due until JD approves."
       );
       return inquiry;
     }

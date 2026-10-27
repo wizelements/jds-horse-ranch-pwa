@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     const experience = clean(body.experience, 800);
     const qualificationNotes = clean(body.qualificationNotes, 1200);
     const email = clean(body.email, 250).toLowerCase();
-    const preferredChannel = body.preferredChannel === "sms" ? "sms" : "whatsapp";
+    const preferredChannel = "web" as const;
 
     if (!customerName || !phone || !serviceRequested || !riderDetails || !requestedDatetimeText || !experience) {
       return NextResponse.json({ error: "Complete all required booking fields." }, { status: 400 });

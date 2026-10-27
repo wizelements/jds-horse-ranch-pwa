@@ -21,7 +21,7 @@ export default async function InquiriesPage() {
     <div>
       <h1 className="text-3xl font-bold text-gray-900 mb-2">Reservation Queue</h1>
       <p className="text-gray-600 mb-6">
-        One queue for web, WhatsApp, and SMS. JD must personally approve the final time and amount before a Square payment request is created.
+        Website requests appear here for JD's review. JD must approve the date and price before creating a Square payment link. Contact the customer using the phone or email shown; online requests are not automatically messaged.
       </p>
 
       {error && (
@@ -97,7 +97,7 @@ export default async function InquiriesPage() {
                       rel="noopener noreferrer"
                       className="text-xs text-ranch-brown underline"
                     >
-                      Open Square checkout
+                      Open / share Square checkout
                     </a>
                   )}
                   {item.paid_at && <div className="text-xs text-green-700 mt-1">Verified paid</div>}
@@ -108,7 +108,6 @@ export default async function InquiriesPage() {
                     status={item.status}
                     automationPaused={item.automation_paused}
                     rescheduleRequestText={item.reschedule_request_text}
-                    customerServiceWindowExpiresAt={item.customer_service_window_expires_at}
                   />
                 </td>
               </tr>

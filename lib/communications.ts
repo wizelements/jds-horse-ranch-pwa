@@ -1,19 +1,17 @@
 import { BookingInquiry, recordMessage } from "@/lib/bookingStore";
 import { sendSmsText } from "@/lib/sms";
-import { sendWhatsAppTemplate, sendWhatsAppText } from "@/lib/whatsapp";
 
-async function recordOutbound(
-  inquiry: BookingInquiry,
-  channel: "whatsapp" | "sms",
-  body: string,
-  result: any
-) {
-  const providerMessageId =
-    channel === "whatsapp" ? result?.messages?.[0]?.id || null : result?.sid || null;
+// Historical WhatsApp records are preserved in Turso, but no new WhatsApp calls
+// are made. Online requests are handled by JD using the phone/email on file.
+export async function sendCustomerMessage(inquiry: BookingInquiry, body: string) {
+  if (inquiry.preferred_channel !== "sms") {
+    throw new Error("Direct messaging is not enabled for this request. Contact the customer manually.");
+  }
+  const result = await sendSmsText(inquiry.customer_phone, body);
   await recordMessage({
-    providerMessageId,
+    providerMessageId: result?.sid || null,
     inquiryId: inquiry.id,
-    channel,
+    channel: "sms",
     direction: "outbound",
     phone: inquiry.customer_phone,
     body,
@@ -21,61 +19,13 @@ async function recordOutbound(
   });
 }
 
-export async function sendCustomerMessage(inquiry: BookingInquiry, body: string) {
-  const channel =
-    inquiry.preferred_channel === "whatsapp" || inquiry.preferred_channel === "sms"
-      ? inquiry.preferred_channel
-      : inquiry.channel;
-
-  if (channel === "whatsapp") {
-    const result = await sendWhatsAppText(inquiry.customer_phone, body);
-    await recordOutbound(inquiry, "whatsapp", body, result);
-    return;
-  }
-
-  if (channel === "sms") {
-    const result = await sendSmsText(inquiry.customer_phone, body);
-    await recordOutbound(inquiry, "sms", body, result);
-    return;
-  }
-
-  throw new Error("No outbound messaging channel is configured for this inquiry");
-}
-
+// Returns false when JD must contact the customer personally.
+// A false result must never be recorded as a message delivered.
 export async function sendOperationalMessage(
   inquiry: BookingInquiry,
-  input: {
-    body: string;
-    whatsappTemplateEnv: string;
-    whatsappParameters?: string[];
-  }
-) {
-  const channel =
-    inquiry.preferred_channel === "whatsapp" || inquiry.preferred_channel === "sms"
-      ? inquiry.preferred_channel
-      : inquiry.channel;
-
-  if (channel === "sms") {
-    const result = await sendSmsText(inquiry.customer_phone, input.body);
-    await recordOutbound(inquiry, "sms", input.body, result);
-    return;
-  }
-
-  if (channel === "whatsapp") {
-    const templateName = process.env[input.whatsappTemplateEnv];
-    if (!templateName) {
-      throw new Error(
-        `WhatsApp operational message requires approved template env ${input.whatsappTemplateEnv}`
-      );
-    }
-    const result = await sendWhatsAppTemplate(
-      inquiry.customer_phone,
-      templateName,
-      input.whatsappParameters || []
-    );
-    await recordOutbound(inquiry, "whatsapp", input.body, result);
-    return;
-  }
-
-  throw new Error("No outbound messaging channel is configured for this inquiry");
+  input: { body: string }
+): Promise<boolean> {
+  if (inquiry.preferred_channel !== "sms") return false;
+  await sendCustomerMessage(inquiry, input.body);
+  return true;
 }

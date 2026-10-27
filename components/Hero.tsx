@@ -1,7 +1,3 @@
-function bookingLink(message:string) {
-  const number=process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "14049812361";
-  return "https://wa.me/"+number+"?text="+encodeURIComponent(message);
-}
 const heroPhoto="https://jds-horse-ranch-v1751084549.websitepro-cdn.com/wp-content/uploads/2020/09/image0.jpeg";
 export default function Hero() {
   return <section className="relative isolate flex min-h-[86vh] flex-col overflow-hidden bg-[#17372b] text-white">
@@ -23,7 +19,7 @@ export default function Hero() {
           Discover riding lessons, guided trail rides, and time well spent with horses at JD&apos;s Horse Ranch.
         </p>
         <div className="mt-9 flex flex-wrap gap-3">
-          <a href={bookingLink("Hi, I'd like to request a riding experience at JD's Horse Ranch.")} target="_blank" rel="noopener noreferrer"
+          <a href="#request-ride"
             className="inline-flex items-center justify-center rounded-xl bg-[#f4e6c7] px-6 py-4 text-base font-bold text-[#17372b] transition hover:bg-white focus:outline-none focus:ring-4 focus:ring-white/50">Request a Ride</a>
           <a href="#experiences" className="inline-flex items-center justify-center rounded-xl border border-white/70 bg-white/10 px-6 py-4 text-base font-semibold text-white transition hover:bg-white/20 focus:outline-none focus:ring-4 focus:ring-white/50">Explore Experiences</a>
         </div>

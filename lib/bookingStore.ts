@@ -190,7 +190,7 @@ export async function createWebInquiry(input: {
   experience: string;
   qualificationNotes?: string | null;
   marketingConsent: boolean;
-  preferredChannel: "whatsapp" | "sms";
+  preferredChannel: "web";
 }) {
   const id = randomUUID();
   const now = new Date().toISOString();

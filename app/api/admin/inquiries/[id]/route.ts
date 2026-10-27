@@ -89,21 +89,20 @@ export async function POST(
     const when = easternTime(approvedStartAt);
 
     try {
-      await sendOperationalMessage(approved, {
+      const delivered = await sendOperationalMessage(approved, {
         body: `JD approved your riding request for ${when}. Complete your booking-specific Square payment here: ${paymentLink.url}. Your booking becomes confirmed only after Square reports the payment as completed.`,
-        whatsappTemplateEnv: "WHATSAPP_PAYMENT_TEMPLATE_NAME",
-        whatsappParameters: [when, paymentLink.url],
       });
       await recordBookingEvent({
         inquiryId: approved.id,
-        eventType: "payment_link_delivered",
+        eventType: delivered ? "payment_link_delivered" : "payment_link_manual_delivery_required",
         actor: "system",
       });
       return NextResponse.json({
         success: true,
         status: approved.status,
         paymentUrl: paymentLink.url,
-        delivery: "sent",
+        delivery: delivered ? "sent" : "manual",
+        ...(delivered ? {} : { warning: "Square payment link created. Contact the customer and share the link manually; no automatic message was sent." }),
       });
     } catch (error) {
       console.error("Payment-link delivery failed:", error);
@@ -166,11 +165,8 @@ export async function POST(
       metadata: { approved_start_at: changed.approved_start_at, note },
     });
 
-    await sendOperationalMessage(changed, {
-      body: updateText,
-      whatsappTemplateEnv: "WHATSAPP_UPDATE_TEMPLATE_NAME",
-      whatsappParameters: [updateText],
-    });
+    const notified = await sendOperationalMessage(changed, { body: updateText });
+    if (!notified) await recordBookingEvent({ inquiryId: changed.id, eventType: "manual_change_notice_required", actor: "system" });
 
     return NextResponse.json({ success: true, status: changed.status });
   }
@@ -199,11 +195,8 @@ export async function POST(
       metadata: note ? { note } : {},
     });
 
-    await sendOperationalMessage(unchanged, {
-      body: updateText,
-      whatsappTemplateEnv: "WHATSAPP_UPDATE_TEMPLATE_NAME",
-      whatsappParameters: [updateText],
-    });
+    const notified = await sendOperationalMessage(unchanged, { body: updateText });
+    if (!notified) await recordBookingEvent({ inquiryId: unchanged.id, eventType: "manual_change_notice_required", actor: "system" });
 
     return NextResponse.json({ success: true, status: unchanged.status });
   }
@@ -217,15 +210,9 @@ export async function POST(
       );
     }
 
-    const windowEnds = inquiry.customer_service_window_expires_at
-      ? new Date(inquiry.customer_service_window_expires_at).getTime()
-      : 0;
-    if (!windowEnds || windowEnds <= Date.now()) {
+    if (inquiry.preferred_channel !== "sms") {
       return NextResponse.json(
-        {
-          error:
-            "The 24-hour WhatsApp service window is closed. A free-form human reply cannot be sent; use an approved operational template.",
-        },
+        { error: "Online requests require manual contact. Use the customer's phone or email from the reservation queue." },
         { status: 409 }
       );
     }
@@ -272,15 +259,12 @@ export async function POST(
     });
     try {
       const message = reason
-        ? `JD reviewed your request and cannot confirm it as submitted. Note: ${reason}. Reply BOOK to start another request or continue messaging here with a question.`
-        : "JD reviewed your request and cannot confirm it as submitted. Reply BOOK to start another request or continue messaging here with a question.";
-      await sendOperationalMessage(declined, {
+        ? `JD reviewed your request and cannot confirm it as submitted. Note: ${reason}. Please contact the ranch if you would like to request another date or ask a question.`
+        : "JD reviewed your request and cannot confirm it as submitted. Please contact the ranch if you would like to request another date or ask a question.";
+      const delivered = await sendOperationalMessage(declined, {
         body: message,
-        whatsappTemplateEnv: "WHATSAPP_DECLINE_TEMPLATE_NAME",
-        whatsappParameters: [
-          reason || "Reply here if you would like to request another date or option.",
-        ],
       });
+      if (!delivered) await recordBookingEvent({ inquiryId: declined.id, eventType: "manual_decline_notice_required", actor: "system" });
     } catch (error) {
       await recordBookingEvent({
         inquiryId: declined.id,
