@@ -60,7 +60,7 @@ function ServiceCard({
 
 export default function Services() {
   return (
-    <section className="section bg-white">
+    <section id="experiences" className="section bg-white">
       <h2 className="mb-4 text-center text-4xl font-bold text-ranch-brown">
         Our Services
       </h2>
