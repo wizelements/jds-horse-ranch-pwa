@@ -1,0 +1,62 @@
+// Run with: vercel env run -e production -- node scripts/production-readiness.mjs
+// Safe by design: never emits environment variable values or authentication tokens.
+const required = [
+  "NEXT_PUBLIC_SITE_URL", "NEXT_PUBLIC_WHATSAPP_NUMBER",
+  "TURSO_DATABASE_URL", "TURSO_AUTH_TOKEN",
+  "ADMIN_PASSWORD_HASH_V2", "ADMIN_PASSWORD_SALT_V2", "SESSION_TOKEN_SECRET_V2",
+  "WHATSAPP_VERIFY_TOKEN", "WHATSAPP_APP_SECRET", "WHATSAPP_ACCESS_TOKEN",
+  "WHATSAPP_PHONE_NUMBER_ID", "WHATSAPP_GRAPH_VERSION",
+  "WHATSAPP_PAYMENT_TEMPLATE_NAME", "WHATSAPP_DECLINE_TEMPLATE_NAME",
+  "WHATSAPP_CONFIRMATION_TEMPLATE_NAME", "WHATSAPP_REMINDER_TEMPLATE_NAME",
+  "WHATSAPP_EXPIRED_TEMPLATE_NAME", "WHATSAPP_FOLLOWUP_TEMPLATE_NAME",
+  "WHATSAPP_UPDATE_TEMPLATE_NAME", "SQUARE_ACCESS_TOKEN", "SQUARE_LOCATION_ID",
+  "SQUARE_WEBHOOK_SIGNATURE_KEY", "SQUARE_WEBHOOK_NOTIFICATION_URL",
+  "CRON_SECRET",
+];
+
+const has = (key) => Boolean(process.env[key]?.trim());
+const missing = required.filter((name) => !has(name));
+const invalid = [];
+const check = (key, predicate, reason) => {
+  if (has(key) && !predicate(process.env[key].trim())) invalid.push(`${key}: ${reason}`);
+};
+check("NEXT_PUBLIC_SITE_URL", (value) => {
+  try { const url=new URL(value); return url.protocol==="https:" && !url.username && !url.password && url.pathname==="/" && !url.search && !url.hash; }
+  catch { return false; }
+}, "must be a HTTPS site origin, without paths or credentials");
+check("NEXT_PUBLIC_WHATSAPP_NUMBER", (value) => /^[1-9][0-9]{7,14}$/.test(value),
+  "must be digits in international format with no + sign");
+check("TURSO_DATABASE_URL", (value) => /^libsql:\/\/[a-z0-9.-]+(?:\/)?$/i.test(value),
+  "must be a valid libsql:// database host");
+check("ADMIN_PASSWORD_HASH_V2", (value) => /^[a-f\d]{128}$/i.test(value),
+  "must be a 64-byte scrypt password hash (hex)");
+check("ADMIN_PASSWORD_SALT_V2", (value) => value.length >= 16,
+  "must be a strong password salt");
+check("SESSION_TOKEN_SECRET_V2", (value) => value.length >= 32,
+  "must be at least 32 characters");
+check("WHATSAPP_GRAPH_VERSION", (value) => /^v\d+\.\d+$/.test(value),
+  "must resemble a current Graph API version such as v26.0");
+check("WHATSAPP_PHONE_NUMBER_ID", (value) => /^\d+$/.test(value),
+  "must be a numeric Meta phone-number ID");
+check("SQUARE_WEBHOOK_NOTIFICATION_URL", (value) => {
+  try { const url=new URL(value); return url.protocol==="https:" &&
+    url.pathname==="/api/square/webhook" && !url.search && !url.hash; }
+  catch { return false; }
+}, "must be an HTTPS public Square webhook URL ending /api/square/webhook");
+for(const key of ["TURSO_AUTH_TOKEN","WHATSAPP_APP_SECRET","WHATSAPP_ACCESS_TOKEN",
+  "SQUARE_ACCESS_TOKEN","SQUARE_WEBHOOK_SIGNATURE_KEY","CRON_SECRET"]) {
+  check(key, (value)=>value.length>=16, "appears too short");
+}
+console.log("JD's Horse Ranch — production configuration audit (values withheld)");
+console.log(`Required configuration fields: ${required.length}`);
+console.log(`Present: ${required.length - missing.length}`);
+console.log(`Missing: ${missing.length}`);
+if (missing.length) console.log("Missing keys:\n"+missing.map(name=>"  - "+name).join("\n"));
+if (invalid.length) console.log("Invalid formats:\n"+invalid.map(line=>"  - "+line).join("\n"));
+if (missing.length || invalid.length) {
+  console.error("NOT READY: Correct production configuration before attempting release.");
+  process.exitCode=1;
+} else {
+  console.log("CONFIGURATION PRESENT: Values have acceptable formats.");
+  console.log("NOT YET CERTIFIED: Still test actual Turso connectivity, signed Meta/Square webhooks, paid checkout, refunds, and customer confirmation before release.");
+}
