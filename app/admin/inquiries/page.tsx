@@ -21,7 +21,7 @@ export default async function InquiriesPage() {
     <div>
       <h1 className="text-3xl font-bold text-gray-900 mb-2">Reservation Queue</h1>
       <p className="text-gray-600 mb-6">
-        Website requests appear here for JD's review. JD must approve the date and price before creating a Square payment link. Contact the customer using the phone or email shown; online requests are not automatically messaged.
+        Website requests appear here for JD&apos;s review. JD must approve the date and price before creating a Square payment link. Contact the customer using the phone or email shown; online requests are not automatically messaged.
       </p>
 
       {error && (

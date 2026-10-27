@@ -75,11 +75,11 @@ export async function GET(req: NextRequest) {
       const sent = await sendOperationalMessage(inquiry, {
         body: `Payment verified. Your JD's Horse Ranch booking is confirmed for ${when}.`,
       });
-      await updateInquiry(inquiry.id, { confirmation_sent_at: new Date().toISOString() });
       if (!sent) {
         result.manualContactNeeded += 1;
         continue;
       }
+      await updateInquiry(inquiry.id, { confirmation_sent_at: new Date().toISOString() });
       await recordBookingEvent({
         inquiryId: inquiry.id,
         eventType: "confirmation_retry_sent",
@@ -109,11 +109,11 @@ export async function GET(req: NextRequest) {
       const sent = await sendOperationalMessage(inquiry, {
         body: `Reminder: your JD's Horse Ranch booking is scheduled for ${when}. Please follow the arrival instructions JD provided.`,
       });
-      await updateInquiry(inquiry.id, { reminder_sent_at: new Date().toISOString() });
       if (!sent) {
         result.manualContactNeeded += 1;
         continue;
       }
+      await updateInquiry(inquiry.id, { reminder_sent_at: new Date().toISOString() });
       await recordBookingEvent({
         inquiryId: inquiry.id,
         eventType: "booking_reminder_sent",
@@ -144,11 +144,11 @@ export async function GET(req: NextRequest) {
       const sent = await sendOperationalMessage(inquiry, {
         body,
       });
-      await updateInquiry(inquiry.id, { followup_sent_at: new Date().toISOString() });
       if (!sent) {
         result.manualContactNeeded += 1;
         continue;
       }
+      await updateInquiry(inquiry.id, { followup_sent_at: new Date().toISOString() });
       await recordBookingEvent({
         inquiryId: inquiry.id,
         eventType: "post_ride_followup_sent",
