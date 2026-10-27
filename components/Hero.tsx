@@ -1,75 +1,34 @@
-"use client";
-
-function whatsappUrl(message: string) {
-  const whatsappNumber =
-    process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "14049812361";
-  return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+function bookingLink(message:string) {
+  const number=process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "14049812361";
+  return "https://wa.me/"+number+"?text="+encodeURIComponent(message);
 }
-
+const heroPhoto="https://jds-horse-ranch-v1751084549.websitepro-cdn.com/wp-content/uploads/2020/09/image0.jpeg";
 export default function Hero() {
-  const whatsappHref = whatsappUrl(
-    "Hi, I'd like to start a riding request at JD's Horse Ranch."
-  );
-
-  return (
-    <section className="relative flex min-h-screen w-full items-center justify-center bg-gradient-to-br from-ranch-brown to-ranch-dark px-4 py-16 text-center text-white">
-      <div className="max-w-4xl">
-        <p className="mb-4 text-sm font-semibold uppercase tracking-[0.22em] text-yellow-300">
-          Fairburn, Georgia
-        </p>
-        <h1 className="mb-4 text-5xl font-bold md:text-7xl">
-          JD&apos;s Horse Ranch
-        </h1>
-        <p className="mb-4 text-2xl text-gray-100 md:text-3xl">
-          Start your riding request on WhatsApp
-        </p>
-        <p className="mx-auto mb-8 max-w-2xl text-lg leading-relaxed text-gray-300">
-          Tell our reservation assistant who is riding and when you would like
-          to come. JD personally reviews every request before a time and price
-          are finalized. Payment is requested only after approval.
-        </p>
-
-        <div className="mx-auto max-w-2xl rounded-3xl bg-white/10 p-6 shadow-2xl backdrop-blur md:p-8">
-          <p className="mb-2 text-sm font-bold uppercase tracking-wider text-yellow-300">
-            By appointment only · No walk-ins
-          </p>
-          <h2 className="mb-5 text-2xl font-bold">
-            7555 Jones Rd. Fairburn, GA
-          </h2>
-
-          <a
-            href={whatsappHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block w-full rounded-2xl bg-green-600 px-6 py-5 text-xl font-bold text-white transition hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-300"
-          >
-            Start Booking on WhatsApp
-          </a>
-
-          <p className="mt-3 text-sm text-gray-200">
-            Your request, JD&apos;s decision, payment link, confirmation, and
-            reminders stay in the same WhatsApp conversation.
-          </p>
-
-          <div className="mt-6 grid gap-3 text-left text-sm text-gray-100 sm:grid-cols-3">
-            <div className="rounded-xl bg-black/20 p-4">
-              <strong className="block text-white">1. Send your request</strong>
-              Choose a service and provide each rider&apos;s age, height,
-              weight, experience, and preferred date.
-            </div>
-            <div className="rounded-xl bg-black/20 p-4">
-              <strong className="block text-white">2. JD reviews it</strong>
-              JD personally approves, adjusts, or declines the request. Any
-              update comes back to you in WhatsApp.
-            </div>
-            <div className="rounded-xl bg-black/20 p-4">
-              <strong className="block text-white">3. Pay after approval</strong>
-              Only after JD approves does the system send your secure,
-              booking-specific Square checkout link.
-            </div>
-          </div>
-        </div>
+  return <section className="relative isolate flex min-h-[86vh] flex-col overflow-hidden bg-[#17372b] text-white">
+    <div aria-hidden="true" className="absolute inset-0 -z-10 bg-cover bg-center opacity-45" style={{backgroundImage:`url("${heroPhoto}")`}} />
+    <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-r from-[#102a23]/95 via-[#102a23]/70 to-[#102a23]/20" />
+    <nav aria-label="Main navigation" className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-4 px-5 py-6 sm:px-8">
+      <a href="/" className="text-lg font-bold tracking-wide sm:text-xl">JD&apos;S HORSE RANCH</a>
+      <div className="flex flex-wrap items-center gap-4 text-sm font-medium sm:gap-7">
+        <a href="#experiences" className="hover:underline">Experiences</a>
+        <a href="#about-ranch" className="hover:underline">Our Ranch</a>
+        <a href="#plan-visit" className="hover:underline">Plan Your Visit</a>
       </div>
-    </section>
-  );
+    </nav>
+    <div className="mx-auto flex w-full max-w-7xl flex-1 items-center px-5 py-16 sm:px-8">
+      <div className="max-w-2xl">
+        <p className="mb-5 text-sm font-semibold uppercase tracking-[0.19em] text-amber-100">Fairburn, Georgia · By appointment</p>
+        <h1 className="text-5xl font-bold leading-[1.06] tracking-tight sm:text-6xl lg:text-7xl">Step away from the city. Ride into the country.</h1>
+        <p className="mt-6 max-w-xl text-lg leading-relaxed text-stone-100 sm:text-xl">
+          Discover riding lessons, guided trail rides, and time well spent with horses at JD&apos;s Horse Ranch.
+        </p>
+        <div className="mt-9 flex flex-wrap gap-3">
+          <a href={bookingLink("Hi, I'd like to request a riding experience at JD's Horse Ranch.")} target="_blank" rel="noopener noreferrer"
+            className="inline-flex items-center justify-center rounded-xl bg-[#f4e6c7] px-6 py-4 text-base font-bold text-[#17372b] transition hover:bg-white focus:outline-none focus:ring-4 focus:ring-white/50">Request a Ride</a>
+          <a href="#experiences" className="inline-flex items-center justify-center rounded-xl border border-white/70 bg-white/10 px-6 py-4 text-base font-semibold text-white transition hover:bg-white/20 focus:outline-none focus:ring-4 focus:ring-white/50">Explore Experiences</a>
+        </div>
+        <p className="mt-6 text-sm text-stone-100">Every request is personally reviewed by JD. Your reservation is confirmed after approval and verified payment.</p>
+      </div>
+    </div>
+  </section>;
 }
