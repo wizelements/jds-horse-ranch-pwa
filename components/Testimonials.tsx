@@ -1,7 +1,7 @@
 const voices = [
   {quote:"JD is a great instructor. He makes sure everyone feels confident and safe going out on the trail. Their views are beautiful.",attribution:"Rebecca L."},
-  {quote:"Had a great time! Everyone was so welcoming, we were taught how to properly hold the reins and place our feet before going on the trail.",attribution:"Akeela M."},
-  {quote:"The horses were so gentle, and the tour breathtaking. A very great program for everyone.",attribution:"Sylvester S."},
+  {quote:"Had a great time! Everyone was so welcoming, we were taught how to properly hold the reigns and place our feet before going on the trail.",attribution:"Akeela M."},
+  {quote:"The horses were so gentle, and the tour breath taking. A very great program for everyone.",attribution:"Sylvester S."},
 ];
 export default function Testimonials() {
   return <section className="section-space bg-[#eae2d4]">
