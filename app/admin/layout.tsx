@@ -1,56 +1,37 @@
+export const dynamic = "force-dynamic";
+export const metadata = { manifest: "/ranch-manifest.json", robots: { index: false, follow: false } };
+
 import { verifyAdminSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 
-export default async function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const isAuthenticated = await verifyAdminSession();
+const sections = [
+  {href:"/admin/dashboard", label:"Today"},
+  {href:"/admin/schedule", label:"Ride Schedule"},
+  {href:"/admin/inquiries", label:"Reservations"},
+  {href:"/admin/inquiries/new", label:"Record Phone Call"},
+  {href:"/admin/customers", label:"Customers"},
+  {href:"/admin/services", label:"Experiences"},
+  {href:"/admin/gallery", label:"Photos"},
+  {href:"/admin/testimonials", label:"Reviews"},
+  {href:"/admin/contacts", label:"Contact Activity"},
+];
 
-  if (!isAuthenticated) {
-    redirect("/admin/login");
-  }
-
-  return (
-    <div className="min-h-screen bg-gray-100">
-      <nav className="bg-ranch-dark text-white shadow">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold">JD&apos;s Ranch Admin</h1>
-            <a
-              href="/admin/logout"
-              className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded text-sm"
-            >
-              Logout
-            </a>
-          </div>
-        </div>
-      </nav>
-
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <aside className="mb-8 flex gap-4 flex-wrap">
-          <NavLink href="/admin/dashboard" label="Dashboard" />
-          <NavLink href="/admin/inquiries" label="Reservation Queue" />
-          <NavLink href="/admin/services" label="Services" />
-          <NavLink href="/admin/testimonials" label="Testimonials" />
-          <NavLink href="/admin/gallery" label="Gallery" />
-          <NavLink href="/admin/contacts" label="Contact Logs" />
-        </aside>
-
-        <main>{children}</main>
+export default async function AdminLayout({children}:{children:React.ReactNode}) {
+  if (!(await verifyAdminSession())) redirect("/ranch-login");
+  return <div className="min-h-screen bg-stone-50 text-stone-950">
+    <header className="bg-ranch-dark px-4 py-4 text-white">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3">
+        <div><p className="text-xs font-semibold uppercase tracking-widest text-amber-100">Private ranch workspace</p>
+          <p className="text-xl font-bold">JD&apos;s Horse Ranch</p></div>
+        <Link href="/admin/logout" className="rounded-lg border border-white/50 px-3 py-2 text-sm font-semibold hover:bg-white/10">Sign out</Link>
       </div>
+    </header>
+    <div className="mx-auto max-w-7xl px-4 py-6">
+      <nav aria-label="Ranch management" className="mb-7 flex gap-2 overflow-x-auto pb-2">
+        {sections.map(s=><Link key={s.href} href={s.href} className="shrink-0 rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm font-semibold text-ranch-dark hover:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700">{s.label}</Link>)}
+      </nav>
+      <main>{children}</main>
     </div>
-  );
-}
-
-function NavLink({ href, label }: { href: string; label: string }) {
-  return (
-    <a
-      href={href}
-      className="bg-white text-ranch-dark px-4 py-2 rounded hover:bg-gray-200 transition font-medium text-sm"
-    >
-      {label}
-    </a>
-  );
+  </div>;
 }

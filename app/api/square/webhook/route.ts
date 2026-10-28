@@ -74,12 +74,14 @@ export async function POST(req: NextRequest) {
             timeStyle: "short",
           })
         : "the approved time";
-      await sendOperationalMessage(booked, {
+      const sent = await sendOperationalMessage(booked, {
         body: `Payment verified. Your JD's Horse Ranch booking is confirmed for ${when}. Keep this message and follow any instructions JD gave you directly.`,
-        whatsappTemplateEnv: "WHATSAPP_CONFIRMATION_TEMPLATE_NAME",
-        whatsappParameters: [when],
       });
-      booked = await updateInquiry(booked.id, { confirmation_sent_at: new Date().toISOString() });
+      if (sent) {
+        booked = await updateInquiry(booked.id, { confirmation_sent_at: new Date().toISOString() });
+      } else {
+        await recordBookingEvent({ inquiryId: booked.id, eventType: "manual_confirmation_required", actor: "system" });
+      }
     } catch (error) {
       console.error("Booking confirmation delivery failed:", error);
       await recordBookingEvent({

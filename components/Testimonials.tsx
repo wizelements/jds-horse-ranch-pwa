@@ -1,73 +1,23 @@
+const voices = [
+  {quote:"JD is a great instructor. He makes sure everyone feels confident and safe going out on the trail. Their views are beautiful.",attribution:"Rebecca L."},
+  {quote:"Had a great time! Everyone was so welcoming, we were taught how to properly hold the reigns and place our feet before going on the trail.",attribution:"Akeela M."},
+  {quote:"The horses were so gentle, and the tour breath taking. A very great program for everyone.",attribution:"Sylvester S."},
+];
 export default function Testimonials() {
-  const testimonials = [
-    {
-      text: "The very best I've ever experienced. The guides were so friendly, and time never rushed. The horses were so gentle, and the tour breath taking. I felt like John Wayne or Client Eastwood. Next time I'm back, I'm going to purchase cowboy boots and hat. A very great program for everyone.",
-      author: "Sylvester S.",
-      location: "Atlanta, GA",
-    },
-    {
-      text: "JD is a great instructor. He makes sure everyone feels confident and safe going out on the trail. Their views are beautiful.",
-      author: "Rebecca L.",
-      location: "Fairburn, GA",
-    },
-    {
-      text: "Had a great time! Everyone was so welcoming, we were taught how to properly hold the reigns and place our feet before going on the trail. Each person had a guide. We all felt very safe and everyone was so sweet.",
-      author: "Akeela M.",
-      location: "Atlanta, GA",
-    },
-    {
-      text: "We had an amazing experience at JD's Horse Ranch! The staff was incredibly professional and our instructor took great care of us. We felt safe the entire time and enjoyed beautiful riding through the Georgia countryside. Highly recommend!",
-      author: "Michael T.",
-      location: "Marietta, GA",
-    },
-    {
-      text: "Perfect introduction to horseback riding. JD's makes sure beginners feel confident. The trail ride was peaceful and scenic. Looking forward to coming back soon!",
-      author: "Jennifer P.",
-      location: "Decatur, GA",
-    },
-  ];
-
-  return (
-    <section className="section bg-white">
-      <h2 className="text-4xl font-bold text-center mb-12 text-ranch-brown">
-        What Our Customers Are Saying
-      </h2>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {testimonials.map((testimonial, idx) => (
-          <div key={idx} className="service-card border-l-4 border-ranch-brown">
-            <p className="text-gray-700 mb-4 italic">&quot;{testimonial.text}&quot;</p>
-            <div>
-              <p className="font-semibold text-ranch-dark">- {testimonial.author}</p>
-              <p className="text-sm text-gray-600">{testimonial.location}</p>
-            </div>
-          </div>
-        ))}
+  return <section className="section-space bg-[#eae2d4]">
+    <div className="wrap-content">
+      <header className="mb-14 text-center">
+        <p className="overline mb-5 text-[#8c7553]">From our guests</p>
+        <h2 className="font-editorial text-[clamp(2.9rem,5.5vw,5.5rem)] leading-[1.08] tracking-[-.055em] text-[#183329]">The memories <em>ride home with you.</em></h2>
+      </header>
+      <div className="grid gap-5 md:grid-cols-3">
+        {voices.map(v=><figure key={v.attribution} className="flex flex-col border-t border-[#a98f66] bg-[#faf7ef] px-7 pb-8 pt-7">
+          <span className="font-editorial text-6xl leading-none text-[#a98f66]" aria-hidden="true">“</span>
+          <blockquote className="mt-2 flex-1 font-editorial text-[20px] leading-[1.55] text-[#283d30]">{v.quote}</blockquote>
+          <figcaption className="mt-8 border-t border-[#e2d8c7] pt-5 text-[11px] font-bold uppercase tracking-[.18em] text-[#826c4c]">{v.attribution}</figcaption>
+        </figure>)}
       </div>
-
-      {/* Review Schema Markup for SEO */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "LocalBusiness",
-            name: "JD's Horse Ranch",
-            review: testimonials.map((t) => ({
-              "@type": "Review",
-              reviewRating: {
-                "@type": "Rating",
-                ratingValue: "5",
-              },
-              author: {
-                "@type": "Person",
-                name: t.author,
-              },
-              reviewBody: t.text,
-            })),
-          }),
-        }}
-      />
-    </section>
-  );
+      <p className="mt-7 text-center text-xs text-[#687469]">Excerpts from guest comments published by JD&apos;s Horse Ranch.</p>
+    </div>
+  </section>;
 }

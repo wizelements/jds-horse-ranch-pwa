@@ -21,8 +21,10 @@ export default async function InquiriesPage() {
     <div>
       <h1 className="text-3xl font-bold text-gray-900 mb-2">Reservation Queue</h1>
       <p className="text-gray-600 mb-6">
-        One queue for web, WhatsApp, and SMS. JD must personally approve the final time and amount before a Square payment request is created.
+        New customers call JD directly. After a conversation, record the request privately so it appears here. Existing records remain available. No customer forms or automated messages are used.
       </p>
+
+      <a href="/admin/inquiries/new" className="mb-6 inline-flex rounded-lg bg-emerald-900 px-5 py-3 text-sm font-bold text-white hover:bg-emerald-800">Record a phone conversation</a>
 
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
@@ -66,8 +68,8 @@ export default async function InquiriesPage() {
                 </td>
                 <td className="p-3 min-w-[160px]">
                   <div className="font-medium">{item.customer_name || "—"}</div>
-                  <div className="text-gray-500">{item.customer_phone}</div>
-                  <div className="text-gray-500 break-all">{item.email || ""}</div>
+                  <a className="inline-flex rounded bg-emerald-900 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-800" href={`tel:${item.customer_phone}`}>Call {item.customer_phone}</a>
+                  <div className="mt-2 text-xs text-gray-500 break-all">{item.email || ""}</div>
                 </td>
                 <td className="p-3 min-w-[180px]">
                   <div className="font-medium">{item.rider_count || "—"} rider(s)</div>
@@ -97,7 +99,7 @@ export default async function InquiriesPage() {
                       rel="noopener noreferrer"
                       className="text-xs text-ranch-brown underline"
                     >
-                      Open Square checkout
+                      Open / share Square checkout
                     </a>
                   )}
                   {item.paid_at && <div className="text-xs text-green-700 mt-1">Verified paid</div>}
@@ -108,7 +110,6 @@ export default async function InquiriesPage() {
                     status={item.status}
                     automationPaused={item.automation_paused}
                     rescheduleRequestText={item.reschedule_request_text}
-                    customerServiceWindowExpiresAt={item.customer_service_window_expires_at}
                   />
                 </td>
               </tr>

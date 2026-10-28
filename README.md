@@ -1,6 +1,6 @@
 # JD's Horse Ranch Reservation Assistant
 
-Production-oriented Next.js PWA for JD's Horse Ranch with governed reservation intake, JD approval, booking-specific Square checkout, WhatsApp/SMS communication, lifecycle reminders, and a Turso/libSQL database.
+Production-oriented Next.js PWA for JD's Horse Ranch with governed reservation intake, JD approval, booking-specific Square checkout, telephone-first reservations without customer forms or messaging, lifecycle reminders, and a Turso/libSQL database.
 
 ## Governing booking rule
 
@@ -56,7 +56,7 @@ Supabase is not used as the application database. The existing gallery may conti
 ## Core capabilities
 
 - Website reservation intake
-- WhatsApp Cloud API intake
+- Online booking form with JD review (no WhatsApp required)
 - Optional Twilio SMS intake
 - Unified Turso reservation record
 - Rider age/height/weight collection
@@ -102,8 +102,11 @@ The feature is intentionally kept off production until external credentials, Tur
 
 ## Environment
 
-See `.env.example` and `WHATSAPP_SETUP.md` for the current production variables and activation sequence.
+See `.env.example`, `docs/BOOKING_WITHOUT_WHATSAPP.md`, and `scripts/production-readiness.mjs` for required production settings.
 
 ## Production site
 
 Current public baseline: https://jds-horse-ranch-pwa.vercel.app
+
+## Verified ranch photography (Oct 2026)
+Public hero, service tiles, phone reservation panel, and gallery use the original ten photographs hosted on `jdshorseranch.com`. Obsolete 410 CDN URLs have been removed; no random stock horse imagery is used. The gallery also links to the official Google Maps listing for visitor-submitted photos. Run `npm run photos:audit` to recheck the origins and status without making deployments depend on third-party fetches. See `docs/PHOTO_SOURCE_AUDIT_2026-10-28.md`.

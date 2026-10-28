@@ -190,11 +190,12 @@ export async function createWebInquiry(input: {
   experience: string;
   qualificationNotes?: string | null;
   marketingConsent: boolean;
-  preferredChannel: "whatsapp" | "sms";
+  preferredChannel: "web" | "voice";
+  channel?: "web" | "voice";
 }) {
   const id = randomUUID();
   const now = new Date().toISOString();
-  const holdExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+  const holdExpiresAt = input.channel === "voice" ? null : new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 
   await getTurso().execute({
     sql: `INSERT INTO booking_inquiries (
@@ -202,9 +203,10 @@ export async function createWebInquiry(input: {
       service_requested, rider_count, rider_details, requested_datetime_text,
       alternate_datetime_text, experience, qualification_notes, marketing_consent,
       status, intake_step, hold_expires_at, created_at, updated_at
-    ) VALUES (?, 'web', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'PENDING_JD', 'complete', ?, ?, ?)`,
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'PENDING_JD', 'complete', ?, ?, ?)`,
     args: [
       id,
+      input.channel || "web",
       input.preferredChannel,
       input.customerPhone,
       input.customerName,

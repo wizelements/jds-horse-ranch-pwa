@@ -11,7 +11,7 @@ export default function PaymentCompletePage() {
         <p className="mt-4 text-gray-700">
           JD&apos;s Horse Ranch confirms a booking only after Square reports the
           payment as completed. You&apos;ll receive the booking confirmation through
-          your selected messaging channel.
+          JD will contact you using the phone or email you shared with your request. If you have questions, call the ranch.
         </p>
         <div className="mt-7 rounded-xl bg-amber-50 p-5 text-amber-950">
           <p className="font-semibold">Need help?</p>
