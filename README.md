@@ -107,3 +107,6 @@ See `.env.example`, `docs/BOOKING_WITHOUT_WHATSAPP.md`, and `scripts/production-
 ## Production site
 
 Current public baseline: https://jds-horse-ranch-pwa.vercel.app
+
+## Verified ranch photography (Oct 2026)
+Public hero, service tiles, phone reservation panel, and gallery use the original ten photographs hosted on `jdshorseranch.com`. Obsolete 410 CDN URLs have been removed; no random stock horse imagery is used. The gallery also links to the official Google Maps listing for visitor-submitted photos. Run `npm run photos:audit` to recheck the origins and status without making deployments depend on third-party fetches. See `docs/PHOTO_SOURCE_AUDIT_2026-10-28.md`.

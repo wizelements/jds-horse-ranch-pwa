@@ -1,12 +1,12 @@
 {
   "name": "jds-horse-ranch-pwa",
   "version": "1.1.0",
-  "description": "JD's Horse Ranch PWA with web reservations, personal JD approval, Turso, and verified Square checkout",
+  "description": "JD's Horse Ranch — call-first equestrian experience with private owner reservations and verified ranch photography",
   "author": "DevSolo",
   "license": "MIT",
   "scripts": {
     "dev": "next dev",
-    "build": "node scripts/audit-ranch-photos.mjs && node scripts/vercel-prepare.mjs && next build",
+    "build": "node scripts/vercel-prepare.mjs && next build",
     "start": "next start",
     "lint": "eslint . --max-warnings=0",
     "type-check": "tsc --noEmit",
@@ -15,7 +15,8 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,md,json,yml}\"",
     "db:migrate": "node scripts/turso-migrate.mjs",
     "db:migrate:legacy": "node scripts/migrate-supabase-to-turso.mjs",
-    "db:verify": "node scripts/verify-turso-schema.mjs"
+    "db:verify": "node scripts/verify-turso-schema.mjs",
+    "photos:audit": "node scripts/audit-ranch-photos.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.1",

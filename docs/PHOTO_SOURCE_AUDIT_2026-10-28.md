@@ -16,3 +16,5 @@ Presentation map:
 Google research: The business listing is https://www.google.com/maps/place/?q=place_id:ChIJgaHu6b8f9YgRBA8VlHl70mk. The gallery includes a clearly labeled link to view Google-hosted customer photos; this avoids unauthorized rehosting of customer images or violating Google photo attribution/license restrictions. Images returned by Google search from unrelated third-party sites, including travel blog portraits and stock-type directory thumbnails, have **not** been copied into the ranch website.
 
 Guest path remains phone-first at **(404) 981-2361**, with no public forms, WhatsApp, or SMS.
+
+**Live URL verification (2026-10-28):** Vercel preview build performed HEAD requests for every `image0.jpeg`–`image9.jpeg` on the official origin. All ten returned **HTTP 200**, `Content-Type: image/jpeg`, with nonzero content lengths (78 KB–205 KB). The obsolete CDN's ten images all returned HTTP 410. Recheck anytime with `npm run photos:audit`; routine production builds do not depend on the upstream URL audit.
