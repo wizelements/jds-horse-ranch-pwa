@@ -203,7 +203,7 @@ export async function createWebInquiry(input: {
       service_requested, rider_count, rider_details, requested_datetime_text,
       alternate_datetime_text, experience, qualification_notes, marketing_consent,
       status, intake_step, hold_expires_at, created_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'PENDING_JD', 'complete', ?, ?, ?)`,
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'PENDING_JD', 'complete', ?, ?, ?)`,
     args: [
       id,
       input.channel || "web",
