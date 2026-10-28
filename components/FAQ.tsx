@@ -1,10 +1,10 @@
 const questions = [
-  {q:"Do I need horseback riding experience?",a:"No prior experience is required to request a ride. Include your riding experience and each rider's details in your request. JD personally reviews suitability before confirming an appointment."},
-  {q:"Are walk-ins welcome?",a:"No. JD's Horse Ranch operates by appointment only. Submit your request online with the dates and times that work for you."},
+  {q:"Do I need horseback riding experience?",a:"First-time riders are welcome to inquire. Call JD to discuss your experience, rider needs, and the options available for your group."},
+  {q:"Are walk-ins welcome?",a:"No. JD's Horse Ranch operates by appointment only. Call JD to talk through possible days and times before visiting."},
   {q:"What should I wear?",a:"Long pants and sturdy, closed-toe shoes or boots are recommended. JD will share any additional instructions when your appointment is arranged."},
-  {q:"How does the reservation process work?",a:"Submit your request through the form on this page. JD reviews the riders and preferred date. If approved, JD contacts you and shares a Square payment link. Your booking is confirmed only after payment is verified."},
-  {q:"Can I request a private ride or special event?",a:"You can request a guided trail ride for one, two or three riders, or ask about a special occasion. Share the details in the form and JD will review your request."},
-  {q:"What is the rescheduling policy?",a:"Deposits are non-refundable. Requests to reschedule require at least 24 hours' notice and are subject to JD's approval and availability."},
+  {q:"How does the reservation process work?",a:"Call JD at (404) 981-2361. Speak directly about the ride you want, your riders, and your preferred date. JD reviews availability and explains how to finalize the reservation. Nothing is confirmed until JD approves the arrangements and any required payment is verified."},
+  {q:"Can I request a private ride or special event?",a:"Yes. Call JD to discuss guided rides for one, two, or three riders, or your plans for a special occasion. He will discuss the options with you personally."},
+  {q:"What is the rescheduling policy?",a:"Deposits are non-refundable. Please call JD directly to discuss any changes. Rescheduling requires at least 24 hours' notice and is subject to JD's approval and availability."},
 ];
 export default function FAQ() {
   return <section className="section-space bg-[#f8f5ee]">

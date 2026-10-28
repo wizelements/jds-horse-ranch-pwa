@@ -1,6 +1,6 @@
 # JD's Horse Ranch Reservation Assistant
 
-Production-oriented Next.js PWA for JD's Horse Ranch with governed reservation intake, JD approval, booking-specific Square checkout, website intake with optional SMS communications, lifecycle reminders, and a Turso/libSQL database.
+Production-oriented Next.js PWA for JD's Horse Ranch with governed reservation intake, JD approval, booking-specific Square checkout, telephone-first reservations without customer forms or messaging, lifecycle reminders, and a Turso/libSQL database.
 
 ## Governing booking rule
 

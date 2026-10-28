@@ -3,7 +3,7 @@ import Experience from "@/components/Experience";
 import Services from "@/components/Services";
 import Gallery from "@/components/Gallery";
 import Testimonials from "@/components/Testimonials";
-import BookingRequest from "@/components/BookingRequest";
+import CallToBook from "@/components/CallToBook";
 import FAQ from "@/components/FAQ";
 import Contact from "@/components/Contact";
 import AccessibilityToolbar from "@/components/AccessibilityToolbar";
@@ -18,7 +18,7 @@ export default function Home() {
       <Services />
       <Gallery />
       <Testimonials />
-      <BookingRequest />
+      <CallToBook />
       <FAQ />
       <Contact />
     </main>

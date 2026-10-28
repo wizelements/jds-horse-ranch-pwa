@@ -4,7 +4,7 @@ import RegisterSW from "./register-sw";
 
 export const metadata: Metadata = {
   title: "JD's Horse Ranch | Riding Lessons & Trail Rides in Fairburn, GA",
-  description: "Experience riding lessons, guided trail rides, and memorable moments at JD's Horse Ranch in Fairburn, Georgia. Visits are by appointment; request your experience online.",
+  description: "Experience riding lessons, guided trail rides, and memorable moments at JD's Horse Ranch in Fairburn, Georgia. Visits are by appointment; call JD to talk about lessons, trail rides, and reservations.",
   metadataBase: new URL("https://jdshorseranch.com"),
   alternates: { canonical: "/" },
   manifest: "/manifest.json",

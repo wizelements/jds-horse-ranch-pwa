@@ -6,7 +6,7 @@ export default function Experience() {
         <h2 className="font-editorial text-[clamp(3rem,5vw,5.4rem)] leading-[1.08] tracking-[-.055em] text-[#183329]">A little more <em className="text-[#917b58]">room to breathe.</em></h2>
         <p className="mt-8 max-w-md text-[16px] leading-8 text-[#576157]">Trade the rush of the everyday for the rhythm of the trail. Whether this is your first time in the saddle or a familiar place to return, JD&apos;s Horse Ranch offers time to connect with horses and enjoy the country.</p>
         <p className="mt-5 max-w-md text-[16px] leading-8 text-[#576157]">Every riding request is personally reviewed by JD so the experience can be planned with your riders in mind.</p>
-        <a href="#request-ride" className="mt-8 inline-flex items-center gap-4 border-b border-[#183329] pb-2 text-xs font-bold uppercase tracking-[.15em]">Plan your experience <span aria-hidden="true">↗</span></a>
+        <a href="tel:+14049812361" className="mt-8 inline-flex items-center gap-4 border-b border-[#183329] pb-2 text-xs font-bold uppercase tracking-[.15em]">Talk with JD about riding <span aria-hidden="true">↗</span></a>
       </div>
       <div className="relative">
         <div aria-hidden="true" className="absolute -bottom-5 -left-5 hidden h-[60%] w-2/5 border border-[#cbb991] lg:block" />

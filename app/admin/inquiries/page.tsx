@@ -21,7 +21,7 @@ export default async function InquiriesPage() {
     <div>
       <h1 className="text-3xl font-bold text-gray-900 mb-2">Reservation Queue</h1>
       <p className="text-gray-600 mb-6">
-        Website requests appear here for JD&apos;s review. JD must approve the date and price before creating a Square payment link. Contact the customer using the phone or email shown; online requests are not automatically messaged.
+        This queue contains existing reservation records. New guests call JD directly; the website no longer accepts booking forms. Call customers to discuss arrangements and confirmations. No automated messages are sent.
       </p>
 
       {error && (
@@ -66,8 +66,8 @@ export default async function InquiriesPage() {
                 </td>
                 <td className="p-3 min-w-[160px]">
                   <div className="font-medium">{item.customer_name || "—"}</div>
-                  <div className="text-gray-500">{item.customer_phone}</div>
-                  <div className="text-gray-500 break-all">{item.email || ""}</div>
+                  <a className="inline-flex rounded bg-emerald-900 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-800" href={`tel:${item.customer_phone}`}>Call {item.customer_phone}</a>
+                  <div className="mt-2 text-xs text-gray-500 break-all">{item.email || ""}</div>
                 </td>
                 <td className="p-3 min-w-[180px]">
                   <div className="font-medium">{item.rider_count || "—"} rider(s)</div>

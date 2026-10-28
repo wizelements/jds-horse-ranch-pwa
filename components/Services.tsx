@@ -9,7 +9,7 @@ export default function Services() {
     <div className="wrap-wide">
       <header className="mb-12 flex flex-col justify-between gap-8 lg:mb-16 lg:flex-row lg:items-end">
         <div><p className="overline mb-5 text-[#8d7351]">Ways to ride</p><h2 className="font-editorial text-[clamp(3rem,6vw,6.3rem)] leading-[1.06] tracking-[-.055em] text-[#183329]">Your time. <em>Your experience.</em></h2></div>
-        <p className="max-w-xs text-[15px] leading-7 text-[#606d63]">Choose what brings you here. JD personally reviews every request before confirming a time and final price.</p>
+        <p className="max-w-xs text-[15px] leading-7 text-[#606d63]">Choose what brings you here. Call JD to talk through your ride, available dates, and what works best for you.</p>
       </header>
       <div className="grid gap-6 lg:grid-cols-3">
         {rides.map(ride=><article key={ride.n} className="group flex flex-col border border-[#e7e2d8] bg-[#fdfcf9]">
@@ -22,7 +22,7 @@ export default function Services() {
             <p className="mt-4 text-[15px] font-semibold text-[#8b7454]">{ride.lead}</p>
             <p className="mt-4 flex-1 text-sm leading-7 text-[#667068]">{ride.desc}</p>
             <div className="mt-8 border-t border-[#e4dfd4] pt-5"><p className="text-sm font-bold text-[#273b30]">{ride.price}</p><p className="mt-1 text-xs leading-5 text-[#697168]">{ride.detail}</p></div>
-            <a href="#request-ride" className="mt-7 flex items-center justify-between border-b border-[#87978a] pb-3 text-[11px] font-bold uppercase tracking-[.14em] text-[#183329] hover:border-[#ad946b] hover:text-[#806745]">Request this experience <span aria-hidden="true" className="text-lg font-normal">↗</span></a>
+            <a href="tel:+14049812361" className="mt-7 flex items-center justify-between border-b border-[#87978a] pb-3 text-[11px] font-bold uppercase tracking-[.14em] text-[#183329] hover:border-[#ad946b] hover:text-[#806745]">Call JD to arrange <span aria-hidden="true" className="text-lg font-normal">↗</span></a>
           </div>
         </article>)}
       </div>

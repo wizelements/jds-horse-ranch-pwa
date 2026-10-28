@@ -15,8 +15,8 @@ export default function Hero() {
         <a href="#gallery" className="hover:text-[#efd5a7]">Gallery</a>
         <a href="#plan-visit" className="hover:text-[#efd5a7]">Visit</a>
       </nav>
-      <a href="#request-ride" className="hidden border border-white/60 px-5 py-3 text-[11px] font-bold uppercase tracking-[.16em] hover:bg-white hover:text-[#183329] sm:inline-flex">Reserve Your Visit</a>
-      <a href="#request-ride" className="border border-white/60 px-3 py-2 text-[10px] font-bold uppercase tracking-widest sm:hidden">Book</a>
+      <a href="tel:+14049812361" className="hidden border border-white/60 px-5 py-3 text-[11px] font-bold uppercase tracking-[.16em] hover:bg-white hover:text-[#183329] sm:inline-flex">Call to Book</a>
+      <a href="tel:+14049812361" className="border border-white/60 px-3 py-2 text-[10px] font-bold uppercase tracking-widest sm:hidden">Call JD</a>
     </header>
     <div className="wrap-wide z-10 flex flex-1 items-center py-24 sm:py-32">
       <div className="max-w-[830px]">
@@ -24,13 +24,13 @@ export default function Hero() {
         <h1 className="font-editorial text-[clamp(3.55rem,8vw,8.3rem)] leading-[.98] tracking-[-.055em]">Come for the ride.<br /><em className="font-normal text-[#e6cfa9]">Stay for the feeling.</em></h1>
         <p className="mt-9 max-w-[560px] text-base leading-8 text-[#f4f1ec]/90 sm:text-lg">Just outside Atlanta, discover a more beautiful pace of life. Guided trail rides, riding lessons, and moments worth remembering in the Georgia countryside.</p>
         <div className="mt-11 flex flex-wrap items-center gap-6">
-          <a href="#request-ride" className="cta-light">Request Your Ride <span aria-hidden="true">↗</span></a>
+          <a href="#request-ride" className="cta-light">Call JD to Ride <span aria-hidden="true">↗</span></a>
           <a href="#experiences" className="border-b border-white/70 pb-1 text-xs font-bold uppercase tracking-[.15em] hover:text-[#e6cfa9]">Explore Experiences</a>
         </div>
       </div>
     </div>
     <div className="wrap-wide z-10 flex flex-wrap items-center justify-between gap-3 border-t border-white/20 py-6 text-[10px] font-semibold uppercase tracking-[.18em] text-stone-200">
-      <span>7555 Jones Road · Fairburn, GA</span><span>By appointment only</span><a href="#about-ranch" className="hidden md:inline-flex">Discover the ranch ↓</a>
+      <span>7555 Jones Road · Fairburn, GA</span><span>Speak directly with JD · (404) 981-2361</span><a href="#about-ranch" className="hidden md:inline-flex">Discover the ranch ↓</a>
     </div>
   </section>;
 }

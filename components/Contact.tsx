@@ -4,10 +4,10 @@ export default function Contact() {
       <div className="grid gap-12 lg:grid-cols-[1.35fr_.65fr] lg:items-end">
         <div><p className="overline mb-7 text-[#c6ae88]">We&apos;ll see you out here</p>
           <h2 className="max-w-3xl font-editorial text-[clamp(3.2rem,7vw,7.7rem)] leading-[.99] tracking-[-.06em]">The country <em className="text-[#dbc4a0]">is calling.</em></h2>
-          <p className="mt-7 max-w-lg text-[16px] leading-8 text-[#cdd6cb]">Bring your curiosity, your people, or simply yourself. Tell us when you&apos;d like to ride and JD will take it from there.</p>
+          <p className="mt-7 max-w-lg text-[16px] leading-8 text-[#cdd6cb]">Bring your curiosity, your people, or simply yourself. A personal conversation is the first step. Call JD to talk about riding and choose a time together.</p>
         </div>
         <div className="flex flex-col items-start gap-5 lg:items-end">
-          <a href="#request-ride" className="cta-light">Request your ride <span aria-hidden="true">↗</span></a>
+          <a href="tel:+14049812361" className="cta-light">Call JD to book <span aria-hidden="true">↗</span></a>
           <p className="text-xs uppercase tracking-[.18em] text-[#cbd3c7]">Reservations by appointment only</p>
         </div>
       </div>
@@ -22,7 +22,7 @@ export default function Contact() {
       </div>
       <div><h3 className="overline mb-6 text-[#c6ae88]">Say hello</h3>
         <a href="tel:+14049812361" className="block font-editorial text-2xl hover:text-[#ddc29e]">(404) 981-2361</a>
-        <a href="mailto:jdshorseranch@gmail.com" className="mt-3 block break-all text-sm text-[#e2e6dc] underline underline-offset-4">jdshorseranch@gmail.com</a>
+        <p className="mt-4 text-sm leading-6 text-[#c6d0c5]">Reservations and questions are handled by phone.</p>
         <div className="mt-7 flex gap-6 text-xs font-semibold uppercase tracking-[.14em]"><a target="_blank" rel="noopener noreferrer" href="https://www.facebook.com/Jdshorseranch/" className="hover:text-[#ddc29e]">Facebook</a><a target="_blank" rel="noopener noreferrer" href="https://www.instagram.com/jdshorseranch/" className="hover:text-[#ddc29e]">Instagram</a></div>
       </div>
     </div>
