@@ -72,8 +72,10 @@ export default async function DashboardPage() {
       <header>
         <p className="text-sm font-semibold uppercase tracking-widest text-emerald-800">Ranch management</p>
         <h1 className="mt-2 text-3xl font-bold text-ranch-dark">Today at JD&apos;s Ranch</h1>
-        <p className="mt-2 text-stone-700">Your rides, requests, and next steps in one place.</p>
+        <p className="mt-2 text-stone-700">Your rides, phone conversations, customer records, and next steps in one place.</p>
       </header>
+
+      <Link href="/admin/inquiries/new" className="inline-flex rounded-lg bg-emerald-900 px-5 py-3 text-sm font-bold text-white hover:bg-emerald-800">Record a phone conversation</Link>
 
       {unavailable && (
         <div role="alert" className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-amber-950">

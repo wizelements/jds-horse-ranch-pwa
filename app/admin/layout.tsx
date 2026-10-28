@@ -9,6 +9,7 @@ const sections = [
   {href:"/admin/dashboard", label:"Today"},
   {href:"/admin/schedule", label:"Ride Schedule"},
   {href:"/admin/inquiries", label:"Reservations"},
+  {href:"/admin/inquiries/new", label:"Record Phone Call"},
   {href:"/admin/customers", label:"Customers"},
   {href:"/admin/services", label:"Experiences"},
   {href:"/admin/gallery", label:"Photos"},

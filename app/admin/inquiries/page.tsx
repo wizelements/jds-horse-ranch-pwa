@@ -21,8 +21,10 @@ export default async function InquiriesPage() {
     <div>
       <h1 className="text-3xl font-bold text-gray-900 mb-2">Reservation Queue</h1>
       <p className="text-gray-600 mb-6">
-        This queue contains existing reservation records. New guests call JD directly; the website no longer accepts booking forms. Call customers to discuss arrangements and confirmations. No automated messages are sent.
+        New customers call JD directly. After a conversation, record the request privately so it appears here. Existing records remain available. No customer forms or automated messages are used.
       </p>
+
+      <a href="/admin/inquiries/new" className="mb-6 inline-flex rounded-lg bg-emerald-900 px-5 py-3 text-sm font-bold text-white hover:bg-emerald-800">Record a phone conversation</a>
 
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">

@@ -1,6 +1,6 @@
 /* JD's Horse Ranch: safe public-assets-only offline support.
    Do not store private rider records, messages, calendar details, or checkout responses. */
-const CACHE_NAME="jds-public-assets-v2";
+const CACHE_NAME="jds-public-assets-v3";
 const OFFLINE_PAGE="/offline.html";
 self.addEventListener("install",event=>{
   event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.add(OFFLINE_PAGE)).then(()=>self.skipWaiting()));

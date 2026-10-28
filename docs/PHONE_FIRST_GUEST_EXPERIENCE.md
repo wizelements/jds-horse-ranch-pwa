@@ -1,11 +1,9 @@
-# JD's Horse Ranch — phone-first guest experience
+# JD's Horse Ranch — telephone-first experience
 
-JD handles new reservations through a real telephone conversation, not website forms, SMS, WhatsApp, chatbot, or email intake. Public CTAs consistently open `tel:+14049812361` and display the number for desktop visitors. Service prices are indicative until JD confirms them over the phone.
+Guests call JD at (404) 981-2361 to discuss and book. Public CTAs are telephone links, with the number visible on desktops. No public forms, WhatsApp, SMS, automated customer messaging, or live availability claims.
 
-The public website remains a premium visual introduction to the ranch, its experiences, photographs, questions, location, and an invitation to call. Do not imply that tapping a call link proves a phone call was completed or that availability is known.
+The private admin can record a conversation at `/admin/inquiries/new`. This owner-only entry saves a phone-origin record (`voice`) to Turso in the status `PENDING_JD`, for JD's review. No customer messages are sent; a `phone_conversation_recorded` event records manual entry, not automatic phone tracking.
 
-`POST /api/booking` intentionally returns HTTP 410; it no longer writes guest intake to Turso. The legacy booking data and private admin remain intact for existing records. No new WhatsApp or SMS outbound messages are permitted.
+`POST /api/booking` is HTTP 410 and does not collect requests. Historical records remain. Existing signed Square events can verify paid bookings. Automated lifecycle notifications and inbound SMS handling are disabled.
 
-**Owner workflow remains partly manual:** JD discusses details on the phone. The existing private reservation queue contains historical records only; it does not automatically record new calls. Calendar integration, new phone-booking capture inside admin, and production Square verification need separate certification. Do not claim these are already operational.
-
-All customers are expected to speak directly with JD. The site does not promise immediate pickup, staffing hours, a booked time, or a guaranteed response.
+Production admin needs real login credentials and Turso. Square payments require configured merchant keys and end-to-end certification. Automatic inbound phone logging, calendar integrations, and production payments are not yet certified; the design must not imply they are.

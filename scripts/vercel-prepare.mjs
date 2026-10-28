@@ -17,7 +17,6 @@ const requiredProduction = [
   "SQUARE_LOCATION_ID",
   "SQUARE_WEBHOOK_SIGNATURE_KEY",
   "SQUARE_WEBHOOK_NOTIFICATION_URL",
-  "CRON_SECRET",
 ];
 
 const missing = requiredProduction.filter((name) => !present(name));

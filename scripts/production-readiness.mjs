@@ -6,7 +6,6 @@ const required = [
   "ADMIN_PASSWORD_HASH_V2", "ADMIN_PASSWORD_SALT_V2", "SESSION_TOKEN_SECRET_V2",
 "SQUARE_ACCESS_TOKEN", "SQUARE_LOCATION_ID",
   "SQUARE_WEBHOOK_SIGNATURE_KEY", "SQUARE_WEBHOOK_NOTIFICATION_URL",
-  "CRON_SECRET",
 ];
 
 const has = (key) => Boolean(process.env[key]?.trim());
@@ -32,7 +31,7 @@ check("SQUARE_WEBHOOK_NOTIFICATION_URL", (value) => {
     url.pathname==="/api/square/webhook" && !url.search && !url.hash; }
   catch { return false; }
 }, "must be an HTTPS public Square webhook URL ending /api/square/webhook");
-  "SQUARE_ACCESS_TOKEN","SQUARE_WEBHOOK_SIGNATURE_KEY","CRON_SECRET"]) {
+  "SQUARE_ACCESS_TOKEN","SQUARE_WEBHOOK_SIGNATURE_KEY"]) {
   check(key, (value)=>value.length>=16, "appears too short");
 }
 console.log("JD's Horse Ranch — production configuration audit (values withheld)");
