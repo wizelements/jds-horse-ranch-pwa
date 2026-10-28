@@ -5,7 +5,7 @@ const config = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "*.websitepro-cdn.com",
+        hostname: "jdshorseranch.com",
         pathname: "/**",
       },
     ],

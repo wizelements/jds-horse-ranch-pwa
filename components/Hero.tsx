@@ -1,4 +1,4 @@
-const image = "https://jds-horse-ranch-v1751084549.websitepro-cdn.com/wp-content/uploads/2020/09/image0.jpeg";
+const image = "https://jdshorseranch.com/wp-content/uploads/2020/09/image0.jpeg";
 export default function Hero() {
   return <section className="relative isolate flex min-h-[740px] flex-col overflow-hidden bg-[#10231e] text-white lg:min-h-[830px]">
     <div aria-hidden="true" className="absolute inset-0 -z-20 bg-cover bg-center" style={{backgroundImage:`url("${image}")`}} />

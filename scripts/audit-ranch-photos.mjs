@@ -24,3 +24,10 @@ const tested=await Promise.all(imageUrls.map(async (url)=>{
 }));
 console.log("RANCH_ORIGINAL_IMAGES",JSON.stringify(tested));
 console.log("RANCH_PHOTO_AUDIT_END");
+
+const liveUrls=Array.from({length:10},(_,i)=>"https://jdshorseranch.com/wp-content/uploads/2020/09/image"+i+".jpeg");
+const liveResults=await Promise.all(liveUrls.map(async url=>{
+ const result=await fetchSafe(url,"HEAD");
+ return {file:url.split("/").pop(),status:result.code,type:result.contentType,length:result.length,error:result.error||null};
+}));
+console.log("RANCH_LIVE_IMAGES",JSON.stringify(liveResults));

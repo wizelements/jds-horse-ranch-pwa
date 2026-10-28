@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-const photo = "https://jds-horse-ranch-v1751084549.websitepro-cdn.com/wp-content/uploads/2020/09/image4.jpeg";
+const photo = "https://jdshorseranch.com/wp-content/uploads/2020/09/image4.jpeg";
 
 export default function CallToBook() {
   return (
