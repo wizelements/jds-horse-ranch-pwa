@@ -1,0 +1,108 @@
+{
+  "schema": "jds.release-verification.v1",
+  "dateLocal": "2026-11-01",
+  "timeZone": "America/New_York",
+  "verifiedApplicationCommit": "27ee67affa9217871806d72c6c887e47f9b38ef4",
+  "verifiedSourceTree": "af7e332a796a93e728e2d814c18d7e3b1d425266",
+  "deployment": {
+    "id": "dpl_4hVYexBp7Uom3qM4vjTKQ9mYCFHy",
+    "url": "https://jds-horse-ranch-ea4hx0kem-theangelsilvers-projects.vercel.app/",
+    "target": "preview",
+    "state": "READY"
+  },
+  "checks": {
+    "lint": "PASS",
+    "schema": "PASS",
+    "typeScript": "PASS",
+    "productionBuild": "PASS",
+    "timeAndPriceTests": {
+      "passed": 3,
+      "failed": 0
+    },
+    "isolatedHttpAcceptance": {
+      "passed": 20,
+      "failed": 0,
+      "provider": "loopback Square simulator",
+      "database": "temporary local libSQL"
+    },
+    "productionDependencyAudit": {
+      "vulnerabilities": 0
+    },
+    "fullDependencyAudit": {
+      "moderate": 18,
+      "high": 0,
+      "critical": 0,
+      "remainingScope": "development-only ESLint/minimatch dependency graph"
+    }
+  },
+  "githubActions": {
+    "runId": 41373989254,
+    "verifyJob": {
+      "id": 125050195578,
+      "conclusion": "success"
+    },
+    "securityJob": {
+      "id": 125050195867,
+      "conclusion": "success"
+    }
+  },
+  "publicReadback": {
+    "http": 200,
+    "callLinks": 12,
+    "bookingForms": 0,
+    "oldPhotoHostReferences": 0,
+    "robots": "Disallow: /",
+    "noindex": true
+  },
+  "visual": {
+    "desktopHomepage": "PASS",
+    "photos": "loaded",
+    "galleryOpen": "PASS",
+    "galleryNext": "PASS",
+    "galleryEscape": "PASS",
+    "galleryFocusRestored": "PASS",
+    "bookingFaqExpansion": "PASS",
+    "viewportWidth": 1363,
+    "documentWidth": 1348,
+    "screenshot": "jds-horse-ranch-preview-1793584209475.jpg",
+    "mobileDeviceInstall": "NOT_VERIFIED",
+    "signedInOwnerBrowserWalkthrough": "BLOCKED_LIVE_CONFIGURATION"
+  },
+  "liveHealth": {
+    "service": "jd-ranch-booking",
+    "ready": false,
+    "integrations": {
+      "turso": {
+        "configured": true,
+        "reachable": false,
+        "schemaReady": false
+      },
+      "admin": {
+        "configured": false
+      },
+      "square": {
+        "configured": false,
+        "environment": "sandbox"
+      },
+      "googleCalendar": {
+        "configured": false
+      },
+      "firebase": {
+        "configured": false
+      },
+      "analytics": {
+        "configured": false,
+        "verified": false
+      }
+    }
+  },
+  "blockers": [
+    "Vercel environment metadata and writes return HTTP 403",
+    "Turso configured but unreachable",
+    "V2 admin and Square configuration missing",
+    "Google Calendar, Firebase and GA4 configuration missing",
+    "Original canonical-domain ownership and final public cutover unresolved"
+  ],
+  "originalWebsiteChanged": false,
+  "productionCertified": false
+}

@@ -10,7 +10,7 @@ The redesign now implements a complete phone-first guest-to-owner reservation fl
 
 Application behavior is tested with an isolated database and a local Square simulator running against the production Next.js server. These tests cannot certify JD's real merchant account, Google permissions, notification delivery, analytics collection, or physical Android installation. Those require the owner connections and provider/device acceptance described below.
 
-The live preview inspected before this release reported:
+The deployed release health readback and deployment-account checks reported:
 
 | Connection | Observed result |
 | --- | --- |
@@ -42,6 +42,10 @@ The deployment's account permissions are a real blocker to repairing these live 
 Capacity is deliberately conservative until JD verifies staffing and available horses. Google availability is a point-in-time check; another system can change after approval. Calendar imports are snapshots and refuse recurrence/time-zone formats they cannot safely interpret. Late or mismatched payments require owner review. Customer identity is not inferred from a shared family phone number.
 
 ## Verification
+
+Application commit `27ee67affa9217871806d72c6c887e47f9b38ef4` passed all 23 tests (20 HTTP acceptance scenarios and 3 time/price tests), lint, schema verification, TypeScript, and production build. Both jobs in [GitHub Actions run 181](https://github.com/wizelements/jds-horse-ranch-pwa/actions/runs/41373989254) passed. The [tested Vercel preview](https://jds-horse-ranch-ea4hx0kem-theangelsilvers-projects.vercel.app/) reached READY and returned HTTP 200 for the guest page and robots rules. Desktop visual checks passed for the homepage, image loading, gallery navigation/Escape/focus return, and the booking FAQ. The post-deploy integration health check still returns HTTP 503 with the connection blockers above.
+
+The production dependency audit reports zero vulnerabilities. The full development+production audit reports 18 moderate development-tool findings in the ESLint/minimatch dependency graph, and no high or critical findings. See the [machine-readable receipt](qa/VERIFICATION_2026-11-01.json) and its accompanying screenshot. The receipt commit adds documentation/evidence only; it does not alter the tested application behavior.
 
 Run the reproducible checks with Node 24:
 
