@@ -13,6 +13,7 @@ export interface Service {
   description?: string;
   price_min?: number;
   price_max?: number;
+  price_detail?: string;
   duration_minutes?: number;
   age_requirement?: string;
   display_order: number;

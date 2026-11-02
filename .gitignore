@@ -44,3 +44,7 @@ Thumbs.db
 .LSOverride
 
 .vercel
+
+# Local verification state
+*.tsbuildinfo
+.turso-schema-check.db*

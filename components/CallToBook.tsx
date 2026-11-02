@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-const photo = "https://jdshorseranch.com/wp-content/uploads/2020/09/image4.jpeg";
+const photo = "/photos/ranch-4.jpg";
 
 export default function CallToBook() {
   return (
@@ -16,7 +16,7 @@ export default function CallToBook() {
               Every great ride <em className="text-[#e4cba5]">starts with hello.</em>
             </h2>
             <p className="mt-8 max-w-lg text-[16px] leading-8 text-[#e5ebe1]">
-              No forms. No messages back and forth. Just call JD and talk about
+              Call JD and talk about
               the experience you have in mind. He&apos;ll discuss riding options,
               availability, and what&apos;s right for your group.
             </p>

@@ -1,9 +1,7 @@
-const voices = [
-  {quote:"JD is a great instructor. He makes sure everyone feels confident and safe going out on the trail. Their views are beautiful.",attribution:"Rebecca L."},
-  {quote:"Had a great time! Everyone was so welcoming, we were taught how to properly hold the reigns and place our feet before going on the trail.",attribution:"Akeela M."},
-  {quote:"The horses were so gentle, and the tour breath taking. A very great program for everyone.",attribution:"Sylvester S."},
-];
-export default function Testimonials() {
+import type { Testimonial } from "@/lib/types";
+export default function Testimonials({ testimonials }: { testimonials: Testimonial[] }) {
+  if (!testimonials.length) return null;
+  const voices = testimonials.map(item => ({quote:item.text, attribution:item.customer_name, id:item.id}));
   return <section className="section-space bg-[#eae2d4]">
     <div className="wrap-content">
       <header className="mb-14 text-center">
@@ -17,7 +15,7 @@ export default function Testimonials() {
           <figcaption className="mt-8 border-t border-[#e2d8c7] pt-5 text-[11px] font-bold uppercase tracking-[.18em] text-[#826c4c]">{v.attribution}</figcaption>
         </figure>)}
       </div>
-      <p className="mt-7 text-center text-xs text-[#687469]">Excerpts from guest comments published by JD&apos;s Horse Ranch.</p>
+      <p className="mt-7 text-center text-xs text-[#687469]">Guest comments shared by JD&apos;s Horse Ranch.</p>
     </div>
   </section>;
 }

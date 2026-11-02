@@ -1,3 +1,4 @@
+import { revalidatePath, revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 import {
   createTestimonial,
@@ -11,7 +12,7 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const testimonials = await getTestimonials();
+    const testimonials = await getTestimonials(true);
     return NextResponse.json({ testimonials });
   } catch (error) {
     console.error("Error fetching testimonials:", error);
@@ -33,7 +34,7 @@ export async function POST(req: NextRequest) {
     const text = String(body.text || "").trim().slice(0, 4000);
     const rating = Math.min(5, Math.max(1, Number(body.rating || 5)));
 
-    if (!customerName || !text) {
+    if (!customerName || !text || !Number.isInteger(Number(body.rating || 5)) || Number(body.rating || 5) < 1 || Number(body.rating || 5) > 5) {
       return NextResponse.json(
         { error: "Name and text required" },
         { status: 400 }
@@ -46,6 +47,7 @@ export async function POST(req: NextRequest) {
       rating,
     });
 
+    revalidateTag("ranch-public-content"); revalidatePath("/");
     return NextResponse.json({ testimonial }, { status: 201 });
   } catch (error) {
     console.error("Error creating testimonial:", error);

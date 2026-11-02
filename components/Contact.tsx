@@ -27,7 +27,7 @@ export default function Contact() {
       </div>
     </div>
     <div className="wrap-wide flex flex-wrap items-center justify-between gap-4 py-7 text-[10px] uppercase tracking-[.17em] text-[#bbc6b9]">
-      <span>© 2026 JD&apos;s Horse Ranch. All rights reserved.</span><span>Fairburn, Georgia · By appointment</span>
+      <span>© 2026 JD&apos;s Horse Ranch. All rights reserved.</span><span>Fairburn, Georgia · By appointment · <a href="/privacy" className="underline">Privacy</a></span>
     </div>
   </footer>;
 }

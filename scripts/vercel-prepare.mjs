@@ -4,6 +4,7 @@ if (!process.env.VERCEL) {
 }
 
 const environment = process.env.VERCEL_ENV || "preview";
+if (process.env.RANCH_TEST_FIXTURES === "true" || process.env.RANCH_ALLOW_LOCAL_DB === "true") throw new Error("Local acceptance fixtures cannot be enabled on Vercel.");
 const present = (name) => Boolean(process.env[name]?.trim());
 
 const requiredProduction = [

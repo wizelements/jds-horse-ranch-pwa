@@ -24,6 +24,7 @@ export default function TestimonialsPage() {
     try {
       setLoading(true);
       const response = await fetch("/api/admin/testimonials");
+      if (!response.ok) throw new Error("The records could not be loaded.");
       const data = await response.json();
       setTestimonials(data.testimonials || []);
     } catch (err) {
@@ -78,6 +79,7 @@ export default function TestimonialsPage() {
 
       if (!response.ok) throw new Error("Create failed");
 
+      if (!response.ok) throw new Error("The records could not be loaded.");
       const data = await response.json();
       setTestimonials([...testimonials, data.testimonial]);
       setIsCreating(false);
@@ -298,6 +300,8 @@ function TestimonialCard({
             </select>
           </div>
 
+          <label className="flex items-center gap-3 text-sm"><input type="checkbox" checked={editForm.active ?? true} onChange={e => onEditChange("active",e.target.checked)} className="h-5 w-5" />Show on the public website</label>
+          <label className="block text-sm font-semibold">Display order<input type="number" min={0} max={1000} value={editForm.display_order ?? 0} onChange={e => onEditChange("display_order",Number(e.target.value))} className="mt-2 w-full rounded border px-3 py-3" /></label>
           <div className="flex gap-3 pt-4">
             <button
               onClick={onSave}

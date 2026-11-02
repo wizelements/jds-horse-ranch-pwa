@@ -4,6 +4,7 @@ export const metadata = { manifest: "/ranch-manifest.json", robots: { index: fal
 import { verifyAdminSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import WorkspaceStatus from "@/components/admin/WorkspaceStatus";
 
 const sections = [
   {href:"/admin/dashboard", label:"Today"},
@@ -15,6 +16,7 @@ const sections = [
   {href:"/admin/gallery", label:"Photos"},
   {href:"/admin/testimonials", label:"Reviews"},
   {href:"/admin/contacts", label:"Contact Activity"},
+  {href:"/admin/settings", label:"Settings"},
 ];
 
 export default async function AdminLayout({children}:{children:React.ReactNode}) {
@@ -31,7 +33,7 @@ export default async function AdminLayout({children}:{children:React.ReactNode})
       <nav aria-label="Ranch management" className="mb-7 flex gap-2 overflow-x-auto pb-2">
         {sections.map(s=><Link key={s.href} href={s.href} className="shrink-0 rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm font-semibold text-ranch-dark hover:border-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-700">{s.label}</Link>)}
       </nav>
-      <main>{children}</main>
+      <main><WorkspaceStatus />{children}</main>
     </div>
   </div>;
 }

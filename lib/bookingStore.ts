@@ -40,6 +40,10 @@ export interface BookingInquiry {
   intake_step: string;
   hold_expires_at: string | null;
   approved_start_at: string | null;
+  approved_end_at: string | null;
+  approval_key: string | null;
+  square_payment_id: string | null;
+  refunded_amount_cents: number;
   approval_note: string | null;
   approved_amount_cents: number | null;
   square_payment_link_id: string | null;
@@ -97,6 +101,10 @@ function bookingFromRow(row: Row): BookingInquiry {
     intake_step: String(r.intake_step),
     hold_expires_at: nullableString(r.hold_expires_at),
     approved_start_at: nullableString(r.approved_start_at),
+    approved_end_at: nullableString(r.approved_end_at),
+    approval_key: nullableString(r.approval_key),
+    square_payment_id: nullableString(r.square_payment_id),
+    refunded_amount_cents: Number(r.refunded_amount_cents || 0),
     approval_note: nullableString(r.approval_note),
     approved_amount_cents: nullableNumber(r.approved_amount_cents),
     square_payment_link_id: nullableString(r.square_payment_link_id),
@@ -192,6 +200,7 @@ export async function createWebInquiry(input: {
   marketingConsent: boolean;
   preferredChannel: "web" | "voice";
   channel?: "web" | "voice";
+  intakeKey?: string;
 }) {
   const id = randomUUID();
   const now = new Date().toISOString();
@@ -202,8 +211,9 @@ export async function createWebInquiry(input: {
       id, channel, preferred_channel, customer_phone, customer_name, email,
       service_requested, rider_count, rider_details, requested_datetime_text,
       alternate_datetime_text, experience, qualification_notes, marketing_consent,
-      status, intake_step, hold_expires_at, created_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'PENDING_JD', 'complete', ?, ?, ?)`,
+      status, intake_step, hold_expires_at, created_at, updated_at, intake_key
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'PENDING_JD', 'complete', ?, ?, ?, ?)
+      ON CONFLICT(intake_key) DO NOTHING`,
     args: [
       id,
       input.channel || "web",
@@ -222,13 +232,19 @@ export async function createWebInquiry(input: {
       holdExpiresAt,
       now,
       now,
+      input.intakeKey || null,
     ],
   });
 
+  if (input.intakeKey) {
+    const existing = await getTurso().execute({ sql: "SELECT id FROM booking_inquiries WHERE intake_key = ?", args: [input.intakeKey] });
+    if (existing.rows.length) return getInquiry(String(existing.rows[0].id));
+  }
   return getInquiry(id);
 }
 
 const MUTABLE_FIELDS = new Set([
+  "customer_phone",
   "customer_name",
   "email",
   "service_requested",
@@ -250,6 +266,7 @@ const MUTABLE_FIELDS = new Set([
   "intake_step",
   "hold_expires_at",
   "approved_start_at",
+  "approved_end_at", "approval_key", "square_payment_id", "refunded_amount_cents",
   "approval_note",
   "approved_amount_cents",
   "square_payment_link_id",
@@ -354,6 +371,7 @@ export async function recordMessage(input: {
 }
 
 export async function recordBookingEvent(input: {
+  eventId?: string;
   inquiryId: string;
   eventType: string;
   actor?: string;
@@ -362,9 +380,9 @@ export async function recordBookingEvent(input: {
   await getTurso().execute({
     sql: `INSERT INTO booking_events
       (id, inquiry_id, event_type, actor, metadata, created_at)
-      VALUES (?, ?, ?, ?, ?, ?)`,
+      VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(id) DO NOTHING`,
     args: [
-      randomUUID(),
+      input.eventId || randomUUID(),
       input.inquiryId,
       input.eventType,
       input.actor || "system",

@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const services = await getServices();
+    const services = await getServices(true);
     return NextResponse.json({ services });
   } catch (error) {
     console.error("Error fetching services:", error);

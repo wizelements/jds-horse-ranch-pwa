@@ -17,6 +17,7 @@ export default function ContactsPage() {
     try {
       setLoading(true);
       const response = await fetch("/api/admin/contacts");
+      if (!response.ok) throw new Error("The records could not be loaded.");
       const data = await response.json();
       setContacts(data.contacts || []);
     } catch (err) {
@@ -31,32 +32,12 @@ export default function ContactsPage() {
     filter === "all" ? true : c.type === filter
   );
 
-  const handleExport = () => {
-    const csv = [
-      ["Date", "Type", "Source", "IP", "User Agent"],
-      ...filteredContacts.map((c) => [
-        new Date(c.created_at).toLocaleString(),
-        c.type,
-        c.source || "",
-        c.ip_address || "",
-        c.user_agent || "",
-      ]),
-    ]
-      .map((row) => row.map((cell) => `"${cell}"`).join(","))
-      .join("\n");
-
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `contacts-${new Date().toISOString().split("T")[0]}.csv`;
-    a.click();
-  };
+  const handleExport = () => { window.location.assign("/api/admin/export?type=contacts"); };
 
   return (
     <div>
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Contact Logs</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Contact activity</h1>
         <button
           onClick={handleExport}
           className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-medium"
@@ -96,7 +77,7 @@ export default function ContactsPage() {
         {loading ? (
           <div className="p-6 text-center text-gray-500">Loading...</div>
         ) : filteredContacts.length === 0 ? (
-          <div className="p-6 text-center text-gray-500">No contacts found</div>
+          <div className="p-6 text-center text-gray-500">No recorded contact clicks</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -112,7 +93,7 @@ export default function ContactsPage() {
                     Source
                   </th>
                   <th className="text-left py-3 px-6 font-semibold text-gray-900">
-                    IP Address
+                    Activity source
                   </th>
                 </tr>
               </thead>
@@ -144,7 +125,7 @@ export default function ContactsPage() {
                       {contact.source || "—"}
                     </td>
                     <td className="py-3 px-6 text-sm text-gray-500 font-mono">
-                      {contact.ip_address}
+                      {contact.source || "Website"}
                     </td>
                   </tr>
                 ))}

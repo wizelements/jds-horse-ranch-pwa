@@ -3,15 +3,14 @@ export default function PaymentCompletePage() {
     <main className="min-h-screen bg-stone-50 px-4 py-16">
       <div className="mx-auto max-w-2xl rounded-2xl border border-stone-200 bg-white p-8 text-center shadow-sm">
         <p className="text-sm font-semibold uppercase tracking-wider text-ranch-brown">
-          Square checkout complete
+          Payment verification
         </p>
         <h1 className="mt-2 text-4xl font-bold text-ranch-dark">
           We&apos;re verifying your payment
         </h1>
         <p className="mt-4 text-gray-700">
           JD&apos;s Horse Ranch confirms a booking only after Square reports the
-          payment as completed. You&apos;ll receive the booking confirmation through
-          JD will contact you using the phone or email you shared with your request. If you have questions, call the ranch.
+          payment as completed. JD will contact you using the phone or email you shared during your conversation. If you have questions, call the ranch.
         </p>
         <div className="mt-7 rounded-xl bg-amber-50 p-5 text-amber-950">
           <p className="font-semibold">Need help?</p>

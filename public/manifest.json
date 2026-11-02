@@ -18,18 +18,23 @@
       "src": "/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     }
   ],
   "categories": [
     "business",
     "entertainment"
   ],
-  "screenshots": [
+  "id": "/",
+  "scope": "/",
+  "shortcuts": [
     {
-      "src": "/screenshot-540x720.png",
-      "sizes": "540x720",
-      "form_factor": "narrow"
+      "name": "Call JD",
+      "url": "/#call-jd"
+    },
+    {
+      "name": "Experiences",
+      "url": "/#experiences"
     }
   ]
 }

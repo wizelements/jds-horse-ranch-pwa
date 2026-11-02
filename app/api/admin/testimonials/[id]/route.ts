@@ -1,3 +1,6 @@
+import { revalidatePath, revalidateTag } from "next/cache";
+import { RanchError } from "@/lib/errors";
+import { publicContentPatch } from "@/lib/contentValidation";
 import { NextRequest, NextResponse } from "next/server";
 import {
   deleteTestimonial,
@@ -16,10 +19,12 @@ export async function PATCH(
     }
 
     const body = await req.json();
-    await updateTestimonial(id, body);
+    await updateTestimonial(id, publicContentPatch(body, "review"));
+    revalidateTag("ranch-public-content"); revalidatePath("/");
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    if (error instanceof RanchError) return NextResponse.json({ error: error.message }, { status: error.status });
     console.error("Error updating testimonial:", error);
     return NextResponse.json(
       { error: "Failed to update testimonial" },
@@ -39,8 +44,10 @@ export async function DELETE(
     }
 
     await deleteTestimonial(id);
+    revalidateTag("ranch-public-content"); revalidatePath("/");
     return NextResponse.json({ success: true });
   } catch (error) {
+    if (error instanceof RanchError) return NextResponse.json({ error: error.message }, { status: error.status });
     console.error("Error deleting testimonial:", error);
     return NextResponse.json(
       { error: "Failed to delete testimonial" },

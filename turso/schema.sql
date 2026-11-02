@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS services (
   description TEXT,
   price_min REAL,
   price_max REAL,
+  price_detail TEXT,
   duration_minutes INTEGER,
   age_requirement TEXT,
   display_order INTEGER NOT NULL DEFAULT 0,
@@ -83,6 +84,7 @@ CREATE TABLE IF NOT EXISTS booking_inquiries (
   intake_step TEXT NOT NULL DEFAULT 'name',
   hold_expires_at TEXT,
   approved_start_at TEXT,
+  approved_end_at TEXT,
   approval_note TEXT,
   approved_amount_cents INTEGER CHECK (approved_amount_cents IS NULL OR approved_amount_cents > 0),
   square_payment_link_id TEXT UNIQUE,
@@ -94,6 +96,12 @@ CREATE TABLE IF NOT EXISTS booking_inquiries (
   confirmation_sent_at TEXT,
   reminder_sent_at TEXT,
   followup_sent_at TEXT,
+  intake_key TEXT UNIQUE,
+  approval_key TEXT,
+  square_payment_id TEXT UNIQUE,
+  refunded_amount_cents INTEGER NOT NULL DEFAULT 0,
+  operation_token TEXT,
+  operation_expires_at TEXT,
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL
 );
@@ -147,11 +155,79 @@ CREATE INDEX IF NOT EXISTS idx_communication_status_inquiry ON communication_sta
 INSERT OR IGNORE INTO services
   (id, name, description, price_min, price_max, duration_minutes, age_requirement, display_order, active, created_at, updated_at)
 VALUES
-  ('service-riding-lessons', 'Riding Lessons', 'Professional one-on-one riding instruction for all skill levels', 50, 75, 60, '8+', 1, 1, datetime('now'), datetime('now')),
-  ('service-trail-rides', 'Trail Rides', 'Scenic guided trail rides through beautiful countryside', 60, 80, 90, '12+', 2, 1, datetime('now'), datetime('now')),
-  ('service-special-events', 'Special Events', 'Private birthday parties, group events, and corporate outings', 100, 500, 120, 'varies', 3, 1, datetime('now'), datetime('now'));
+  ('service-riding-lessons', 'Riding lessons', 'Personally arranged riding instruction for first-time and experienced riders.', 85, 85, 60, 'Discuss with JD', 1, 1, datetime('now'), datetime('now')),
+  ('service-trail-rides', 'Guided trail rides', 'Guided rides for one, two, or three riders through the Georgia countryside.', 85, 85, 60, 'Discuss with JD', 2, 1, datetime('now'), datetime('now')),
+  ('service-special-events', 'Special occasions', 'Horse rental for birthdays, photo shoots, video projects, and private occasions.', 200, 200, 60, 'Discuss with JD', 3, 1, datetime('now'), datetime('now'));
 
 INSERT OR IGNORE INTO settings (id, key, value, updated_at) VALUES
   ('setting-site-name', 'site_name', 'JD''s Horse Ranch', datetime('now')),
   ('setting-site-phone', 'site_phone', '(404) 981-2361', datetime('now')),
   ('setting-site-address', 'site_address', '7555 Jones Rd. Fairburn, GA', datetime('now'));
+
+CREATE TABLE IF NOT EXISTS login_attempts (
+  bucket TEXT PRIMARY KEY,
+  attempts INTEGER NOT NULL DEFAULT 0,
+  window_started_at INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS calendar_blocks (
+  id TEXT PRIMARY KEY,
+  label TEXT NOT NULL,
+  starts_at TEXT NOT NULL,
+  ends_at TEXT NOT NULL,
+  source TEXT NOT NULL DEFAULT 'manual',
+  created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_calendar_blocks_time ON calendar_blocks(starts_at, ends_at);
+
+CREATE TABLE IF NOT EXISTS calendar_connections (
+  id TEXT PRIMARY KEY,
+  provider TEXT NOT NULL,
+  label TEXT NOT NULL,
+  credentials TEXT NOT NULL,
+  calendar_ids TEXT NOT NULL DEFAULT '["primary"]',
+  updated_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS square_webhook_events (
+  id TEXT PRIMARY KEY,
+  type TEXT NOT NULL,
+  object_id TEXT NOT NULL,
+  processed INTEGER NOT NULL DEFAULT 0,
+  received_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS payment_receipts (
+  payment_id TEXT PRIMARY KEY,
+  order_id TEXT NOT NULL,
+  status TEXT NOT NULL,
+  amount_cents INTEGER NOT NULL,
+  currency TEXT NOT NULL,
+  disposition TEXT NOT NULL DEFAULT 'pending',
+  received_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_payment_receipts_order ON payment_receipts(order_id);
+CREATE TABLE IF NOT EXISTS square_refunds (
+  id TEXT PRIMARY KEY,
+  inquiry_id TEXT NOT NULL REFERENCES booking_inquiries(id),
+  payment_id TEXT NOT NULL,
+  amount_cents INTEGER NOT NULL,
+  status TEXT NOT NULL,
+  request_key TEXT UNIQUE,
+  created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS notification_devices (
+  id TEXT PRIMARY KEY,
+  token TEXT NOT NULL UNIQUE,
+  label TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS notification_outbox (
+  id TEXT PRIMARY KEY,
+  kind TEXT NOT NULL,
+  attempts INTEGER NOT NULL DEFAULT 0,
+  claimed_at TEXT,
+  delivered_at TEXT,
+  created_at TEXT NOT NULL
+);

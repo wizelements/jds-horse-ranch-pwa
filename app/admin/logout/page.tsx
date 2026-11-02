@@ -8,8 +8,8 @@ export default function LogoutPage() {
 
   useEffect(() => {
     const logout = async () => {
-      await fetch("/api/admin/logout", { method: "POST" });
-      router.push("/admin/login");
+      await fetch("/api/admin/logout", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" });
+      router.replace("/ranch-login"); router.refresh();
     };
 
     logout();

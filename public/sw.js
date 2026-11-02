@@ -1,6 +1,6 @@
 /* JD's Horse Ranch: safe public-assets-only offline support.
    Do not store private rider records, messages, calendar details, or checkout responses. */
-const CACHE_NAME="jds-public-assets-v3";
+const CACHE_NAME="jds-public-assets-v4";
 const OFFLINE_PAGE="/offline.html";
 self.addEventListener("install",event=>{
   event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.add(OFFLINE_PAGE)).then(()=>self.skipWaiting()));
@@ -16,7 +16,7 @@ self.addEventListener("fetch",event=>{
   if(request.method!=="GET")return;
   const url=new URL(request.url);
   if(url.origin!==self.location.origin)return;
-  if(/^\/(admin|api|ranch-login)(\/|$)/.test(url.pathname))return;
+  if(/^\/(admin|api|ranch-login|booking)(\/|$)/.test(url.pathname))return;
   if(request.mode==="navigate"){
     event.respondWith(fetch(request).catch(()=>caches.match(OFFLINE_PAGE)));
     return;
@@ -31,4 +31,23 @@ self.addEventListener("fetch",event=>{
     }
     return response;
   })));
+});
+
+// Owner-only alerts carry no rider details and always open the private workspace.
+self.addEventListener("push",event=>{
+  let payload={};try{payload=event.data?event.data.json():{};}catch{}
+  const message=payload.data||{};
+  event.waitUntil(self.registration.showNotification("JD's Ranch Manager",{
+    body:"A ranch update is ready. Open your private workspace for details.",
+    icon:"/icon-192.png",badge:"/icon-192.png",tag:message.kind||"ranch-update",
+    data:{url:"/admin/dashboard"}
+  }));
+});
+self.addEventListener("notificationclick",event=>{
+  event.notification.close();
+  event.waitUntil(self.clients.matchAll({type:"window",includeUncontrolled:true}).then(async windows=>{
+    const privateWindow=windows.find(client=>new URL(client.url).pathname.startsWith("/admin/"));
+    if(privateWindow){await privateWindow.focus();return privateWindow.navigate("/admin/dashboard");}
+    return self.clients.openWindow("/admin/dashboard");
+  }));
 });

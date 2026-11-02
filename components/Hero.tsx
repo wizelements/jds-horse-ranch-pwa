@@ -1,4 +1,4 @@
-const image = "https://jdshorseranch.com/wp-content/uploads/2020/09/image0.jpeg";
+const image = "/photos/ranch-0.jpg";
 export default function Hero() {
   return <section className="relative isolate flex min-h-[740px] flex-col overflow-hidden bg-[#10231e] text-white lg:min-h-[830px]">
     <div aria-hidden="true" className="absolute inset-0 -z-20 bg-cover bg-center" style={{backgroundImage:`url("${image}")`}} />
@@ -24,7 +24,7 @@ export default function Hero() {
         <h1 className="font-editorial text-[clamp(3.55rem,8vw,8.3rem)] leading-[.98] tracking-[-.055em]">Come for the ride.<br /><em className="font-normal text-[#e6cfa9]">Stay for the feeling.</em></h1>
         <p className="mt-9 max-w-[560px] text-base leading-8 text-[#f4f1ec]/90 sm:text-lg">Just outside Atlanta, discover a more beautiful pace of life. Guided trail rides, riding lessons, and moments worth remembering in the Georgia countryside.</p>
         <div className="mt-11 flex flex-wrap items-center gap-6">
-          <a href="#request-ride" className="cta-light">Call JD to Ride <span aria-hidden="true">↗</span></a>
+          <a href="tel:+14049812361" className="cta-light">Call JD to Ride <span aria-hidden="true">↗</span></a>
           <a href="#experiences" className="border-b border-white/70 pb-1 text-xs font-bold uppercase tracking-[.15em] hover:text-[#e6cfa9]">Explore Experiences</a>
         </div>
       </div>

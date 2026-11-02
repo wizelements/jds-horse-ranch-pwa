@@ -1,112 +1,52 @@
-# JD's Horse Ranch Reservation Assistant
+# JD's Horse Ranch
 
-Production-oriented Next.js PWA for JD's Horse Ranch with governed reservation intake, JD approval, booking-specific Square checkout, telephone-first reservations without customer forms or messaging, lifecycle reminders, and a Turso/libSQL database.
+Phone-first public website and private ranch workspace built with Next.js 15.5.28, React 19, and Turso/libSQL. The original website and domain remain unchanged while account ownership and production connections are resolved.
 
-## Governing booking rule
+The current implementation and its limits are documented in [the release handoff](docs/RELEASE_HANDOFF_2026-11-01.md). This supersedes older activation, delivery, and completion reports in this repository.
 
-JD remains the approval authority.
+## Guest journey
 
-```
-Customer request
-→ 24-hour provisional hold
-→ JD conversation/review
-→ JD approves final time + amount
-→ booking-specific Square checkout
-→ Square webhook verifies completed payment
-→ booking confirmed
-→ reminder
-→ ride
-→ follow-up
-```
+Guests explore the ranch, its genuine photography, experiences, and published prices, then call JD. Public reservation forms and WhatsApp routes are disabled. Only the owner records a phone conversation privately.
 
-No customer receives a payment request before JD approves.
+JD reviews availability, approves an exact time/duration and total, then manually shares a booking-specific Square checkout link. The appointment becomes confirmed only after the server retrieves and verifies Square's completed payment. A return-page visit never proves payment. Customer updates remain personal phone conversations; the site sends no customer messages.
 
-## Database
+## Owner workspace
 
-**Turso is the database source of truth.**
+`/ranch-login` signs into `/admin/dashboard`.
 
-Required variables:
+- Exact dashboard counts; searchable, paginated reservations and contact histories.
+- Correct contact/rider details, manage notes, approve/reschedule/cancel, and record completed rides and phone confirmations.
+- A monthly schedule, blocked times, Google Calendar OAuth/free-busy checks, calendar-file imports, private calendar subscriptions, and appointment downloads.
+- Payment retries with stable idempotency keys; signed, replay-safe webhooks; manual payment refresh; late-payment review/recovery; verified refund tracking.
+- Editable public experiences, prices, gallery and reviews, with immediate cache invalidation.
+- Private exports and optional Firebase owner alerts. Alerts contain no customer details.
 
-```
-TURSO_DATABASE_URL=libsql://...
-TURSO_AUTH_TOKEN=...
-```
+One group at a time and a 15-minute inter-appointment gap are conservative defaults until JD certifies staffing/horse capacity. Unconnected calendars still require manual review. Calendar imports are snapshots; unsupported recurrence rules are refused instead of guessing availability.
 
-Apply/verify the schema:
+## Development and verification
 
-```bash
-npm run db:migrate
-npm run db:verify
-```
+Use Node 24 and npm 10+.
 
-The canonical schema is `turso/schema.sql`.
-
-A one-time legacy importer is available for existing Supabase records:
-
-```bash
-LEGACY_SUPABASE_URL=...
-LEGACY_SUPABASE_SERVICE_ROLE_KEY=...
-npm run db:migrate:legacy
-```
-
-Remove those legacy credentials after migration.
-
-Supabase is not used as the application database. The existing gallery may continue using a Supabase Storage bucket for image objects; gallery metadata is stored in Turso.
-
-## Core capabilities
-
-- Website reservation intake
-- Online booking form with JD review (no WhatsApp required)
-- Optional Twilio SMS intake
-- Unified Turso reservation record
-- Rider age/height/weight collection
-- Preferred and alternate date/time
-- Separate marketing consent
-- 24-hour provisional hold
-- JD admin decision queue
-- JD-controlled final time and price
-- Booking-specific Square Checkout
-- Signed Square webhook payment verification
-- Automatic hold expiry
-- Confirmation retry
-- ~24-hour ride reminders
-- Post-ride follow-up
-- Durable signed admin sessions
-- Audit/event history
-- Contact logging
-- Service/testimonial/gallery administration
-
-## Development
-
-```bash
+```sh
 npm ci
-npm run db:verify
 npm run lint
+npm run db:verify
+npm test
 npm run type-check
 npm run build
-npm run dev
+npm run test:acceptance
 ```
 
-## Release gates
+Acceptance tests create a temporary local database and a loopback Square simulator. They run against the actual production Next.js server and real API handlers. They cannot create real payments, send customer messages, or access a live database. They prove application behavior, not the real Square, Google, Firebase, GA4, or Android installation connections.
 
-CI requires:
+Normal development uses `npm run dev`; copy the relevant placeholders from `.env.example` into an ignored local environment. Never connect a public preview to the production customer database.
 
-1. reproducible `npm ci`
-2. production dependency audit
-3. lint
-4. executable Turso schema verification
-5. TypeScript check
-6. production Next.js build
+## Database and deployment
 
-The feature is intentionally kept off production until external credentials, Turso migration, Square webhook verification, and real messaging E2E tests pass.
+Turso is the source of truth. Apply `npm run db:migrate` explicitly with the intended environment; migrations never run in a Vercel build. The migration is additive and preserves existing business edits and deleted gallery/review records. Back up a real database before migrating.
 
-## Environment
+Git integration builds preview branches. Keep preview protection and noindex safeguards. Public launch requires the JD-owned domain, working private account connections, real Sandbox/provider acceptance tests, a tested production deployment, and migration/rollback sign-off. Build success does not certify public launch.
 
-See `.env.example`, `docs/BOOKING_WITHOUT_WHATSAPP.md`, and `scripts/production-readiness.mjs` for required production settings.
+## Photos and PWA
 
-## Production site
-
-Current public baseline: https://jds-horse-ranch-pwa.vercel.app
-
-## Verified ranch photography (Oct 2026)
-Public hero, service tiles, phone reservation panel, and gallery use the original ten photographs hosted on `jdshorseranch.com`. Obsolete 410 CDN URLs have been removed; no random stock horse imagery is used. The gallery also links to the official Google Maps listing for visitor-submitted photos. Run `npm run photos:audit` to recheck the origins and status without making deployments depend on third-party fetches. See `docs/PHOTO_SOURCE_AUDIT_2026-10-28.md`.
+Ten original ranch JPEGs ship in `public/photos`, independently of the old hosting. [The provenance manifest](docs/RANCH_PHOTO_PROVENANCE.json) records their official sources and SHA-256 fingerprints. The app icons use the existing JD monogram. Both public and private manifests reference real icons. Offline caching excludes customer records, APIs, login, and payment routes.

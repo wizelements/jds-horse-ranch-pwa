@@ -1,6 +1,7 @@
 import "server-only";
 import { createClient, type Client, type InValue, type Row } from "@libsql/client";
 import { randomUUID } from "crypto";
+import { RanchError } from "@/lib/errors";
 import type {
   Contact,
   GalleryPhoto,
@@ -17,11 +18,12 @@ export function getTurso() {
   const url = process.env.TURSO_DATABASE_URL;
   const authToken = process.env.TURSO_AUTH_TOKEN;
 
-  if (!url || !authToken) {
+  const local = !process.env.VERCEL && process.env.RANCH_ALLOW_LOCAL_DB === "true" && url?.startsWith("file:");
+  if (!url || (!authToken && !local)) {
     throw new Error("Turso requires TURSO_DATABASE_URL and TURSO_AUTH_TOKEN");
   }
 
-  client = createClient({ url, authToken });
+  client = createClient({ url, ...(local ? {} : { authToken }) });
   return client;
 }
 
@@ -53,6 +55,7 @@ function serviceFromRow(row: Row): Service {
     description: r.description == null ? undefined : String(r.description),
     price_min: r.price_min == null ? undefined : Number(r.price_min),
     price_max: r.price_max == null ? undefined : Number(r.price_max),
+    price_detail: r.price_detail == null ? undefined : String(r.price_detail),
     duration_minutes:
       r.duration_minutes == null ? undefined : Number(r.duration_minutes),
     age_requirement:
@@ -132,10 +135,11 @@ async function updateById(
   const args = pairs.map(([, value]) => normalizeValue(value));
   args.push(new Date().toISOString(), id);
 
-  await getTurso().execute({
+  const result = await getTurso().execute({
     sql: `UPDATE ${table} SET ${setClause}, updated_at = ? WHERE id = ?`,
     args,
   });
+  if (!result.rowsAffected) throw new RanchError("This record no longer exists. Refresh the page.", 404);
 }
 
 export async function logContact(data: {
@@ -167,9 +171,9 @@ export async function getContacts(limit = 50) {
   return result.rows.map(contactFromRow);
 }
 
-export async function getServices() {
+export async function getServices(includeInactive = false) {
   const result = await getTurso().execute(
-    "SELECT * FROM services WHERE active = 1 ORDER BY display_order, name"
+    `SELECT * FROM services ${includeInactive ? "" : "WHERE active = 1"} ORDER BY display_order, name`
   );
   return result.rows.map(serviceFromRow);
 }
@@ -180,6 +184,7 @@ export async function updateService(id: string, updates: Partial<Service>) {
     "description",
     "price_min",
     "price_max",
+    "price_detail",
     "duration_minutes",
     "age_requirement",
     "display_order",
@@ -187,9 +192,9 @@ export async function updateService(id: string, updates: Partial<Service>) {
   ]);
 }
 
-export async function getTestimonials() {
+export async function getTestimonials(includeInactive = false) {
   const result = await getTurso().execute(
-    "SELECT * FROM testimonials WHERE active = 1 ORDER BY display_order, created_at DESC"
+    `SELECT * FROM testimonials ${includeInactive ? "" : "WHERE active = 1"} ORDER BY display_order, created_at DESC`
   );
   return result.rows.map(testimonialFromRow);
 }
@@ -235,9 +240,9 @@ export async function deleteTestimonial(id: string) {
   });
 }
 
-export async function getGalleryPhotos() {
+export async function getGalleryPhotos(includeInactive = false) {
   const result = await getTurso().execute(
-    "SELECT * FROM gallery_photos WHERE active = 1 ORDER BY display_order, created_at DESC"
+    `SELECT * FROM gallery_photos ${includeInactive ? "" : "WHERE active = 1"} ORDER BY display_order, created_at DESC`
   );
   return result.rows.map(galleryPhotoFromRow);
 }

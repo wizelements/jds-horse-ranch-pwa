@@ -1,129 +1,37 @@
-import InquiryActions from "@/components/admin/InquiryActions";
-import { BookingInquiry, listInquiries } from "@/lib/bookingStore";
+import Link from "next/link";
+import { getTurso } from "@/lib/turso";
+import { bookingLabels, formatMoney } from "@/lib/bookingDisplay";
+import { ranchTime } from "@/lib/ranch";
 
-function money(cents: number | null) {
-  return cents ? new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(cents / 100) : "—";
-}
-
-export default async function InquiriesPage() {
-  let inquiries: BookingInquiry[] = [];
-  let error: string | null = null;
-
+export default async function InquiriesPage({ searchParams }: { searchParams: Promise<{ q?: string; status?: string; page?: string }> }) {
+  const search = await searchParams, q = String(search.q || "").trim().slice(0, 120);
+  const status = bookingLabels[search.status || ""] ? search.status! : "";
+  const page = Math.max(1, Math.min(10000, Number.parseInt(search.page || "1") || 1));
+  const where = ["1=1"], args: (string | number)[] = [];
+  if (q) { where.push("(customer_name LIKE ? OR customer_phone LIKE ? OR service_requested LIKE ?)"); args.push(...Array(3).fill(`%${q}%`)); }
+  if (status) { where.push("status=?"); args.push(status); }
+  let items: Record<string, unknown>[] = [], total = 0, error = false;
   try {
-    inquiries = await listInquiries(100);
-  } catch (err) {
-    console.error(err);
-    error =
-      "Could not load reservation inquiries. Verify the Turso environment variables and run the current Turso migration.";
-  }
-
-  return (
-    <div>
-      <h1 className="text-3xl font-bold text-gray-900 mb-2">Reservation Queue</h1>
-      <p className="text-gray-600 mb-6">
-        New customers call JD directly. After a conversation, record the request privately so it appears here. Existing records remain available. No customer forms or automated messages are used.
-      </p>
-
-      <a href="/admin/inquiries/new" className="mb-6 inline-flex rounded-lg bg-emerald-900 px-5 py-3 text-sm font-bold text-white hover:bg-emerald-800">Record a phone conversation</a>
-
-      {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
-          {error}
-        </div>
-      )}
-
-      <div className="bg-white rounded-lg shadow overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b bg-gray-50">
-              <th className="text-left p-3">Request</th>
-              <th className="text-left p-3">Customer</th>
-              <th className="text-left p-3">Riders</th>
-              <th className="text-left p-3">Timing</th>
-              <th className="text-left p-3">Status</th>
-              <th className="text-left p-3">Payment</th>
-              <th className="text-left p-3">JD action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {inquiries.map((item) => (
-              <tr key={item.id} className="border-b align-top">
-                <td className="p-3 min-w-[170px]">
-                  <div className="font-medium">{item.service_requested || "Service not set"}</div>
-                  <div className="text-xs text-gray-500">{item.channel} · {new Date(item.created_at).toLocaleString()}</div>
-                  <div className="mt-2 text-xs text-gray-600">{item.experience || ""}</div>
-                  {item.qualification_notes && (
-                    <div className="mt-1 text-xs text-gray-600">Notes: {item.qualification_notes}</div>
-                  )}
-                  {item.reschedule_request_text && (
-                    <div className="mt-2 rounded bg-amber-50 p-2 text-xs text-amber-900">
-                      Change requested: {item.reschedule_request_text}
-                    </div>
-                  )}
-                  {item.automation_paused && (
-                    <div className="mt-2 rounded bg-blue-50 p-2 text-xs font-semibold text-blue-900">
-                      Human follow-up requested
-                    </div>
-                  )}
-                </td>
-                <td className="p-3 min-w-[160px]">
-                  <div className="font-medium">{item.customer_name || "—"}</div>
-                  <a className="inline-flex rounded bg-emerald-900 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-800" href={`tel:${item.customer_phone}`}>Call {item.customer_phone}</a>
-                  <div className="mt-2 text-xs text-gray-500 break-all">{item.email || ""}</div>
-                </td>
-                <td className="p-3 min-w-[180px]">
-                  <div className="font-medium">{item.rider_count || "—"} rider(s)</div>
-                  <div className="text-xs text-gray-500 whitespace-pre-wrap">{item.rider_details || ""}</div>
-                </td>
-                <td className="p-3 min-w-[190px]">
-                  <div><span className="font-medium">Requested:</span> {item.requested_datetime_text || "—"}</div>
-                  <div className="mt-1 text-xs text-gray-500">Alternate: {item.alternate_datetime_text || "—"}</div>
-                  {item.approved_start_at && (
-                    <div className="mt-2 text-xs font-semibold text-green-800">
-                      Approved: {new Date(item.approved_start_at).toLocaleString()}
-                    </div>
-                  )}
-                  {item.hold_expires_at && item.status === "PENDING_JD" && (
-                    <div className="mt-2 text-xs text-amber-700">
-                      Hold ends: {new Date(item.hold_expires_at).toLocaleString()}
-                    </div>
-                  )}
-                </td>
-                <td className="p-3 font-semibold">{item.status}</td>
-                <td className="p-3 min-w-[150px]">
-                  <div>{money(item.approved_amount_cents)}</div>
-                  {item.square_payment_url && (
-                    <a
-                      href={item.square_payment_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs text-ranch-brown underline"
-                    >
-                      Open / share Square checkout
-                    </a>
-                  )}
-                  {item.paid_at && <div className="text-xs text-green-700 mt-1">Verified paid</div>}
-                </td>
-                <td className="p-3">
-                  <InquiryActions
-                    id={item.id}
-                    status={item.status}
-                    automationPaused={item.automation_paused}
-                    rescheduleRequestText={item.reschedule_request_text}
-                  />
-                </td>
-              </tr>
-            ))}
-            {!inquiries.length && !error && (
-              <tr>
-                <td className="p-6 text-gray-500" colSpan={7}>
-                  No reservation requests yet.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
+    const result = await getTurso().batch([
+      { sql: `SELECT * FROM booking_inquiries WHERE ${where.join(" AND ")} ORDER BY created_at DESC LIMIT 25 OFFSET ?`, args: [...args, (page - 1) * 25] },
+      { sql: `SELECT COUNT(*) AS n FROM booking_inquiries WHERE ${where.join(" AND ")}`, args },
+    ], "read");
+    items = result[0].rows as Record<string, unknown>[]; total = Number(result[1].rows[0].n);
+  } catch { error = true; }
+  const link = (p: number) => `/admin/inquiries?${new URLSearchParams({ q, status, page: String(p) })}`;
+  return <div className="space-y-6">
+    <header className="flex flex-wrap items-start justify-between gap-4"><div><h1 className="text-3xl font-bold">Reservations</h1><p className="mt-2 text-stone-600">Keep phone conversations, approvals, and verified bookings in one place.</p></div><Link href="/admin/inquiries/new" className="rounded-lg bg-emerald-900 px-5 py-3 font-semibold text-white">Record a phone call</Link></header>
+    <form method="get" className="flex flex-wrap items-end gap-3 rounded-xl border bg-white p-4"><label className="flex-1 text-sm font-semibold">Find a request<input name="q" defaultValue={q} placeholder="Name, phone, or experience" className="mt-2 block w-full min-w-44 rounded-lg border px-3 py-3" /></label><label className="text-sm font-semibold">Status<select name="status" defaultValue={status} className="mt-2 block rounded-lg border px-3 py-3"><option value="">All statuses</option>{Object.entries(bookingLabels).map(([value,label]) => <option key={value} value={value}>{label}</option>)}</select></label><button className="rounded-lg bg-emerald-900 px-5 py-3 font-semibold text-white">Search</button></form>
+    {error ? <p role="alert" className="rounded-xl bg-red-50 p-5 text-red-900">Reservations could not be loaded. Try again when the connection is restored.</p> : <>
+      <p className="text-sm text-stone-600">{total} matching request{total === 1 ? "" : "s"}</p>
+      <div className="grid gap-4 lg:grid-cols-2">{items.map(item => <article key={String(item.id)} className="rounded-xl border border-stone-200 bg-white p-5 shadow-sm">
+        <div className="flex flex-wrap items-start justify-between gap-3"><div><h2 className="text-xl font-bold">{String(item.customer_name || "Unnamed caller")}</h2><p className="mt-1 text-sm text-stone-600">{String(item.service_requested || "Ranch experience")} · {Number(item.rider_count || 0)} riders</p></div><span className="rounded-full bg-stone-100 px-3 py-2 text-sm font-semibold">{bookingLabels[String(item.status)]}</span></div>
+        <p className="mt-4 text-sm">{item.approved_start_at ? ranchTime(String(item.approved_start_at)) : String(item.requested_datetime_text || "Time to be discussed")}</p>
+        <p className="mt-2 text-sm text-stone-600">Approved total: {formatMoney(item.approved_amount_cents == null ? null : Number(item.approved_amount_cents))}</p>
+        <div className="mt-5 flex flex-wrap gap-3"><Link href={`/admin/inquiries/${item.id}`} className="rounded-lg bg-emerald-900 px-4 py-3 text-sm font-semibold text-white">Review reservation</Link><a href={`tel:${item.customer_phone}`} className="rounded-lg border px-4 py-3 text-sm font-semibold">Call customer</a></div>
+      </article>)}</div>
+      {!items.length && <p className="rounded-xl border bg-white p-8 text-stone-600">No matching requests. Record a phone conversation to get started.</p>}
+      <nav aria-label="Reservation pages" className="flex items-center justify-between gap-4">{page > 1 ? <Link className="underline" href={link(page - 1)}>← Previous</Link> : <span />}<span className="text-sm">Page {page} of {Math.max(1, Math.ceil(total / 25))}</span>{page * 25 < total ? <Link className="underline" href={link(page + 1)}>Next →</Link> : <span />}</nav>
+    </>}
+  </div>;
 }

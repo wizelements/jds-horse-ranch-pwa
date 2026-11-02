@@ -11,6 +11,7 @@ export default function RecordPhoneCallPage() {
   const [savedId, setSavedId] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [alreadyOpen, setAlreadyOpen] = useState(false);
+  const [intakeKey, setIntakeKey] = useState(() => crypto.randomUUID());
 
   async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -25,6 +26,8 @@ export default function RecordPhoneCallPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          intakeKey,
+          email: data.get("email"),
           customerName: data.get("customerName"),
           phone: data.get("phone"),
           serviceRequested: data.get("serviceRequested"),
@@ -61,8 +64,8 @@ export default function RecordPhoneCallPage() {
         <p className="mt-3 text-stone-700">The record is ready for JD&apos;s review. No appointment was automatically confirmed and no message was sent.</p>
         <p className="mt-4 break-all text-sm text-stone-600">Reference: {savedId}</p>
         <div className="mt-7 flex flex-wrap gap-3">
-          <Link href="/admin/inquiries" className="rounded-lg bg-emerald-900 px-5 py-3 text-sm font-bold text-white">Open reservation queue</Link>
-          <button type="button" onClick={() => setSavedId(null)} className="rounded-lg border border-stone-300 px-5 py-3 text-sm font-bold">Record another call</button>
+          <Link href={`/admin/inquiries/${savedId}`} className="rounded-lg bg-emerald-900 px-5 py-3 text-sm font-bold text-white">Review this reservation</Link>
+          <button type="button" onClick={() => { setSavedId(null); setIntakeKey(crypto.randomUUID()); }} className="rounded-lg border border-stone-300 px-5 py-3 text-sm font-bold">Record another call</button>
         </div>
       </div>
     ) : (
@@ -82,6 +85,9 @@ export default function RecordPhoneCallPage() {
               <option value="Special event">Special event</option>
               <option value="General inquiry">General inquiry</option>
             </select>
+          </label>
+          <label className={label}>Email (optional)
+            <input className={field} name="email" type="email" maxLength={200} autoComplete="email" />
           </label>
           <label className={label}>Number of riders *
             <input className={field} name="riderCount" type="number" min={1} max={12} defaultValue={1} required />

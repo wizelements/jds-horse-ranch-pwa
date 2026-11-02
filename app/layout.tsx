@@ -2,21 +2,28 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import RegisterSW from "./register-sw";
 
+// Public indexing is opt-in only after domain ownership and launch checks.
+const indexingEnabled =
+  process.env.VERCEL_ENV === "production" &&
+  process.env.SEO_INDEXING_ENABLED === "true";
+
 export const metadata: Metadata = {
   title: "JD's Horse Ranch | Riding Lessons & Trail Rides in Fairburn, GA",
   description: "Experience riding lessons, guided trail rides, and memorable moments at JD's Horse Ranch in Fairburn, Georgia. Visits are by appointment; call JD to talk about lessons, trail rides, and reservations.",
   metadataBase: new URL("https://jdshorseranch.com"),
   alternates: { canonical: "/" },
   manifest: "/manifest.json",
+  icons: { icon: "/icon-192.png", apple: "/icon-180.png" },
   appleWebApp: { capable: true, statusBarStyle: "default", title: "JD's Horse Ranch" },
   openGraph: {
     type: "website",
     title: "JD's Horse Ranch | Horseback Riding Near Atlanta",
     description: "Step away from the city and enjoy the country life. Riding lessons and guided trail rides by appointment in Fairburn, Georgia.",
     url: "https://jdshorseranch.com",
-    images: [{url:"/og-image.jpg",width:1200,height:630,alt:"JD's Horse Ranch"}],
+    // This photo ships with the source; no old-host dependency.
+    images: [{ url: "/photos/ranch-0.jpg", alt: "JD's Horse Ranch" }],
   },
-  robots: { index: true, follow: true },
+  robots: indexingEnabled ? { index: true, follow: true } : { index: false, follow: false },
 };
 export const viewport: Viewport = {
   width: "device-width", initialScale: 1, viewportFit:"cover", themeColor:"#254939",
