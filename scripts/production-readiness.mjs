@@ -31,7 +31,7 @@ check("SQUARE_WEBHOOK_NOTIFICATION_URL", (value) => {
     url.pathname==="/api/square/webhook" && !url.search && !url.hash; }
   catch { return false; }
 }, "must be an HTTPS public Square webhook URL ending /api/square/webhook");
-  "SQUARE_ACCESS_TOKEN","SQUARE_WEBHOOK_SIGNATURE_KEY"]) {
+for (const key of ["SQUARE_ACCESS_TOKEN", "SQUARE_WEBHOOK_SIGNATURE_KEY"]) {
   check(key, (value)=>value.length>=16, "appears too short");
 }
 console.log("JD's Horse Ranch — production configuration audit (values withheld)");
