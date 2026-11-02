@@ -18,6 +18,7 @@ export default function ServicesPage() {
     try {
       setLoading(true);
       const response = await fetch("/api/admin/services");
+      if (!response.ok) throw new Error("The records could not be loaded.");
       const data = await response.json();
       setServices(data.services || []);
     } catch (err) {
@@ -40,7 +41,7 @@ export default function ServicesPage() {
       const response = await fetch(`/api/admin/services/${editingId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(editForm),
+        body: JSON.stringify({ ...editForm, price_max: editForm.price_min }),
       });
 
       if (!response.ok) throw new Error("Save failed");
@@ -62,7 +63,7 @@ export default function ServicesPage() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Services</h1>
+      <h1 className="text-3xl font-bold text-gray-900 mb-3">Experiences and prices</h1><p className="mb-8 text-sm leading-6 text-stone-600">Changes update the public website. Keep the starting price, group pricing, and child pricing consistent. The public card displays the minimum price and the additional details below it.</p>
 
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
@@ -142,26 +143,13 @@ function ServiceCard({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Min Price
+                Starting price ($)
               </label>
               <input
                 type="number"
                 value={editForm.price_min || ""}
                 onChange={(e) =>
                   onEditChange("price_min", parseFloat(e.target.value) || 0)
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-ranch-brown focus:border-transparent"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Max Price
-              </label>
-              <input
-                type="number"
-                value={editForm.price_max || ""}
-                onChange={(e) =>
-                  onEditChange("price_max", parseFloat(e.target.value) || 0)
                 }
                 className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-ranch-brown focus:border-transparent"
               />
@@ -196,6 +184,11 @@ function ServiceCard({
             </div>
           </div>
 
+          <label className="block text-sm font-semibold text-stone-900">Additional prices / details
+            <input value={editForm.price_detail || ""} onChange={e => onEditChange("price_detail", e.target.value)} maxLength={500} className="mt-2 w-full rounded border px-3 py-3" placeholder="Children / group pricing or special details" />
+          </label>
+          <label className="flex items-center gap-3 text-sm"><input type="checkbox" checked={editForm.active ?? true} onChange={e => onEditChange("active",e.target.checked)} className="h-5 w-5" />Show this experience on the public website</label>
+          <label className="block text-sm font-semibold">Display order<input type="number" min={0} max={1000} value={editForm.display_order ?? 0} onChange={e => onEditChange("display_order",Number(e.target.value))} className="mt-2 w-full rounded border px-3 py-3" /></label>
           <div className="flex gap-3 pt-4">
             <button
               onClick={onSave}
@@ -232,7 +225,7 @@ function ServiceCard({
                 Price
               </p>
               <p className="text-lg font-bold text-gray-900 mt-1">
-                ${service.price_min || 0} - ${service.price_max || 0}
+                From ${service.price_min || 0}
               </p>
             </div>
             <div>

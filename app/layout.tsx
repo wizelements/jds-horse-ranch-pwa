@@ -13,14 +13,15 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://jdshorseranch.com"),
   alternates: { canonical: "/" },
   manifest: "/manifest.json",
+  icons: { icon: "/icon-192.png", apple: "/icon-180.png" },
   appleWebApp: { capable: true, statusBarStyle: "default", title: "JD's Horse Ranch" },
   openGraph: {
     type: "website",
     title: "JD's Horse Ranch | Horseback Riding Near Atlanta",
     description: "Step away from the city and enjoy the country life. Riding lessons and guided trail rides by appointment in Fairburn, Georgia.",
     url: "https://jdshorseranch.com",
-    // Temporary owner-site photo; replace with a ranch-owned image before cutover.
-    images: [{ url: "https://jdshorseranch.com/wp-content/uploads/2020/09/image0.jpeg", alt: "JD's Horse Ranch" }],
+    // This photo ships with the source; no old-host dependency.
+    images: [{ url: "/photos/ranch-0.jpg", alt: "JD's Horse Ranch" }],
   },
   robots: indexingEnabled ? { index: true, follow: true } : { index: false, follow: false },
 };

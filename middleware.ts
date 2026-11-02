@@ -1,0 +1,38 @@
+import { NextRequest, NextResponse } from "next/server";
+import { validEdgeSession } from "@/lib/edgeSession";
+
+export async function middleware(request: NextRequest) {
+  const path = request.nextUrl.pathname;
+  if (/^\/admin(?:\/|$)/.test(path) && !(await validEdgeSession(request.cookies.get("admin_session")?.value))) {
+    const response = NextResponse.redirect(new URL("/ranch-login", request.url));
+    response.headers.set("Cache-Control", "private, no-store");
+    response.headers.set("X-Robots-Tag", "noindex, nofollow");
+    return response;
+  }
+  if (path.startsWith("/api/admin") && !["GET", "HEAD", "OPTIONS"].includes(request.method)) {
+    const origin = request.headers.get("origin");
+    const site = new URL(request.url).origin;
+    if ((origin && origin !== site) || request.headers.get("sec-fetch-site") === "cross-site") {
+      return NextResponse.json({ error: "This action must be made from the ranch workspace." }, { status: 403 });
+    }
+    if (request.method !== "DELETE" && !request.headers.get("content-type")?.startsWith(
+      path.endsWith("/gallery/upload") ? "multipart/form-data" : "application/json"
+    )) return NextResponse.json({ error: "Unsupported request format." }, { status: 415 });
+    const size = Number(request.headers.get("content-length") || 0);
+    if (size > (path.endsWith("/gallery/upload") ? 8500000 : path.endsWith("/calendars") ? 1100000 : 32768)) {
+      return NextResponse.json({ error: "Request is too large." }, { status: 413 });
+    }
+  }
+  const response = NextResponse.next();
+  if (/^\/(admin|api|ranch-login|booking)(\/|$)/.test(path)) {
+    response.headers.set("Cache-Control", "private, no-store, max-age=0");
+    response.headers.set("X-Robots-Tag", "noindex, nofollow");
+  }
+  response.headers.set("X-Content-Type-Options", "nosniff");
+  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  response.headers.set("X-Frame-Options", "DENY");
+  response.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  return response;
+}
+
+export const config = { matcher: ["/((?!_next/static|_next/image|photos|icon-|favicon).*)"] };

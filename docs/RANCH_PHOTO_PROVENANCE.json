@@ -1,0 +1,66 @@
+{
+  "verified_on": "2026-11-01",
+  "source": "Official ranch website; original JPEG bytes preserved. No stock or AI horse photographs.",
+  "photos": [
+    {
+      "file": "/photos/ranch-0.jpg",
+      "source": "https://jdshorseranch.com/wp-content/uploads/2020/09/image0.jpeg",
+      "bytes": 78096,
+      "sha256": "02af1d2e8b11a3f6e63bc3b585b6b3678a022f0495512be2b88acce6400f807b"
+    },
+    {
+      "file": "/photos/ranch-1.jpg",
+      "source": "https://jdshorseranch.com/wp-content/uploads/2020/09/image1.jpeg",
+      "bytes": 205200,
+      "sha256": "7b0bd99551ff3f91861fbd738de60e5a2b2c5144d4c293e74394d6402ece5a4d"
+    },
+    {
+      "file": "/photos/ranch-2.jpg",
+      "source": "https://jdshorseranch.com/wp-content/uploads/2020/09/image2.jpeg",
+      "bytes": 106799,
+      "sha256": "d15cae0f22ebfbcc0bbe438524b4d5c40ea6f3370cfd8e490ab97a096185818c"
+    },
+    {
+      "file": "/photos/ranch-3.jpg",
+      "source": "https://jdshorseranch.com/wp-content/uploads/2020/09/image3.jpeg",
+      "bytes": 130638,
+      "sha256": "1969c7a1fe1891d88e16f6a10a99fc8cbd8f9366984ad91b6b62b3cc04d723df"
+    },
+    {
+      "file": "/photos/ranch-4.jpg",
+      "source": "https://jdshorseranch.com/wp-content/uploads/2020/09/image4.jpeg",
+      "bytes": 142842,
+      "sha256": "b61b0aa3de9a854fa7fcf0c65bd25b49225fa1e02d1735dbdec42de126760811"
+    },
+    {
+      "file": "/photos/ranch-5.jpg",
+      "source": "https://jdshorseranch.com/wp-content/uploads/2020/09/image5.jpeg",
+      "bytes": 136215,
+      "sha256": "526ffab316a934d74557218220c4fc2ab2aff59c613ce0a7f46847af2d1bd666"
+    },
+    {
+      "file": "/photos/ranch-6.jpg",
+      "source": "https://jdshorseranch.com/wp-content/uploads/2020/09/image6.jpeg",
+      "bytes": 128012,
+      "sha256": "4373e2c7e229f45e46ecba5bfec43d1f6ec0236cf34c41340b05c14c4d84dd68"
+    },
+    {
+      "file": "/photos/ranch-7.jpg",
+      "source": "https://jdshorseranch.com/wp-content/uploads/2020/09/image7.jpeg",
+      "bytes": 164313,
+      "sha256": "f421beb23d451afa14776cf350f62d5e9ac59fb6156da75ab32cd13dddb70cf4"
+    },
+    {
+      "file": "/photos/ranch-8.jpg",
+      "source": "https://jdshorseranch.com/wp-content/uploads/2020/09/image8.jpeg",
+      "bytes": 113036,
+      "sha256": "01d478393a5205ff0100b4ebed6bbe2afbf047773571b824a9d6738e9b86feec"
+    },
+    {
+      "file": "/photos/ranch-9.jpg",
+      "source": "https://jdshorseranch.com/wp-content/uploads/2020/09/image9.jpeg",
+      "bytes": 120944,
+      "sha256": "eb04a7721e6ccb22930d0ecf34f0b80cf5c3a0f009bfe993eab3ebf2bd01db42"
+    }
+  ]
+}

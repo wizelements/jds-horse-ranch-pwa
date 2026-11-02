@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyAdminSession } from "@/lib/auth";
-import { createWebInquiry, getActiveInquiry, recordBookingEvent } from "@/lib/bookingStore";
+import { createWebInquiry, recordBookingEvent } from "@/lib/bookingStore";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -34,18 +34,17 @@ export async function POST(req: NextRequest) {
     const requestedDatetimeText = clean(data.requestedDatetimeText, 300) || "To be arranged by phone";
     const experience = clean(data.experience, 800) || "Not yet discussed";
     const qualificationNotes = clean(data.qualificationNotes, 1200);
+    const intakeKey = clean(data.intakeKey, 40);
+    const email = clean(data.email, 200);
 
     if (!customerName || !phone || !serviceRequested ||
-        !Number.isInteger(riderCount) || riderCount < 1 || riderCount > 12) {
+        !Number.isInteger(riderCount) || riderCount < 1 || riderCount > 12 ||
+        !/^[a-f0-9-]{36}$/i.test(intakeKey) || (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))) {
       return NextResponse.json({ error: "Enter the caller's name, valid phone number, experience type and rider count." }, { status: 400 });
     }
-    const active = await getActiveInquiry(phone);
-    if (active) return NextResponse.json({
-      error: "An open reservation already exists for this phone number. Review it instead of making a duplicate.",
-      existingId: active.id,
-    }, { status: 409 });
-
     const inquiry = await createWebInquiry({
+      intakeKey,
+      email: email || null,
       channel: "voice",
       preferredChannel: "voice",
       customerPhone: phone,
@@ -59,6 +58,7 @@ export async function POST(req: NextRequest) {
       marketingConsent: false,
     });
     await recordBookingEvent({
+      eventId: `phone-intake-${inquiry.id}`,
       inquiryId: inquiry.id,
       eventType: "phone_conversation_recorded",
       actor: "jd_admin",
@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
     });
     return NextResponse.json({ success: true, inquiryId: inquiry.id }, { status: 201 });
   } catch (error) {
-    console.error("Owner call recording failed:", error);
+    console.error("Owner call recording dependency unavailable");
     return NextResponse.json({ error: "Unable to save phone conversation. Check database access." }, { status: 500 });
   }
 }

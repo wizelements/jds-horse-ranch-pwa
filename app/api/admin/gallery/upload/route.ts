@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyAdminSession } from "@/lib/auth";
 import { createGalleryPhoto } from "@/lib/turso";
 import { getGalleryStorage } from "@/lib/storage";
+import sharp from "sharp";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 const ALLOWED_TYPES = new Set([
@@ -37,18 +39,18 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-
-    const extension =
-      file.type === "image/jpeg"
-        ? "jpg"
-        : file.type.split("/")[1].replace("jpeg", "jpg");
-    const filename = `${Date.now()}-${randomUUID()}.${extension}`;
+    if (!process.env.SUPABASE_STORAGE_URL || !process.env.SUPABASE_STORAGE_SERVICE_ROLE_KEY) return NextResponse.json({ error: "Photo storage is not configured yet. Existing ranch photos remain available." }, { status: 503 });
+    let optimized: Buffer;
+    try {
+      optimized = await sharp(Buffer.from(await file.arrayBuffer()), { limitInputPixels: 40000000 }).rotate().resize({ width: 2000, height: 2000, fit: "inside", withoutEnlargement: true }).webp({ quality: 85 }).toBuffer();
+    } catch { return NextResponse.json({ error: "This file could not be read as a supported photograph." }, { status: 400 }); }
+    const filename = `${Date.now()}-${randomUUID()}.webp`;
 
     const storage = getGalleryStorage();
     const { error: uploadError } = await storage.storage
       .from("gallery-photos")
-      .upload(filename, file, {
-        contentType: file.type,
+      .upload(filename, optimized, {
+        contentType: "image/webp",
         upsert: false,
         cacheControl: "31536000",
       });
@@ -64,6 +66,7 @@ export async function POST(req: NextRequest) {
         title,
         image_url: urlData.publicUrl,
       });
+      revalidateTag("ranch-public-content"); revalidatePath("/");
       return NextResponse.json({ photo }, { status: 201 });
     } catch (error) {
       await storage.storage.from("gallery-photos").remove([filename]);

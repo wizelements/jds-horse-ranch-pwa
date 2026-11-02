@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const photos = await getGalleryPhotos();
+    const photos = await getGalleryPhotos(true);
     return NextResponse.json({ photos });
   } catch (error) {
     console.error("Error fetching gallery:", error);

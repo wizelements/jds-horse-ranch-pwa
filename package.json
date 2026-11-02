@@ -1,7 +1,7 @@
 {
   "name": "jds-horse-ranch-pwa",
   "version": "1.1.0",
-  "description": "JD's Horse Ranch — call-first equestrian experience with private owner reservations and verified ranch photography",
+  "description": "JD's Horse Ranch \u2014 call-first equestrian experience with private owner reservations and verified ranch photography",
   "author": "DevSolo",
   "license": "MIT",
   "scripts": {
@@ -10,20 +10,23 @@
     "start": "next start",
     "lint": "eslint . --max-warnings=0",
     "type-check": "tsc --noEmit",
-    "test": "npm run type-check",
+    "test": "node --test tests/ranch-time.test.mjs",
     "format": "prettier --write \"**/*.{ts,tsx,md,json,yml}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,md,json,yml}\"",
     "db:migrate": "node scripts/turso-migrate.mjs",
     "db:migrate:legacy": "node scripts/migrate-supabase-to-turso.mjs",
     "db:verify": "node scripts/verify-turso-schema.mjs",
-    "photos:audit": "node scripts/audit-ranch-photos.mjs"
+    "photos:audit": "node scripts/audit-ranch-photos.mjs",
+    "test:acceptance": "node --test --test-concurrency=1 tests/acceptance.test.mjs"
   },
   "dependencies": {
+    "@libsql/client": "0.18.0",
     "@supabase/supabase-js": "^2.117.1",
-    "next": "15.5.24",
+    "firebase": "13.1.0",
+    "next": "15.5.28",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "@libsql/client": "0.18.0"
+    "sharp": "0.35.5"
   },
   "devDependencies": {
     "@types/node": "^20.19.0",
@@ -31,7 +34,7 @@
     "@types/react-dom": "^19.0.0",
     "autoprefixer": "^10.4.21",
     "eslint": "8.57.1",
-    "eslint-config-next": "15.5.24",
+    "eslint-config-next": "15.5.28",
     "postcss": "8.5.28",
     "tailwindcss": "3.4.17",
     "typescript": "^5.9.2"
@@ -42,6 +45,7 @@
   },
   "overrides": {
     "postcss": "8.5.28",
-    "nanoid": "3.3.19"
+    "nanoid": "3.3.19",
+    "@grpc/grpc-js": "1.13.6"
   }
 }

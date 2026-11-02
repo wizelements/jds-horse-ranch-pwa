@@ -21,6 +21,8 @@ const requiredTables = [
   "communication_messages",
   "booking_events",
   "communication_status_events",
+  "login_attempts", "calendar_blocks", "calendar_connections", "square_webhook_events",
+  "payment_receipts", "square_refunds", "notification_devices", "notification_outbox",
 ];
 
 const result = await db.execute(

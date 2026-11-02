@@ -20,6 +20,7 @@ export default function GalleryPage() {
     try {
       setLoading(true);
       const response = await fetch("/api/admin/gallery");
+      if (!response.ok) throw new Error("The records could not be loaded.");
       const data = await response.json();
       setPhotos(data.photos || []);
     } catch (err) {
@@ -49,6 +50,7 @@ export default function GalleryPage() {
 
       if (!response.ok) throw new Error("Upload failed");
 
+      if (!response.ok) throw new Error("The records could not be loaded.");
       const data = await response.json();
       setPhotos([...photos, data.photo]);
       e.target.value = ""; // Reset input
@@ -195,6 +197,7 @@ function PhotoCard({
       <div className="relative w-full h-48 bg-gray-200">
         <Image
           src={photo.image_url}
+          unoptimized={!photo.image_url.startsWith("/")}
           alt={photo.title || "Gallery photo"}
           fill
           className="object-cover"
@@ -228,6 +231,8 @@ function PhotoCard({
               />
             </div>
 
+            <label className="flex items-center gap-3 text-sm"><input type="checkbox" checked={editForm.active ?? true} onChange={e => onEditChange("active",e.target.checked)} className="h-5 w-5" />Show on the public website</label>
+            <label className="block text-sm font-semibold">Display order<input type="number" min={0} max={1000} value={editForm.display_order ?? 0} onChange={e => onEditChange("display_order",Number(e.target.value))} className="mt-2 w-full rounded border px-3 py-3" /></label>
             <div className="flex gap-3 pt-4">
               <button
                 onClick={onSave}

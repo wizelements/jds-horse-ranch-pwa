@@ -1,5 +1,7 @@
 import Link from "next/link";
-import { listInquiries, type BookingInquiry } from "@/lib/bookingStore";
+import type { BookingInquiry } from "@/lib/bookingStore";
+import { getTurso } from "@/lib/turso";
+import { ranchLocalToIso } from "@/lib/ranch";
 
 const TIME_ZONE = "America/New_York";
 
@@ -48,9 +50,22 @@ function Stat({
 
 export default async function DashboardPage() {
   let inquiries: BookingInquiry[] = [];
+  let counts = { today: 0, pending: 0, awaiting: 0, review: 0 };
   let unavailable = false;
   try {
-    inquiries = await listInquiries(500);
+    const day = localDay(new Date());
+    const nextDay = new Date(Date.parse(day + "T12:00:00Z") + 86400000).toISOString().slice(0,10);
+    const start = ranchLocalToIso(day + "T00:00"), end = ranchLocalToIso(nextDay + "T00:00");
+    const result = await getTurso().batch([
+      { sql: "SELECT * FROM booking_inquiries WHERE status='PENDING_JD' ORDER BY created_at DESC LIMIT 6", args: [] },
+      { sql: "SELECT * FROM booking_inquiries WHERE status='BOOKED' AND approved_start_at >= ? ORDER BY approved_start_at LIMIT 6", args: [new Date().toISOString()] },
+      { sql: `SELECT SUM(CASE WHEN status='BOOKED' AND approved_start_at>=? AND approved_start_at<? THEN 1 ELSE 0 END) AS today,
+        SUM(CASE WHEN status='PENDING_JD' THEN 1 ELSE 0 END) AS pending,
+        SUM(CASE WHEN status='AWAITING_PAYMENT' AND (hold_expires_at IS NULL OR hold_expires_at > ?) THEN 1 ELSE 0 END) AS awaiting FROM booking_inquiries`, args: [start,end,new Date().toISOString()] },
+      { sql: "SELECT COUNT(*) AS n FROM payment_receipts WHERE disposition='review_required'", args: [] },
+    ], "read");
+    inquiries = [...result[0].rows,...result[1].rows] as unknown as BookingInquiry[];
+    counts = { today:Number(result[2].rows[0].today || 0),pending:Number(result[2].rows[0].pending || 0),awaiting:Number(result[2].rows[0].awaiting || 0),review:Number(result[3].rows[0].n || 0) };
   } catch (error) {
     unavailable = true;
     console.error("Ranch dashboard bookings unavailable:", error);
@@ -86,10 +101,11 @@ export default async function DashboardPage() {
       {!unavailable && (
         <>
           <section aria-label="Today overview" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            <Stat title="Rides today" count={todaysRides.length} description="Confirmed and paid appointments" href="/admin/schedule" />
-            <Stat title="Needs JD&apos;s review" count={pending.length} description="Requests awaiting your decision" href="/admin/inquiries" />
-            <Stat title="Awaiting payment" count={awaitingPayment.length} description="Approved, not yet confirmed" href="/admin/inquiries" />
+            <Stat title="Rides today" count={counts.today} description="Confirmed and paid appointments" href="/admin/schedule" />
+            <Stat title="Needs JD&apos;s review" count={counts.pending} description="Requests awaiting your decision" href="/admin/inquiries?status=PENDING_JD" />
+            <Stat title="Awaiting payment" count={counts.awaiting} description="Active payment holds" href="/admin/inquiries?status=AWAITING_PAYMENT" />
           </section>
+          {counts.review > 0 && <p role="alert" className="rounded-xl border border-red-300 bg-red-50 p-5 text-red-950">{counts.review} payment(s) need manual review. Open the reservation queue and review expired or cancelled appointments before contacting the customer.</p>}
 
           <div className="grid gap-6 xl:grid-cols-2">
             <section className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm" aria-labelledby="pending-heading">
@@ -134,7 +150,7 @@ export default async function DashboardPage() {
           </div>
 
           <p className="text-sm text-stone-600">
-            This overview uses the most recent 500 reservation records. It shows only verified booking statuses; connected external calendar availability is not included yet.
+            Counts include the full reservation history. Connected calendars are checked during approval; use Settings to manage calendars and blocked times.
           </p>
         </>
       )}

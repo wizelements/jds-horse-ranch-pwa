@@ -40,32 +40,28 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const ipAddress = (req.headers.get("x-forwarded-for") || "unknown")
-      .split(",")[0]
-      .trim();
-    const userAgent = req.headers.get("user-agent") || "unknown";
+    const origin = req.headers.get("origin");
+    if ((origin && origin !== new URL(req.url).origin) || req.headers.get("sec-fetch-site") === "cross-site") return NextResponse.json({ error: "Invalid origin" }, { status: 403 });
 
     // Log to Turso
     await logContact({
       type: type as "call" | "email",
       source: String(source).substring(0, 500),
-      userAgent,
-      ipAddress,
+
     });
 
-    console.log("Contact logged:", { type, source, ipAddress });
 
-    // TODO: Send push notification to JD via Firebase
-    // await sendPushToOwner({ type, source, ipAddress });
+
+
 
     return NextResponse.json(
       { success: true, message: "Contact logged successfully" },
       { status: 201 }
     );
   } catch (error) {
-    console.error("Contact logging error:", error);
+    console.error("Contact activity storage unavailable");
     return NextResponse.json(
-      { error: "Failed to log contact", details: String(error) },
+      { error: "Contact activity unavailable" },
       { status: 500 }
     );
   }
