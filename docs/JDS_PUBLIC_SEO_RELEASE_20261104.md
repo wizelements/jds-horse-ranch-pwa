@@ -49,3 +49,13 @@ and independent owner confirmation.
 
 Google controls indexing and rankings; publishing/valid schema cannot guarantee
 that this subdomain outranks the established jdshorseranch.com.
+
+## IndexNow (Bing and other participating engines, not Google)
+A 32-character site-ownership key is publicly served as a plain text file in
+/public. Use npm run indexnow:submit -- --all --dry-run to verify the deployed
+sitemap and key, then npm run indexnow:submit -- --all once after the initial
+deployment. On future meaningful changes submit only changed canonical paths,
+for example npm run indexnow:submit -- --changed=/guided-horseback-trail-rides-fairburn-ga.
+The submission verifies the live sitemap, origin, route set and live ownership
+file before sending. HTTP 200/202 acknowledges receipt only; it is not ranking.
+Google does NOT consume IndexNow; owner-verified Search Console is still needed.
