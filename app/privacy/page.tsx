@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export const metadata = { title: "Privacy | JD's Horse Ranch", alternates: { canonical: "/privacy" } };
+export const metadata = { title: "Privacy | JD's Horse Ranch", description: "How JD's Horse Ranch handles reservation details, payment references and optional website analytics. Contact JD about your privacy choices.", alternates: { canonical: "/privacy" } };
 export default function PrivacyPage() {
   return <main className="mx-auto min-h-screen max-w-3xl space-y-7 px-6 py-16 text-stone-900">
     <Link href="/" className="font-semibold underline">← JD&apos;s Horse Ranch</Link>
