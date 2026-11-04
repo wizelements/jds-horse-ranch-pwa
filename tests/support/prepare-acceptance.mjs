@@ -14,7 +14,7 @@ const environment = {
   ADMIN_PASSWORD_SALT_V2: salt, ADMIN_PASSWORD_HASH_V2: scryptSync(password, salt, 64).toString("hex"), SESSION_TOKEN_SECRET_V2: randomBytes(32).toString("hex"),
   SQUARE_ENVIRONMENT: "sandbox", SQUARE_ACCESS_TOKEN: "local-square-fixture", SQUARE_LOCATION_ID: "fixture-ranch-location",
   SQUARE_TEST_API_URL: "http://127.0.0.1:43189", SQUARE_WEBHOOK_SIGNATURE_KEY: randomBytes(32).toString("hex"),
-  SQUARE_WEBHOOK_NOTIFICATION_URL: "https://acceptance.invalid/api/square/webhook", NEXT_PUBLIC_SITE_URL: "https://jdshorseranch.com",
+  SQUARE_WEBHOOK_NOTIFICATION_URL: "https://acceptance.invalid/api/square/webhook", NEXT_PUBLIC_SITE_URL: "https://jdshorseranch.codewithsolo.com",
   CALENDAR_ENCRYPTION_KEY: randomBytes(32).toString("base64"), CRON_SECRET: randomBytes(32).toString("hex"),
 };
 await writeFile(envFile, Object.entries(environment).map(([key,value]) => `${key}=${JSON.stringify(value)}`).join("\n") + "\n", { mode: 0o600, flag: "wx" });

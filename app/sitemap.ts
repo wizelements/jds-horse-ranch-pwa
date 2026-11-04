@@ -1,7 +1,15 @@
 import type { MetadataRoute } from "next";
+import { absoluteUrl, PUBLIC_EXPERIENCE_PATHS } from "@/lib/seo";
 
-// Only real public pages belong here. HTML fragment links
-// (#gallery, #experiences, etc.) are not separate indexable URLs.
+/** Only useful, public, canonical pages. No fragments, admin routes or calls to action. */
 export default function sitemap(): MetadataRoute.Sitemap {
-  return [{ url: "https://jdshorseranch.com/", changeFrequency: "monthly", priority: 1 }, { url: "https://jdshorseranch.com/privacy", changeFrequency: "yearly", priority: 0.3 }];
+  return [
+    { url: absoluteUrl("/"), changeFrequency: "weekly", priority: 1 },
+    ...PUBLIC_EXPERIENCE_PATHS.map((path) => ({
+      url: absoluteUrl(path),
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+    })),
+    { url: absoluteUrl("/privacy"), changeFrequency: "yearly", priority: 0.2 },
+  ];
 }

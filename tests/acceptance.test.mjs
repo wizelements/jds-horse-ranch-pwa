@@ -196,7 +196,7 @@ test("owner can correct rider details and a migration preserves edited content",
 test("PWA manifests and icons exist, previews stay out of search, and private routes are excluded from offline caching", async () => {
   for(const path of ["/manifest.json","/ranch-manifest.json"]) {const response=await request(path);assert.equal(response.status,200);for(const icon of response.data.icons)assert.equal((await request(icon.src)).status,200);}
   const robots=await request("/robots.txt");assert.match(robots.text,/Disallow: \//);
-  const sitemap=await request("/sitemap.xml");assert.match(sitemap.text,/https:\/\/jdshorseranch.com\//);assert.doesNotMatch(sitemap.text,/#|\/admin/);
+  const sitemap=await request("/sitemap.xml");assert.match(sitemap.text,/https:\/\/jdshorseranch\.codewithsolo\.com\//);assert.doesNotMatch(sitemap.text,/#|\/admin/);
   const sw=await request("/sw.js");assert.match(sw.text,/admin\|api\|ranch-login/);assert.doesNotMatch(sw.text,/cache\.addAll\(\[.*admin/);
 });
 test("missing live notification and Google app settings fail closed", async () => {
@@ -209,4 +209,28 @@ test("sign-out clears access and repeated bad passwords are throttled", async ()
   assert.equal((await post("/api/admin/logout",{})).status,200);cookie="";
   assert.equal((await request("/api/admin/services")).status,401);
   let status=0;for(let i=0;i<10;i++)status=(await post("/api/admin/login",{password:"wrong",unused:i})).status;assert.equal(status,429);
+});
+
+
+test("search pages use the new canonical domain, structured facts, and an exact public sitemap", async () => {
+  const expected = [
+    "/horseback-riding-lessons-fairburn-ga",
+    "/guided-horseback-trail-rides-fairburn-ga",
+    "/horseback-riding-special-events-fairburn-ga",
+    "/visit-jds-horse-ranch-fairburn-ga",
+  ];
+  const sitemap = await request("/sitemap.xml");
+  assert.equal(sitemap.status, 200);
+  for (const path of expected) {
+    assert.ok(sitemap.text.includes("https://jdshorseranch.codewithsolo.com" + path), path + " missing from sitemap");
+    const page = await request(path);
+    assert.equal(page.status, 200, path);
+    assert.ok(page.text.includes('href="https://jdshorseranch.codewithsolo.com' + path + '"'), path + " missing canonical");
+    assert.ok(page.text.includes("application/ld+json"), path + " missing structured data");
+    assert.ok(page.text.includes("tel:+14049812361"), path + " missing click-to-call");
+  }
+  const machineSummary = await request("/llms.txt");
+  assert.equal(machineSummary.status, 200);
+  assert.match(machineSummary.text, /By appointment|appointment only/i);
+  assert.ok(!sitemap.text.includes("/admin/") && !sitemap.text.includes("/api/"));
 });

@@ -1,10 +1,16 @@
 import Image from "next/image";
+import Link from "next/link";
 import type { Service } from "@/lib/types";
 
 const art: Record<string, { lead: string; image: string; alt: string }> = {
   "service-riding-lessons": { lead: "Find your confidence in the saddle.", image: "/photos/ranch-2.jpg", alt: "A mounted rider with an instructor beside the horse" },
   "service-trail-rides": { lead: "Take the scenic route.", image: "/photos/ranch-7.jpg", alt: "Riders and guides together outside the ranch barn" },
   "service-special-events": { lead: "Make moments worth remembering.", image: "/photos/ranch-9.jpg", alt: "Friends and family together at a ranch celebration" },
+};
+const detailsHref: Record<string, string> = {
+  "service-riding-lessons": "/horseback-riding-lessons-fairburn-ga",
+  "service-trail-rides": "/guided-horseback-trail-rides-fairburn-ga",
+  "service-special-events": "/horseback-riding-special-events-fairburn-ga",
 };
 const money = (value: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: value % 1 ? 2 : 0 }).format(value);
 
@@ -31,12 +37,14 @@ export default function Services({ services }: { services: Service[] }) {
                 <p className="text-sm font-bold text-[#273b30]">{ride.duration_minutes ? `${ride.duration_minutes} minutes · ` : ""}{ride.price_min != null ? `From ${money(ride.price_min)}` : "Call JD for pricing"}</p>
                 {ride.price_detail && <p className="mt-1 text-xs leading-5 text-[#697168]">{ride.price_detail}</p>}
               </div>
+              {detailsHref[ride.id] && <Link href={detailsHref[ride.id]} className="mt-5 inline-flex text-sm font-semibold text-[#183329] underline underline-offset-4 hover:text-[#806745]">Explore this experience</Link>}
               <a href="tel:+14049812361" className="mt-7 flex items-center justify-between border-b border-[#87978a] pb-3 text-[11px] font-bold uppercase tracking-[.14em] text-[#183329] hover:border-[#ad946b] hover:text-[#806745]">Call JD to arrange <span aria-hidden="true" className="text-lg font-normal">↗</span></a>
             </div>
           </article>;
         })}
       </div>
       {services.length === 0 && <p className="text-center text-stone-700">Call JD to discuss the experiences currently available.</p>}
+      <p className="mt-7 text-center text-sm"><Link href="/visit-jds-horse-ranch-fairburn-ga" className="font-semibold text-[#183329] underline underline-offset-4">Plan your visit and get directions to the ranch</Link></p>
       <p className="mt-7 text-center text-xs leading-6 text-[#697168]">By appointment only. Deposits are non-refundable. Rescheduling requires at least 24 hours&apos; notice and JD&apos;s approval.</p>
     </div>
   </section>;

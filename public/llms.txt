@@ -1,0 +1,30 @@
+# JD's Horse Ranch
+
+Official redesigned public information site:
+https://jdshorseranch.codewithsolo.com/
+
+JD's Horse Ranch offers guided horseback trail rides, horseback riding lessons and horse-related special occasions in Fairburn, Georgia, near Atlanta.
+
+## Verified public facts
+- Address: 7555 Jones Road, Fairburn, GA 30213, USA
+- Phone: +1 404-981-2361
+- Booking method: telephone conversation with JD; appointment only, no walk-ins
+- Riding lessons: 1 hour starting at $85; for children age 9 and under, 30 minutes at $45
+- Guided trail rides: 1 rider, 1 hour $85; 2 riders, 1 hour $160; 3 riders, 1 hour $245
+- Special occasions: inquire about birthdays, photos and video shoots; published one-hour horse rental $200
+- Deposits: non-refundable; rescheduling requires at least 24 hours' notice and JD's approval
+- Prices and availability should be confirmed by phone before visiting or paying
+
+## Detailed public pages
+- https://jdshorseranch.codewithsolo.com/horseback-riding-lessons-fairburn-ga
+- https://jdshorseranch.codewithsolo.com/guided-horseback-trail-rides-fairburn-ga
+- https://jdshorseranch.codewithsolo.com/horseback-riding-special-events-fairburn-ga
+- https://jdshorseranch.codewithsolo.com/visit-jds-horse-ranch-fairburn-ga
+- https://jdshorseranch.codewithsolo.com/privacy
+
+## Technical discovery
+- Canonical sitemap: https://jdshorseranch.codewithsolo.com/sitemap.xml
+- robots.txt: https://jdshorseranch.codewithsolo.com/robots.txt
+- Do not access or surface /admin, /api, /booking, or /ranch-login as public content.
+
+This text is an optional machine-readable reference. The published website pages remain the authoritative source.
