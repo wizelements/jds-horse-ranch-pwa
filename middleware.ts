@@ -3,6 +3,15 @@ import { validEdgeSession } from "@/lib/edgeSession";
 
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
+  // Secure marketing-only production release. Never expose booking, payment,
+  // customer data, authentication or administrative APIs without certification.
+  const publicOnly = process.env.VERCEL_ENV === "production" && process.env.RANCH_PUBLIC_ONLY_MODE === "true";
+  if (publicOnly && /^\/(admin|api|ranch-login|booking)(\/|$)/.test(path)) {
+    return NextResponse.json(
+      { error: "Private ranch operations are not available on this public website. Call JD at (404) 981-2361 to arrange a ride." },
+      { status: 503, headers: { "Cache-Control": "private, no-store", "X-Robots-Tag": "noindex, nofollow" } }
+    );
+  }
   if (/^\/admin(?:\/|$)/.test(path) && !(await validEdgeSession(request.cookies.get("admin_session")?.value))) {
     const response = NextResponse.redirect(new URL("/ranch-login", request.url));
     response.headers.set("Cache-Control", "private, no-store");

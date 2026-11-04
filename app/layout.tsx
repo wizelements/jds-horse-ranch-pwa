@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: "JD's Horse Ranch | Riding Lessons & Trail Rides in Fairburn, GA",
   description: "Experience riding lessons, guided trail rides, and memorable moments at JD's Horse Ranch in Fairburn, Georgia. Visits are by appointment; call JD to talk about lessons, trail rides, and reservations.",
   metadataBase: new URL(SITE_ORIGIN),
-  alternates: { canonical: "/" },
+  alternates: { canonical: SITE_ORIGIN + "/" },
   manifest: "/manifest.json",
   icons: { icon: "/icon-192.png", apple: "/icon-180.png" },
   appleWebApp: { capable: true, statusBarStyle: "default", title: "JD's Horse Ranch" },

@@ -1,3 +1,17 @@
+// Marketing release and full ranch operations have independent release gates.
+// PUBLIC_ONLY never certifies private bookings, Square payments, or admin access.
+const publicOnly = process.env.RANCH_PUBLIC_ONLY_MODE === "true";
+if (publicOnly) {
+  const origin = process.env.NEXT_PUBLIC_SITE_URL;
+  if (origin !== "https://jdshorseranch.codewithsolo.com") {
+    console.error("NOT READY: Public-only target must use the intended JDS HTTPS domain.");
+    process.exit(1);
+  }
+  console.log("PUBLIC MARKETING CONFIGURATION READY: Private admin, payment, and booking APIs are intentionally disabled.");
+  console.log("NOT FULL PRODUCTION: Verify DNS/TLS, live pages, call links, crawl directives, real Square configuration and owner access separately.");
+  process.exit(0);
+}
+
 // Run with: vercel env run -e production -- node scripts/production-readiness.mjs
 // Safe by design: never emits environment variable values or authentication tokens.
 const required = [

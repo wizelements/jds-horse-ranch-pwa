@@ -21,8 +21,12 @@ const requiredProduction = [
 ];
 
 const missing = requiredProduction.filter((name) => !present(name));
+const publicOnly = environment === "production" && process.env.RANCH_PUBLIC_ONLY_MODE === "true";
+if (publicOnly && process.env.NEXT_PUBLIC_SITE_URL !== "https://jdshorseranch.codewithsolo.com") {
+  throw new Error("Public-only release requires the verified JDS custom-domain origin.");
+}
 
-if (environment === "production" && missing.length) {
+if (environment === "production" && !publicOnly && missing.length) {
   throw new Error(
     `Production deployment is missing required configuration: ${missing.join(", ")}`
   );
@@ -30,7 +34,9 @@ if (environment === "production" && missing.length) {
 
 if (missing.length) {
   console.warn(
-    `Preview deployment: production integrations are intentionally not required. Missing: ${missing.join(", ")}`
+    publicOnly
+      ? "Public-only deployment: private operations disabled until production credentials are certified. Missing: " + missing.join(", ")
+      : "Preview deployment: production integrations are intentionally not required. Missing: " + missing.join(", ")
   );
 }
 
