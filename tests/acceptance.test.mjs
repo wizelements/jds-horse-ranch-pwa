@@ -296,3 +296,23 @@ test("licensed recent guest photographs are served locally, credited, and discov
   assert.match(sitemap.text, /guest-2024-woodland-ride\.webp/);
   assert.doesNotMatch(sitemap.text, /\/admin\/|\/api\//);
 });
+
+test("consented first-party call metrics are write-only, same-origin, and privacy-limited", async () => {
+  const endpoint = "/api/contact";
+  assert.equal((await request(endpoint)).status, 405);
+  assert.equal((await post(endpoint, { type: "call", source: "experiences" })).status, 403);
+  assert.equal((await post(endpoint, { type: "call", source: "experiences" }, { headers: { Origin: "https://evil.invalid" } })).status, 403);
+  assert.equal((await post(endpoint, { type: "email", source: "experiences" }, { headers: { "Sec-Fetch-Site": "same-origin" } })).status, 400);
+  assert.equal((await post(endpoint, { type: "call", source: "unknown path" }, { headers: { "Sec-Fetch-Site": "same-origin" } })).status, 400);
+  assert.equal((await request(endpoint, { method: "POST", body: JSON.stringify({ type: "call", source: "experiences" }), headers: { "Sec-Fetch-Site": "same-origin", "Content-Type": "text/plain" } })).status, 415);
+  const logged = await post(endpoint, { type: "call", source: "experiences" }, { headers: { "Sec-Fetch-Site": "same-origin" } });
+  assert.equal(logged.status, 201, logged.text);
+  assert.equal(logged.data.recorded, true);
+  assert.match(logged.headers.get("cache-control") || "", /no-store/);
+  assert.match(logged.headers.get("x-robots-tag") || "", /noindex/);
+  const row = await db.execute({ sql: "SELECT type,source,ip_address,user_agent FROM contacts WHERE source='experiences' ORDER BY created_at DESC LIMIT 1", args: [] });
+  assert.equal(row.rows[0]?.type, "call");
+  assert.equal(row.rows[0]?.source, "experiences");
+  assert.equal(row.rows[0]?.ip_address, null);
+  assert.equal(row.rows[0]?.user_agent, null);
+});
