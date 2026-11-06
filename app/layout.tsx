@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     description: "Step away from the city and enjoy the country life. Riding lessons and guided trail rides by appointment in Fairburn, Georgia.",
     url: SITE_ORIGIN,
     // This photo ships with the source; no old-host dependency.
-    images: [{ url: "/photos/ranch-2.jpg", alt: "A guest on horseback with a guide at JD's Horse Ranch" }],
+    images: [{ url: "/photos/guest-2025-ride.webp", alt: "Guest horseback riding on ranch grounds near Atlanta" }],
   },
   robots: indexingEnabled ? { index: true, follow: true } : { index: false, follow: false },
 };
@@ -35,7 +35,7 @@ const business = {
   description:"Riding lessons, guided horseback trail rides, and horse experiences by appointment.",
   address:{"@type":"PostalAddress",streetAddress:"7555 Jones Rd",addressLocality:"Fairburn",addressRegion:"GA",postalCode:"30213",addressCountry:"US"},
   sameAs:["https://www.facebook.com/Jdshorseranch/","https://www.instagram.com/jdshorseranch/"],
-  image: [absoluteUrl("/photos/ranch-2.jpg"), absoluteUrl("/photos/ranch-0.jpg")],
+  image: [absoluteUrl("/photos/guest-2025-ride.webp"), absoluteUrl("/photos/guest-2024-woodland-ride.webp"), absoluteUrl("/photos/ranch-0.jpg")],
 };
 export default function RootLayout({children}:{children:React.ReactNode}) {
   return <html lang="en"><head><script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(business)}} /></head>
