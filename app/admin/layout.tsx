@@ -16,6 +16,7 @@ const sections = [
   {href:"/admin/gallery", label:"Photos"},
   {href:"/admin/testimonials", label:"Reviews"},
   {href:"/admin/contacts", label:"Contact Activity"},
+  {href:"/admin/insights", label:"Call Insights"},
   {href:"/admin/settings", label:"Settings"},
 ];
 
