@@ -10,12 +10,12 @@ export const DEFAULT_SERVICES: Service[] = [
 ];
 
 export const DEFAULT_PHOTOS: GalleryPhoto[] = [
-  [1, "Time with the horses", "A handler walking a chestnut horse in the ranch pasture"],
-  [5, "A warm welcome", "Two visitors standing with horses inside the barn"],
-  [6, "Close to the horses", "A guest posing beside a chestnut horse"],
-  [7, "Ride together", "A group of mounted riders and guides outside the ranch barn"],
-  [8, "Days to remember", "A guest with a celebration cake at a ranch gathering"],
-  [9, "Bring your people", "Friends and family gathered together for a ranch celebration"],
+  [1, "Horses in motion", "A ranch handler stands with a chestnut horse moving through a grassy clearing"],
+  [7, "A gathering of riders", "An archival group of mounted riders and children gathered outside a ranch stable"],
+  [5, "Sharing time with the horses", "A ranch visitor and a team member standing outdoors beside two chestnut horses"],
+  [8, "A reason to celebrate", "A smiling guest beside birthday cupcakes at a ranch celebration"],
+  [9, "The ranch community", "A group of guests and ranch team members in JD's Horse Ranch shirts"],
+  [0, "Meet the horses", "A ranch handler with a chestnut horse with a wide white blaze on its face"],
 ].map(([index, title, description], order) => ({ ...base, id: `ranch-photo-${index}`, image_url: `/photos/ranch-${index}.jpg`, title: String(title), description: String(description), display_order: order }));
 
 export const DEFAULT_TESTIMONIALS: Testimonial[] = [
