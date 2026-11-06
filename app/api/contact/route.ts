@@ -55,8 +55,19 @@ export async function POST(req: NextRequest) {
     if (Number(count.rows[0]?.n || 0) >= 60) return reply({ error: "Rate limited" }, 429);
     await logContact({ type: "call", source: body.source });
     return reply({ recorded: true }, 201);
-  } catch {
-    console.error("Anonymous call-tap metrics unavailable");
+  } catch (cause) {
+    // Classify production failures without logging tokens, URLs, SQL, IPs or raw errors.
+    // This makes database availability and schema problems visible in Vercel logs.
+    const raw = cause instanceof Error ? cause.message : "";
+    const kind = !process.env.TURSO_DATABASE_URL || !process.env.TURSO_AUTH_TOKEN
+      ? "configuration_missing"
+      : /no such table|no such column/i.test(raw) ? "schema_missing"
+      : /unauthori[sz]ed|forbidden|invalid.*token|auth_error|\b401\b|\b403\b/i.test(raw) ? "database_authentication"
+      : /connection|timeout|network|fetch failed|econn|enotfound/i.test(raw) ? "database_transport"
+      : "database_operation_failed";
+    const code = cause && typeof cause === "object" && "code" in cause
+      ? String(cause.code).replace(/[^A-Z0-9_-]/gi, "").slice(0, 48) : "none";
+    console.error("Anonymous call-tap metrics unavailable", { kind, code, name: cause instanceof Error ? cause.name.slice(0, 32) : "unknown" });
     return reply({ error: "Metrics temporarily unavailable" }, 503);
   }
 }
