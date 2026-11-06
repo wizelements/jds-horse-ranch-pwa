@@ -273,10 +273,10 @@ test("visual storytelling uses discoverable ranch images and honest archive capt
 test("licensed recent guest photographs are served locally, credited, and discoverable", async () => {
   const home = await request("/");
   assert.equal(home.status, 200);
-  assert.match(home.text, /guest-2025-ride\\.webp/);
-  assert.match(home.text, /guest-2024-lake-view\\.webp/);
+  assert.match(home.text, /guest-2025-ride\.webp/);
+  assert.match(home.text, /guest-2024-lake-view\.webp/);
   assert.match(home.text, /Guest photo/);
-  assert.match(home.text, /@carla\\.marie\\.mills/);
+  assert.match(home.text, /@carla\.marie\.mills/);
   assert.match(home.text, /April 2025/);
   for (const image of [
     "guest-2025-ride.webp", "guest-2025-black-horse.webp", "guest-2025-ranch-sign.webp",
@@ -284,15 +284,15 @@ test("licensed recent guest photographs are served locally, credited, and discov
   ]) {
     const asset = await request("/photos/" + image);
     assert.equal(asset.status, 200, image);
-    assert.match(asset.headers.get("content-type") || "", /image\\/webp/i, image);
+    assert.match(asset.headers.get("content-type") || "", /image\/webp/i, image);
   }
   const visit = await request("/visit-jds-horse-ranch-fairburn-ga");
   assert.equal(visit.status, 200);
-  assert.match(visit.text, /guest-2025-ranch-sign\\.webp/);
+  assert.match(visit.text, /guest-2025-ranch-sign\.webp/);
   assert.match(visit.text, /Signage may change/);
   const sitemap = await request("/sitemap.xml");
   assert.equal(sitemap.status, 200);
-  assert.match(sitemap.text, /guest-2025-ride\\.webp/);
-  assert.match(sitemap.text, /guest-2024-woodland-ride\\.webp/);
-  assert.doesNotMatch(sitemap.text, /\\/admin\\/|\\/api\\//);
+  assert.match(sitemap.text, /guest-2025-ride\.webp/);
+  assert.match(sitemap.text, /guest-2024-woodland-ride\.webp/);
+  assert.doesNotMatch(sitemap.text, /\/admin\/|\/api\//);
 });
