@@ -20,7 +20,7 @@ export const ranchPages: Record<string, RanchPage> = {
     kicker: "Build confidence in the saddle",
     intro: "Whether this is your first time around horses or you're returning to the saddle, start with a conversation. JD will help you understand the riding experience, discuss the riders in your party and arrange an appointment when availability is confirmed.",
     image: "/photos/ranch-2.jpg",
-    imageAlt: "Rider on horseback with instruction at JD's Horse Ranch",
+    imageAlt: "A smiling guest riding a brown horse with a guide standing beside them at JD's Horse Ranch",
     sectionTitle: "What to know before your lesson",
     details: [
       "The ranch is at 7555 Jones Road in Fairburn, Georgia, outside Atlanta. Lessons are by appointment only; there are no walk-ins.",
@@ -43,7 +43,7 @@ export const ranchPages: Record<string, RanchPage> = {
     kicker: "A slower pace, just outside the city",
     intro: "Make room for the country. JD's Horse Ranch offers guided horseback trail rides in Fairburn for people who want to spend time outdoors and create a memorable experience. Speak directly with JD about your group, timing and the available ride options.",
     image: "/photos/ranch-7.jpg",
-    imageAlt: "Guided horseback trail riders together at JD's Horse Ranch",
+    imageAlt: "An archival group of horseback riders gathered outside a ranch stable",
     sectionTitle: "Choose the ride for your group",
     details: [
       "The ranch currently publishes guided one-hour trail rides for one, two or three people. A one-rider ride is listed at $85, a two-rider ride at $160 and a three-rider ride at $245.",
@@ -65,8 +65,8 @@ export const ranchPages: Record<string, RanchPage> = {
     heading: "Special occasions at JD's Horse Ranch",
     kicker: "For moments worth remembering",
     intro: "A horse ranch can be the setting for a beautiful memory. JD's Horse Ranch invites inquiries about birthday occasions, photo shoots and video shoots, with details arranged through a direct conversation instead of a one-size-fits-all booking form.",
-    image: "/photos/ranch-9.jpg",
-    imageAlt: "Guests enjoying a special occasion at JD's Horse Ranch",
+    image: "/photos/ranch-8.jpg",
+    imageAlt: "A smiling ranch guest with birthday cupcakes at an outdoor celebration",
     sectionTitle: "Plan your occasion with JD",
     details: [
       "The ranch's published services include birthday occasions, photo shoots, video shoots and one-hour horse rental at $200. Event arrangements and access must be confirmed directly with JD.",
@@ -89,7 +89,7 @@ export const ranchPages: Record<string, RanchPage> = {
     kicker: "Fairburn, Georgia · Just outside Atlanta",
     intro: "JD's Horse Ranch welcomes guests by appointment at its Fairburn location. To make your visit smooth, start by calling JD to discuss the experience you want, the number of riders and your preferred day.",
     image: "/photos/ranch-0.jpg",
-    imageAlt: "Horse at JD's Horse Ranch in Fairburn, Georgia",
+    imageAlt: "A ranch handler standing beside a chestnut horse at JD's Horse Ranch",
     sectionTitle: "Before you head to the ranch",
     details: [
       "The published address is 7555 Jones Road, Fairburn, GA 30213. Confirm that your reservation has been accepted before traveling.",
