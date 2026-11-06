@@ -65,7 +65,9 @@ export async function POST(req: NextRequest) {
       : /unauthori[sz]ed|forbidden|invalid.*token|auth_error|\b401\b|\b403\b/i.test(raw) ? "database_authentication"
       : /connection|timeout|network|fetch failed|econn|enotfound/i.test(raw) ? "database_transport"
       : "database_operation_failed";
-    console.error("Anonymous call-tap metrics unavailable", { kind, name: cause instanceof Error ? cause.name.slice(0, 32) : "unknown" });
+    const code = cause && typeof cause === "object" && "code" in cause
+      ? String(cause.code).replace(/[^A-Z0-9_-]/gi, "").slice(0, 48) : "none";
+    console.error("Anonymous call-tap metrics unavailable", { kind, code, name: cause instanceof Error ? cause.name.slice(0, 32) : "unknown" });
     return reply({ error: "Metrics temporarily unavailable" }, 503);
   }
 }
