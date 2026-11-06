@@ -93,7 +93,11 @@ export default async function RanchExperiencePage({ params }: Props) {
         <div className="relative aspect-[1.16/1] overflow-hidden bg-[#d5dccf]">
           <Image src={content.image} alt={content.imageAlt} fill sizes="(max-width: 1024px) 100vw, 45vw" className="object-cover" priority />
         </div>
-        <figcaption className="mt-4 border-l-2 border-[#bda27b] pl-4 text-xs leading-6 text-[#6b786a]">An authentic moment from the ranch photo archive. Call JD for current riding arrangements.</figcaption>
+        <figcaption className="mt-4 border-l-2 border-[#bda27b] pl-4 text-xs leading-6 text-[#6b786a]">
+          {content.photoSource && content.photoCredit
+            ? <><a className="underline underline-offset-2" href={content.photoSource} target="_blank" rel="noopener noreferrer">{content.photoCredit}</a> · Used with permission. Confirm current arrangements by phone.</>
+            : "An authentic moment from the ranch photo archive. Call JD for current riding arrangements."}
+        </figcaption>
       </figure>
     </section>
     <section id="experience-content" className="border-y border-[#e5dfd3] bg-white py-14 lg:py-20">
@@ -108,6 +112,12 @@ export default async function RanchExperiencePage({ params }: Props) {
           <h2 className="font-editorial text-4xl leading-tight lg:text-5xl">{content.sectionTitle}</h2>
           <div className="space-y-6 text-base leading-8 text-[#56675c]">
             {content.details.map((detail) => <p key={detail}>{detail}</p>)}
+            {experience === "visit-jds-horse-ranch-fairburn-ga" && <figure className="mt-8">
+              <div className="relative aspect-[3/4] w-full max-w-[300px] overflow-hidden bg-[#e6e7da]">
+                <Image src="/photos/guest-2025-ranch-sign.webp" alt="JD's Horse Ranch banner displaying the ranch name and phone number, seen in an April 2025 guest photograph" fill loading="lazy" sizes="(max-width:640px) 90vw, 300px" className="object-cover" />
+              </div>
+              <figcaption className="mt-3 max-w-sm text-xs leading-6 text-[#607065]">Ranch signage photographed in April 2025 by <a href="https://www.lemon8-app.com/@carla.marie.mills/7493317959583367723" target="_blank" rel="noopener noreferrer" className="underline">@carla.marie.mills</a>, reused with permission. Signage may change; call before driving over.</figcaption>
+            </figure>}
             {experience === "visit-jds-horse-ranch-fairburn-ga" && <a className="inline-flex border-b border-[#183329] font-semibold text-[#183329]" href="https://www.google.com/maps/search/?api=1&query=7555+Jones+Rd+Fairburn+GA+30213">Get directions to 7555 Jones Road</a>}
           </div>
         </div>
