@@ -4,7 +4,7 @@ import type { Service } from "@/lib/types";
 
 const art: Record<string, { lead: string; image: string; alt: string }> = {
   "service-riding-lessons": { lead: "Find your confidence in the saddle.", image: "/photos/ranch-2.jpg", alt: "A rider on a brown horse with a guide standing next to them" },
-  "service-trail-rides": { lead: "Take the scenic route.", image: "/photos/ranch-7.jpg", alt: "A group of mounted riders and children outside a ranch stable in an archival photo" },
+  "service-trail-rides": { lead: "Take the scenic route.", image: "/photos/guest-2024-woodland-ride.webp", alt: "A guest riding a black-and-white horse on a wooded trail at JD's Horse Ranch" },
   "service-special-events": { lead: "Make moments worth remembering.", image: "/photos/ranch-8.jpg", alt: "A guest smiling beside birthday cupcakes at an outdoor ranch celebration" },
 };
 const detailsHref: Record<string, string> = {
