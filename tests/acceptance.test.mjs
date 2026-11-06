@@ -234,3 +234,16 @@ test("search pages use the new canonical domain, structured facts, and an exact 
   assert.match(machineSummary.text, /By appointment|appointment only/i);
   assert.ok(!sitemap.text.includes("/admin/") && !sitemap.text.includes("/api/"));
 });
+
+test("public homepage answers Atlanta search intent and makes the phone booking path clear", async () => {
+  const page = await request("/");
+  assert.equal(page.status, 200);
+  assert.match(page.text, /Horseback Riding Near Atlanta/);
+  assert.match(page.text, /Far from ordinary/);
+  assert.match(page.text, /What to expect on the call/);
+  assert.match(page.text, /Where can I go horseback riding near Atlanta/);
+  assert.match(page.text, /How much does horseback riding cost at JD/);
+  assert.match(page.text, /by appointment only/i);
+  assert.match(page.text, /tel:\+14049812361/);
+  assert.doesNotMatch(page.text, /guaranteed spots|limited spots today/i);
+});
