@@ -45,11 +45,22 @@ export default async function RanchExperiencePage({ params }: Props) {
     },
     {
       "@context": "https://schema.org",
+      "@type": "WebPage",
+      "@id": absoluteUrl(pathname),
+      url: absoluteUrl(pathname),
+      name: content.heading,
+      description: content.description,
+      primaryImageOfPage: absoluteUrl(content.image),
+      mainEntity: { "@id": absoluteUrl(pathname) + "#details" },
+    },
+    {
+      "@context": "https://schema.org",
       "@type": content.serviceType ? "Service" : "WebPage",
       "@id": absoluteUrl(pathname) + "#details",
       name: content.heading,
       description: content.description,
       url: absoluteUrl(pathname),
+      image: absoluteUrl(content.image),
       ...(content.serviceType
         ? {
             serviceType: content.serviceType,
@@ -78,9 +89,12 @@ export default async function RanchExperiencePage({ params }: Props) {
         <p className="mt-8 max-w-2xl text-[17px] leading-9 text-[#56675c]">{content.intro}</p>
         <a href="tel:+14049812361" className="cta-dark mt-9 inline-flex">Talk to JD · (404) 981-2361</a>
       </div>
-      <div className="relative aspect-[1.16/1] overflow-hidden bg-[#d5dccf]">
-        <Image src={content.image} alt={content.imageAlt} fill sizes="(max-width: 1024px) 100vw, 45vw" className="object-cover" priority />
-      </div>
+      <figure>
+        <div className="relative aspect-[1.16/1] overflow-hidden bg-[#d5dccf]">
+          <Image src={content.image} alt={content.imageAlt} fill sizes="(max-width: 1024px) 100vw, 45vw" className="object-cover" priority />
+        </div>
+        <figcaption className="mt-4 border-l-2 border-[#bda27b] pl-4 text-xs leading-6 text-[#6b786a]">An authentic moment from the ranch photo archive. Call JD for current riding arrangements.</figcaption>
+      </figure>
     </section>
     <section id="experience-content" className="border-y border-[#e5dfd3] bg-white py-14 lg:py-20">
       <div className="wrap-wide">
