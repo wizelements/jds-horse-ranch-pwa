@@ -247,3 +247,25 @@ test("public homepage answers Atlanta search intent and makes the phone booking 
   assert.match(page.text, /tel:\+14049812361/);
   assert.doesNotMatch(page.text, /guaranteed spots|limited spots today/i);
 });
+
+test("visual storytelling uses discoverable ranch images and honest archive captions", async () => {
+  const home = await request("/");
+  assert.equal(home.status, 200);
+  assert.match(home.text, /A guest riding a brown horse with a guide beside them/i);
+  assert.match(home.text, /Real moments from the ranch archive/);
+  assert.match(home.text, /See guest photos on Google/);
+  assert.match(home.text, /ranch-2\.jpg/);
+  const trail = await request("/guided-horseback-trail-rides-fairburn-ga");
+  assert.equal(trail.status, 200);
+  assert.match(trail.text, /An archival group of horseback riders/);
+  assert.match(trail.text, /ranch photo archive/);
+  const special = await request("/horseback-riding-special-events-fairburn-ga");
+  assert.equal(special.status, 200);
+  assert.match(special.text, /birthday cupcakes/);
+  const sitemap = await request("/sitemap.xml");
+  assert.equal(sitemap.status, 200);
+  assert.match(sitemap.text, /image:image/);
+  assert.match(sitemap.text, /photos\/ranch-2\.jpg/);
+  assert.match(sitemap.text, /photos\/ranch-8\.jpg/);
+  assert.doesNotMatch(sitemap.text, /\/admin\/|\/api\//);
+});

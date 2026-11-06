@@ -3,9 +3,9 @@ import Link from "next/link";
 import type { Service } from "@/lib/types";
 
 const art: Record<string, { lead: string; image: string; alt: string }> = {
-  "service-riding-lessons": { lead: "Find your confidence in the saddle.", image: "/photos/ranch-2.jpg", alt: "A mounted rider with an instructor beside the horse" },
-  "service-trail-rides": { lead: "Take the scenic route.", image: "/photos/ranch-7.jpg", alt: "Riders and guides together outside the ranch barn" },
-  "service-special-events": { lead: "Make moments worth remembering.", image: "/photos/ranch-9.jpg", alt: "Friends and family together at a ranch celebration" },
+  "service-riding-lessons": { lead: "Find your confidence in the saddle.", image: "/photos/ranch-2.jpg", alt: "A rider on a brown horse with a guide standing next to them" },
+  "service-trail-rides": { lead: "Take the scenic route.", image: "/photos/ranch-7.jpg", alt: "A group of mounted riders and children outside a ranch stable in an archival photo" },
+  "service-special-events": { lead: "Make moments worth remembering.", image: "/photos/ranch-8.jpg", alt: "A guest smiling beside birthday cupcakes at an outdoor ranch celebration" },
 };
 const detailsHref: Record<string, string> = {
   "service-riding-lessons": "/horseback-riding-lessons-fairburn-ga",
