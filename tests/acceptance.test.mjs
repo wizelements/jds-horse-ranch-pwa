@@ -302,10 +302,10 @@ test("consented first-party call metrics are write-only, same-origin, and privac
   assert.equal((await request(endpoint)).status, 405);
   assert.equal((await post(endpoint, { type: "call", source: "experiences" })).status, 403);
   assert.equal((await post(endpoint, { type: "call", source: "experiences" }, { headers: { Origin: "https://evil.invalid" } })).status, 403);
-  assert.equal((await post(endpoint, { type: "email", source: "experiences" }, { headers: { Origin: base } })).status, 400);
-  assert.equal((await post(endpoint, { type: "call", source: "unknown path" }, { headers: { Origin: base } })).status, 400);
-  assert.equal((await request(endpoint, { method: "POST", body: JSON.stringify({ type: "call", source: "experiences" }), headers: { Origin: base, "Content-Type": "text/plain" } })).status, 415);
-  const logged = await post(endpoint, { type: "call", source: "experiences" }, { headers: { Origin: base } });
+  assert.equal((await post(endpoint, { type: "email", source: "experiences" }, { headers: { "Sec-Fetch-Site": "same-origin" } })).status, 400);
+  assert.equal((await post(endpoint, { type: "call", source: "unknown path" }, { headers: { "Sec-Fetch-Site": "same-origin" } })).status, 400);
+  assert.equal((await request(endpoint, { method: "POST", body: JSON.stringify({ type: "call", source: "experiences" }), headers: { "Sec-Fetch-Site": "same-origin", "Content-Type": "text/plain" } })).status, 415);
+  const logged = await post(endpoint, { type: "call", source: "experiences" }, { headers: { "Sec-Fetch-Site": "same-origin" } });
   assert.equal(logged.status, 201, logged.text);
   assert.equal(logged.data.recorded, true);
   assert.match(logged.headers.get("cache-control") || "", /no-store/);
