@@ -20,13 +20,14 @@ export default function Hero() {
     </header>
     <div className="wrap-wide z-10 flex flex-1 items-center py-24 sm:py-32">
       <div className="max-w-[830px]">
-        <div className="mb-8 flex items-center gap-4"><span className="rule-brass" /><p className="overline text-[#ebd3ab]">An invitation to slow down</p></div>
-        <h1 className="font-editorial text-[clamp(3.55rem,8vw,8.3rem)] leading-[.98] tracking-[-.055em]">Come for the ride.<br /><em className="font-normal text-[#e6cfa9]">Stay for the feeling.</em></h1>
-        <p className="mt-9 max-w-[560px] text-base leading-8 text-[#f4f1ec]/90 sm:text-lg">Just outside Atlanta, discover a more beautiful pace of life. Guided trail rides, riding lessons, and moments worth remembering in the Georgia countryside.</p>
+        <div className="mb-8 flex items-center gap-4"><span className="rule-brass" /><p className="overline text-[#ebd3ab]">Horseback riding near Atlanta · Fairburn, GA</p></div>
+        <h1 className="font-editorial text-[clamp(3rem,6.9vw,7.4rem)] leading-[1.03] tracking-[-.055em]">Horseback riding<br />near Atlanta.<br /><em className="font-normal text-[#e6cfa9]">Far from ordinary.</em></h1>
+        <p className="mt-8 max-w-[600px] text-base leading-8 text-[#f4f1ec]/90 sm:text-lg">Looking for a first ride, a guided trail experience, or a day to remember? Find it at JD&apos;s Horse Ranch in Fairburn, Georgia. Talk directly with JD about your riders, available dates, and what to expect.</p>
         <div className="mt-11 flex flex-wrap items-center gap-6">
-          <a href="tel:+14049812361" className="cta-light">Call JD to Ride <span aria-hidden="true">↗</span></a>
-          <a href="#experiences" className="border-b border-white/70 pb-1 text-xs font-bold uppercase tracking-[.15em] hover:text-[#e6cfa9]">Explore Experiences</a>
-        </div>
+          <a href="tel:+14049812361" className="cta-light">Call JD about your ride <span aria-hidden="true">↗</span></a>
+          <a href="#experiences" className="border-b border-white/70 pb-1 text-xs font-bold uppercase tracking-[.15em] hover:text-[#e6cfa9]">Compare rides &amp; prices</a>
+        <p className="mt-7 max-w-xl text-sm leading-6 text-[#eee7d9]">New to horses? You can ask questions before booking. Visits are by appointment only, with no walk-ins.</p>
+      </div>
       </div>
     </div>
     <div className="wrap-wide z-10 flex flex-wrap items-center justify-between gap-3 border-t border-white/20 py-6 text-[10px] font-semibold uppercase tracking-[.18em] text-stone-200">
