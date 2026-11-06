@@ -5,8 +5,10 @@ Visitors arriving from "horse riding atlanta" should immediately see a real ride
 
 ## Verified source and rights boundary (Nov 5, 2026)
 - Examined every JPEG in the existing repository /public/photos/ranch-0.jpg through ranch-9.jpg. These photographs were already part of the ranch redesign and are retained as first-party source assets.
-- Publicly discoverable guest-uploaded Google/Maps and social photos may be more recent, including 2024/2025 posts. Their reuse rights, attribution requirements, date and current-location applicability were not confirmed. **Do not re-host them or strip creator attribution** until JD/the photographer grants a reusable original.
-- The site offers a link to newer guest photos on Google Maps without copying those photos. The archive is labeled clearly. Several existing photographs feature an older ranch setting; do not caption those as the current Fairburn facility.
+- On November 5, 2026, the project operator explicitly confirmed they have reuse rights to JD's ranch guest photographs. Six authentic images from @carla.marie.mills' public April 2025 and December 2024 guest posts were downloaded from the creator's original public posts and checked visually. They were stored as versioned local WebP site assets rather than linking to expiring signed CDN URLs.
+- The site attributes the creator, shows dates and links back to the original guest posts without removing existing creator marks. The reuse-rights confirmation was provided in conversation; written license documents or image likeness releases have not independently been inspected.
+- The new gallery places rider photographs first, then a wooded riding experience, a view from horseback at a lake, and horse portraits, followed by the prior archive. The visit page shows the April 2025 ranch banner as an illustrative sign, not a guarantee the sign has not moved.
+- Avoid representing older photographs, signage or trail conditions as a live current view of the Fairburn facility.
 - Photos of children: leave permission-sensitive images in their existing context, avoid promoting them into a hero image or new advertisement without release confirmation.
 
 ## Intent and image placement
@@ -38,3 +40,20 @@ Each replacement should record photographer, capture date, current-site confirma
 
 ## Measurement
 Track organic search queries, Google Images impressions, Core Web Vitals (LCP), tap-to-call interactions and reservation conversion. A prettier site does not prove a ranking or revenue lift. Compare after enough real traffic.
+
+## Nov 5 authorized guest-photo placement and provenance
+| Local site asset | Photographer/source | Actual visible subject | Placement |
+|---|---|---|---|
+| `guest-2025-ride.webp` | @carla.marie.mills, Apr 16 2025 | Guest mounted on pinto horse in a sunny paddock | Homepage hero, gallery, social preview |
+| `guest-2024-woodland-ride.webp` | @carla.marie.mills, Dec 8 2024 | Guest riding a pinto among woods | Trail service card and details, gallery |
+| `guest-2024-lake-view.webp` | @carla.marie.mills, Dec 8 2024 | View of a lake beyond a horse's ears | Gallery |
+| `guest-2025-ranch-sign.webp` | @carla.marie.mills, Apr 16 2025 | JD's Horse Ranch sign with phone on a roadside structure | Visit page wayfinding (historical note) |
+| `guest-2025-two-horses.webp` | @carla.marie.mills, Apr 16 2025 | Two saddled horses beside wooden rail | Gallery |
+| `guest-2025-black-horse.webp` | @carla.marie.mills, Apr 16 2025 | Black horse with blue halter | Gallery |
+
+Original posts:
+- https://www.lemon8-app.com/@carla.marie.mills/7493317959583367723
+- https://www.lemon8-app.com/@carla.marie.mills/7446094569826959914
+
+All six images are archived in JDS's public repository, identified and credited; Google search photos were used for discovery, but no Google Maps CDN assets were scraped or hotlinked. Search engines receive source-image URLs in the public image sitemap and structured data.
+

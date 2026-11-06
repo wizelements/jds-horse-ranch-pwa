@@ -6,6 +6,8 @@ export type RanchPage = {
   intro: string;
   image: string;
   imageAlt: string;
+  photoCredit?: string;
+  photoSource?: string;
   sectionTitle: string;
   details: readonly string[];
   highlights: readonly { label: string; value: string }[];
@@ -42,8 +44,10 @@ export const ranchPages: Record<string, RanchPage> = {
     heading: "Guided horseback trail rides near Atlanta",
     kicker: "A slower pace, just outside the city",
     intro: "Make room for the country. JD's Horse Ranch offers guided horseback trail rides in Fairburn for people who want to spend time outdoors and create a memorable experience. Speak directly with JD about your group, timing and the available ride options.",
-    image: "/photos/ranch-7.jpg",
-    imageAlt: "An archival group of horseback riders gathered outside a ranch stable",
+    image: "/photos/guest-2024-woodland-ride.webp",
+    imageAlt: "A guest in a white cowboy hat riding a black-and-white horse on a wooded trail in December 2024",
+    photoCredit: "Guest photo by @carla.marie.mills · December 2024",
+    photoSource: "https://www.lemon8-app.com/@carla.marie.mills/7446094569826959914",
     sectionTitle: "Choose the ride for your group",
     details: [
       "The ranch currently publishes guided one-hour trail rides for one, two or three people. A one-rider ride is listed at $85, a two-rider ride at $160 and a three-rider ride at $245.",

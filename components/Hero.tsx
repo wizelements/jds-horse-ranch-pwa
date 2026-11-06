@@ -31,8 +31,8 @@ export default function Hero() {
       <figure className="min-w-0">
         <div className="relative aspect-[6/5] overflow-hidden bg-[#304b3f] shadow-[0_35px_95px_-55px_rgba(0,0,0,.8)] lg:aspect-[4/5]">
           <Image
-            src="/photos/ranch-2.jpg"
-            alt="A guest riding a brown horse with a guide beside them at JD's Horse Ranch"
+            src="/photos/guest-2025-ride.webp"
+            alt="A ranch guest in a white cowboy hat riding a black-and-white horse in a sunny green paddock"
             fill
             priority
             fetchPriority="high"
@@ -40,7 +40,7 @@ export default function Hero() {
             className="object-cover object-center"
           />
         </div>
-        <figcaption className="mt-4 border-l border-[#bda27b] pl-4 text-xs leading-6 text-[#d4dfd5]">A real riding moment from the ranch photo archive.</figcaption>
+        <figcaption className="mt-4 border-l border-[#bda27b] pl-4 text-xs leading-6 text-[#d4dfd5]">A real guest riding at JD&apos;s Horse Ranch · April 2025. Photo: <a className="underline underline-offset-2" href="https://www.lemon8-app.com/@carla.marie.mills/7493317959583367723" target="_blank" rel="noopener noreferrer">@carla.marie.mills</a>.</figcaption>
       </figure>
     </div>
     <div className="wrap-wide relative z-10 flex flex-wrap items-center justify-between gap-3 border-t border-white/20 py-6 text-[10px] font-semibold uppercase tracking-[.18em] text-stone-200">

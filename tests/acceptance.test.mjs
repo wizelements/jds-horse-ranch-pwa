@@ -251,14 +251,14 @@ test("public homepage answers Atlanta search intent and makes the phone booking 
 test("visual storytelling uses discoverable ranch images and honest archive captions", async () => {
   const home = await request("/");
   assert.equal(home.status, 200);
-  assert.match(home.text, /A guest riding a brown horse with a guide beside them/i);
+  assert.match(home.text, /A ranch guest in a white cowboy hat riding a black-and-white horse/i);
   assert.match(home.text, /Real moments from the ranch archive/);
   assert.match(home.text, /See guest photos on Google/);
   assert.match(home.text, /ranch-2\.jpg/);
   const trail = await request("/guided-horseback-trail-rides-fairburn-ga");
   assert.equal(trail.status, 200);
-  assert.match(trail.text, /An archival group of horseback riders/);
-  assert.match(trail.text, /ranch photo archive/);
+  assert.match(trail.text, /A guest in a white cowboy hat riding a black-and-white horse on a wooded trail/);
+  assert.match(trail.text, /Guest photo by @carla.marie.mills/);
   const special = await request("/horseback-riding-special-events-fairburn-ga");
   assert.equal(special.status, 200);
   assert.match(special.text, /birthday cupcakes/);
@@ -267,5 +267,32 @@ test("visual storytelling uses discoverable ranch images and honest archive capt
   assert.match(sitemap.text, /image:image/);
   assert.match(sitemap.text, /photos\/ranch-2\.jpg/);
   assert.match(sitemap.text, /photos\/ranch-8\.jpg/);
+  assert.doesNotMatch(sitemap.text, /\/admin\/|\/api\//);
+});
+
+test("licensed recent guest photographs are served locally, credited, and discoverable", async () => {
+  const home = await request("/");
+  assert.equal(home.status, 200);
+  assert.match(home.text, /guest-2025-ride\.webp/);
+  assert.match(home.text, /guest-2024-lake-view\.webp/);
+  assert.match(home.text, /Guest photo/);
+  assert.match(home.text, /@carla\.marie\.mills/);
+  assert.match(home.text, /April 2025/);
+  for (const image of [
+    "guest-2025-ride.webp", "guest-2025-black-horse.webp", "guest-2025-ranch-sign.webp",
+    "guest-2025-two-horses.webp", "guest-2024-lake-view.webp", "guest-2024-woodland-ride.webp",
+  ]) {
+    const asset = await request("/photos/" + image);
+    assert.equal(asset.status, 200, image);
+    assert.match(asset.headers.get("content-type") || "", /image\/webp/i, image);
+  }
+  const visit = await request("/visit-jds-horse-ranch-fairburn-ga");
+  assert.equal(visit.status, 200);
+  assert.match(visit.text, /guest-2025-ranch-sign\.webp/);
+  assert.match(visit.text, /Signage may change/);
+  const sitemap = await request("/sitemap.xml");
+  assert.equal(sitemap.status, 200);
+  assert.match(sitemap.text, /guest-2025-ride\.webp/);
+  assert.match(sitemap.text, /guest-2024-woodland-ride\.webp/);
   assert.doesNotMatch(sitemap.text, /\/admin\/|\/api\//);
 });
