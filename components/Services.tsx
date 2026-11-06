@@ -19,7 +19,7 @@ export default function Services({ services }: { services: Service[] }) {
     <div className="wrap-wide">
       <header className="mb-12 flex flex-col justify-between gap-8 lg:mb-16 lg:flex-row lg:items-end">
         <div><p className="overline mb-5 text-[#8d7351]">Ways to ride</p><h2 className="font-editorial text-[clamp(3rem,6vw,6.3rem)] leading-[1.06] tracking-[-.055em] text-[#183329]">Your time. <em>Your experience.</em></h2></div>
-        <p className="max-w-xs text-[15px] leading-7 text-[#606d63]">Choose what brings you here. Call JD to talk through your ride, available dates, and what works best for you.</p>
+        <p className="max-w-sm text-[15px] leading-7 text-[#606d63]">Whether you&apos;re starting with riding lessons or planning a trail ride near Atlanta, compare the options and published prices before calling JD about an appointment.</p>
       </header>
       <div className="grid gap-6 lg:grid-cols-3">
         {services.map((ride, index) => {
@@ -37,8 +37,8 @@ export default function Services({ services }: { services: Service[] }) {
                 <p className="text-sm font-bold text-[#273b30]">{ride.duration_minutes ? `${ride.duration_minutes} minutes · ` : ""}{ride.price_min != null ? `From ${money(ride.price_min)}` : "Call JD for pricing"}</p>
                 {ride.price_detail && <p className="mt-1 text-xs leading-5 text-[#697168]">{ride.price_detail}</p>}
               </div>
-              {detailsHref[ride.id] && <Link href={detailsHref[ride.id]} className="mt-5 inline-flex text-sm font-semibold text-[#183329] underline underline-offset-4 hover:text-[#806745]">Explore this experience</Link>}
-              <a href="tel:+14049812361" className="mt-7 flex items-center justify-between border-b border-[#87978a] pb-3 text-[11px] font-bold uppercase tracking-[.14em] text-[#183329] hover:border-[#ad946b] hover:text-[#806745]">Call JD to arrange <span aria-hidden="true" className="text-lg font-normal">↗</span></a>
+              {detailsHref[ride.id] && <Link href={detailsHref[ride.id]} className="mt-5 inline-flex text-sm font-semibold text-[#183329] underline underline-offset-4 hover:text-[#806745]">View {ride.name.toLowerCase()} details &amp; prices</Link>}
+              <a href="tel:+14049812361" className="mt-7 flex items-center justify-between border-b border-[#87978a] pb-3 text-[11px] font-bold uppercase tracking-[.14em] text-[#183329] hover:border-[#ad946b] hover:text-[#806745]">Ask JD about availability <span aria-hidden="true" className="text-lg font-normal">↗</span></a>
             </div>
           </article>;
         })}
