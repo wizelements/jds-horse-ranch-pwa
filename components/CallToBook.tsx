@@ -16,12 +16,18 @@ export default function CallToBook() {
               Every great ride <em className="text-[#e4cba5]">starts with hello.</em>
             </h2>
             <p className="mt-8 max-w-lg text-[16px] leading-8 text-[#e5ebe1]">
-              Call JD and talk about
-              the experience you have in mind. He&apos;ll discuss riding options,
-              availability, and what&apos;s right for your group.
+              You don&apos;t need to have everything figured out before calling. JD can help you compare available riding experiences and understand the next step.
             </p>
+            <div className="mt-8 border-y border-white/20 py-7" aria-label="What happens when you call JD">
+              <h3 className="text-xs font-bold uppercase tracking-[.14em] text-[#e5c79c]">What to expect on the call</h3>
+              <ol className="mt-5 space-y-4 text-sm leading-6 text-[#e5ebe1]">
+                <li><span className="mr-3 font-semibold text-[#e5c79c]">01</span>Tell JD whether you&apos;re interested in a lesson, trail ride, or special occasion.</li>
+                <li><span className="mr-3 font-semibold text-[#e5c79c]">02</span>Share the number of riders and the date you&apos;re considering.</li>
+                <li><span className="mr-3 font-semibold text-[#e5c79c]">03</span>Review availability, deposit terms, and what to bring before confirming.</li>
+              </ol>
+            </div>
             <a href="tel:+14049812361" className="cta-light mt-10 self-start" aria-label="Call JD's Horse Ranch at 404 981 2361">
-              <span aria-hidden="true">☎</span> Call JD now <span aria-hidden="true">↗</span>
+              <span aria-hidden="true">☎</span> Ask JD about a ride <span aria-hidden="true">↗</span>
             </a>
             <a href="tel:+14049812361" className="mt-6 self-start font-editorial text-[clamp(2rem,4vw,3.2rem)] tracking-[-.035em] text-white underline decoration-[#ad946b] underline-offset-8">
               (404) 981-2361

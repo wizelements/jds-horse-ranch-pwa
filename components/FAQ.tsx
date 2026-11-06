@@ -1,4 +1,6 @@
 const questions = [
+  {q:"Where can I go horseback riding near Atlanta?",a:"JD's Horse Ranch offers guided horseback trail rides and riding lessons at 7555 Jones Road in Fairburn, Georgia, outside Atlanta. Visits are by appointment only, so call JD before making the trip."},
+  {q:"How much does horseback riding cost at JD's Horse Ranch?",a:"Published one-hour trail rides are $85 for one rider, $160 for two, and $245 for three. One-hour riding lessons start at $85; the listed 30-minute lesson for children age nine and under is $45. Ask JD to confirm current availability and terms."},
   {q:"Do I need horseback riding experience?",a:"First-time riders are welcome to inquire. Call JD to discuss your experience, rider needs, and the options available for your group."},
   {q:"Are walk-ins welcome?",a:"No. JD's Horse Ranch operates by appointment only. Call JD to talk through possible days and times before visiting."},
   {q:"What should I wear?",a:"Long pants and sturdy, closed-toe shoes or boots are recommended. JD will share any additional instructions when your appointment is arranged."},
@@ -12,7 +14,7 @@ export default function FAQ() {
       <div>
         <div className="mb-6 flex items-center gap-4"><span className="rule-brass"/><p className="overline text-[#8d7351]">Before you ride</p></div>
         <h2 className="font-editorial text-[clamp(2.9rem,5vw,5.1rem)] leading-[1.08] tracking-[-.055em] text-[#183329]">A few things <em>to know.</em></h2>
-        <p className="mt-7 max-w-sm text-[16px] leading-8 text-[#627166]">Good rides begin with thoughtful planning. Here are the details guests ask about most.</p>
+        <p className="mt-7 max-w-sm text-[16px] leading-8 text-[#627166]">Know the price, the location, and what happens next before you make plans. These are the questions guests usually ask first.</p>
         <a href="tel:+14049812361" className="mt-9 inline-flex border-b border-[#183329] pb-2 text-xs font-bold uppercase tracking-[.17em] text-[#183329]">Questions? Call the ranch ↗</a>
       </div>
       <div className="divide-y divide-[#d8d4ca] border-y border-[#d8d4ca]">

@@ -4,7 +4,7 @@ import RegisterSW from "./register-sw";
 import { SITE_ORIGIN, absoluteUrl, indexingEnabled } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "JD's Horse Ranch | Riding Lessons & Trail Rides in Fairburn, GA",
+  title: "Horseback Riding Near Atlanta | JD's Horse Ranch in Fairburn",
   description: "Explore guided horseback trail rides and riding lessons at JD's Horse Ranch in Fairburn, Georgia, near Atlanta. By appointment only. Call JD to book.",
   metadataBase: new URL(SITE_ORIGIN),
   alternates: { canonical: SITE_ORIGIN + "/" },
