@@ -44,6 +44,7 @@ export async function POST(req: NextRequest) {
     // A successful write still certifies real Turso connectivity end-to-end.
   }
 
+  let stage: "count_check" | "event_write" = "count_check";
   try {
     // Bound write volume per displayed website section without saving IPs or
     // creating per-visitor identifiers. Reject bulk automated event floods.
@@ -53,21 +54,31 @@ export async function POST(req: NextRequest) {
       args: [body.source, since],
     });
     if (Number(count.rows[0]?.n || 0) >= 60) return reply({ error: "Rate limited" }, 429);
+    stage = "event_write";
     await logContact({ type: "call", source: body.source });
     return reply({ recorded: true }, 201);
   } catch (cause) {
     // Classify production failures without logging tokens, URLs, SQL, IPs or raw errors.
     // This makes database availability and schema problems visible in Vercel logs.
     const raw = cause instanceof Error ? cause.message : "";
+    // Only the numeric HTTP status is retained. Never log the raw provider message,
+    // database hostname, authentication token, SQL or request body.
+    const statusMatch = raw.match(/\b(?:HTTP\s+status|status(?:\s+code)?)\s*:?\s*([45]\d{2})\b/i);
+    const httpStatus = statusMatch ? Number(statusMatch[1]) : null;
     const kind = !process.env.TURSO_DATABASE_URL || !process.env.TURSO_AUTH_TOKEN
       ? "configuration_missing"
       : /no such table|no such column/i.test(raw) ? "schema_missing"
       : /unauthori[sz]ed|forbidden|invalid.*token|auth_error|\b401\b|\b403\b/i.test(raw) ? "database_authentication"
+      : httpStatus === 429 ? "database_throttled"
+      : httpStatus !== null && httpStatus >= 500 ? "database_provider_response"
       : /connection|timeout|network|fetch failed|econn|enotfound/i.test(raw) ? "database_transport"
       : "database_operation_failed";
     const code = cause && typeof cause === "object" && "code" in cause
       ? String(cause.code).replace(/[^A-Z0-9_-]/gi, "").slice(0, 48) : "none";
-    console.error("Anonymous call-tap metrics unavailable", { kind, code, name: cause instanceof Error ? cause.name.slice(0, 32) : "unknown" });
+    console.error("Anonymous call-tap metrics unavailable", {
+      kind, code, stage, httpStatus,
+      name: cause instanceof Error ? cause.name.slice(0, 32) : "unknown",
+    });
     return reply({ error: "Metrics temporarily unavailable" }, 503);
   }
 }
