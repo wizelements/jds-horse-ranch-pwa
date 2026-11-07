@@ -330,3 +330,13 @@ test("sitewide consented analytics is mounted once and excludes private routes",
   assert.match(analytics, /directions_click/);
   assert.match(analytics, /globalPrivacyControl/);
 });
+
+test("anonymous Turso failure diagnostics retain no sensitive provider details", async () => {
+  const handler = await readFile(new URL("../app/api/contact/route.ts", import.meta.url), "utf8");
+  assert.match(handler, /let stage: "count_check" \| "event_write"/);
+  assert.match(handler, /stage = "event_write"/);
+  assert.match(handler, /const httpStatus = statusMatch/);
+  assert.match(handler, /kind, code, stage, httpStatus/);
+  assert.doesNotMatch(handler, /console\.error\([^;]*\braw\b/s);
+  assert.match(handler, /return reply\(\{ error: "Metrics temporarily unavailable" \}, 503\)/);
+});
