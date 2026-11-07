@@ -316,3 +316,17 @@ test("consented first-party call metrics are write-only, same-origin, and privac
   assert.equal(row.rows[0]?.ip_address, null);
   assert.equal(row.rows[0]?.user_agent, null);
 });
+
+test("sitewide consented analytics is mounted once and excludes private routes", async () => {
+  const layout = await readFile(new URL("../app/layout.tsx", import.meta.url), "utf8");
+  const homepage = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  const analytics = await readFile(new URL("../components/GuestAnalytics.tsx", import.meta.url), "utf8");
+  assert.match(layout, /<GuestAnalytics measurementId=/);
+  assert.doesNotMatch(homepage, /<GuestAnalytics/);
+  assert.match(analytics, /usePathname/);
+  assert.match(analytics, /if \(!publicPage\) return null/);
+  assert.match(analytics, /choice !== "accepted" \|\| !publicPage/);
+  assert.match(analytics, /call_click/);
+  assert.match(analytics, /directions_click/);
+  assert.match(analytics, /globalPrivacyControl/);
+});
