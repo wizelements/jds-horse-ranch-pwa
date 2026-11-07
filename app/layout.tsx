@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import RegisterSW from "./register-sw";
+import GuestAnalytics from "@/components/GuestAnalytics";
 import { SITE_ORIGIN, absoluteUrl, indexingEnabled } from "@/lib/seo";
 
 export const metadata: Metadata = {
@@ -39,5 +40,5 @@ const business = {
 };
 export default function RootLayout({children}:{children:React.ReactNode}) {
   return <html lang="en"><head><script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(business)}} /></head>
-    <body className="bg-ranch-cream text-ranch-dark"><RegisterSW/>{children}</body></html>;
+    <body className="bg-ranch-cream text-ranch-dark"><RegisterSW/>{children}<GuestAnalytics measurementId={process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID || ""} /></body></html>;
 }

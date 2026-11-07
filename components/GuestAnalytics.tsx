@@ -1,6 +1,7 @@
 "use client";
 
 import Script from "next/script";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 declare global {
@@ -21,6 +22,8 @@ function sourceOf(anchor: HTMLAnchorElement) {
 
 export default function GuestAnalytics({ measurementId }: { measurementId: string }) {
   const [choice, setChoice] = useState<string | null>(null);
+  const pathname = usePathname();
+  const publicPage = !/^\/(?:admin|api|booking|ranch-login)(?:\/|$)/.test(pathname || "/");
   const validId = /^G-[A-Z0-9]{5,20}$/.test(measurementId);
   useEffect(() => {
     const privacy = navigator as Navigator & { globalPrivacyControl?: boolean };
@@ -29,7 +32,7 @@ export default function GuestAnalytics({ measurementId }: { measurementId: strin
   }, []);
 
   useEffect(() => {
-    if (choice !== "accepted") return;
+    if (choice !== "accepted" || !publicPage) return;
     if (validId) {
       window.dataLayer = window.dataLayer || [];
       window.gtag = function () { window.dataLayer!.push(arguments); };
@@ -63,7 +66,7 @@ export default function GuestAnalytics({ measurementId }: { measurementId: strin
     };
     document.addEventListener("click", click);
     return () => document.removeEventListener("click", click);
-  }, [choice, measurementId, validId]);
+  }, [choice, measurementId, validId, publicPage]);
 
   function decide(next: "accepted" | "declined") {
     const privacy = navigator as Navigator & { globalPrivacyControl?: boolean };
@@ -71,6 +74,8 @@ export default function GuestAnalytics({ measurementId }: { measurementId: strin
     localStorage.setItem(CONSENT_KEY, value);
     setChoice(value);
   }
+
+  if (!publicPage) return null;
 
   return <>
     {choice === "accepted" && validId && <Script id="jd-ga4" strategy="afterInteractive"
