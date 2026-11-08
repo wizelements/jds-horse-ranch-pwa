@@ -66,7 +66,8 @@ export async function POST(req: NextRequest) {
     // database hostname, authentication token, SQL or request body.
     const statusMatch = raw.match(/\b(?:HTTP\s+status|status(?:\s+code)?)\s*:?\s*([45]\d{2})\b/i);
     const httpStatus = statusMatch ? Number(statusMatch[1]) : null;
-    const kind = !process.env.TURSO_DATABASE_URL || !process.env.TURSO_AUTH_TOKEN
+    const kind = raw.startsWith("TURSO_CONFIG_") ? "configuration_invalid"
+      : !process.env.TURSO_DATABASE_URL || !process.env.TURSO_AUTH_TOKEN
       ? "configuration_missing"
       : /no such table|no such column/i.test(raw) ? "schema_missing"
       : /unauthori[sz]ed|forbidden|invalid.*token|auth_error|\b401\b|\b403\b/i.test(raw) ? "database_authentication"
