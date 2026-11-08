@@ -1,6 +1,7 @@
 "use client";
 
 import Script from "next/script";
+import { sourceForPublicCall } from "@/lib/contactSource";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -12,12 +13,10 @@ declare global {
 }
 
 const CONSENT_KEY = "jds-analytics-choice";
-const SOURCE = /^[a-z0-9_-]{1,48}$/;
 
 function sourceOf(anchor: HTMLAnchorElement) {
   const nearest = anchor.closest<HTMLElement>("section[id],footer[id],header[id]");
-  const section = nearest?.id || "navigation";
-  return SOURCE.test(section) ? section : "navigation";
+  return sourceForPublicCall(window.location.pathname, nearest?.id);
 }
 
 export default function GuestAnalytics({ measurementId }: { measurementId: string }) {
