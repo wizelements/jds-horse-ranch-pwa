@@ -4,7 +4,7 @@
  * Use with the authenticated owner environment: npm run db:health
  */
 import { createClient } from "@libsql/client";
-import { normalizeTursoCredential, tursoCredentialFlags } from "../lib/tursoConfig.ts";
+import { normalizeTursoCredential, tursoCredentialFlags, tursoCloudConfigurationIssue } from "../lib/tursoConfig.ts";
 
 const expected = ["contacts", "services", "booking_inquiries"];
 const env = process.env;
@@ -27,9 +27,16 @@ if (!url || (!authToken && !localFixture)) {
   report({ status: "FAIL", stage: "configuration", reason: "required_configuration_missing", flags });
   process.exit(1);
 }
-if (!remote && !localFixture) {
-  report({ status: "FAIL", stage: "configuration", reason: "unsupported_remote_scheme", flags });
-  process.exit(1);
+if (!localFixture) {
+  const issue = tursoCloudConfigurationIssue(url, authToken);
+  if (issue) {
+    report({ status: "FAIL", stage: "configuration", reason: issue, flags });
+    process.exit(1);
+  }
+  if (!remote) {
+    report({ status: "FAIL", stage: "configuration", reason: "unsupported_remote_scheme", flags });
+    process.exit(1);
+  }
 }
 
 let client;
