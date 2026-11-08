@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getTurso, logContact } from "@/lib/turso";
+import { tursoCredentialFlags } from "@/lib/tursoConfig";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -77,6 +78,7 @@ export async function POST(req: NextRequest) {
       ? String(cause.code).replace(/[^A-Z0-9_-]/gi, "").slice(0, 48) : "none";
     console.error("Anonymous call-tap metrics unavailable", {
       kind, code, stage, httpStatus,
+      credentialShape: tursoCredentialFlags(process.env),
       name: cause instanceof Error ? cause.name.slice(0, 32) : "unknown",
     });
     return reply({ error: "Metrics temporarily unavailable" }, 503);
