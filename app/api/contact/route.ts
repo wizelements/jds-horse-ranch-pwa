@@ -78,7 +78,10 @@ export async function POST(req: NextRequest) {
       ? String(cause.code).replace(/[^A-Z0-9_-]/gi, "").slice(0, 48) : "none";
     console.error("Anonymous call-tap metrics unavailable", {
       kind, code, stage, httpStatus,
-      credentialShape: tursoCredentialFlags(process.env),
+      credentialShape: tursoCredentialFlags({
+        TURSO_DATABASE_URL: process.env.TURSO_DATABASE_URL,
+        TURSO_AUTH_TOKEN: process.env.TURSO_AUTH_TOKEN,
+      }),
       name: cause instanceof Error ? cause.name.slice(0, 32) : "unknown",
     });
     return reply({ error: "Metrics temporarily unavailable" }, 503);
