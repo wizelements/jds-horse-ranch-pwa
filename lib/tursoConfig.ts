@@ -32,3 +32,49 @@ export function tursoCredentialFlags(env: {
     urlSchemeSupported: /^(libsql|https|http|wss|ws|file):/i.test(cleanUrl),
   };
 }
+
+/**
+ * Fail before network I/O if JDS's production database settings are not from a
+ * Turso Cloud libSQL database. This does NOT verify token signature or
+ * database existence; a successful SELECT 1 is still required for readiness.
+ */
+export type TursoConfigurationIssue =
+  | "database_url_missing"
+  | "database_url_invalid"
+  | "database_host_not_turso"
+  | "database_url_has_unexpected_parts"
+  | "database_token_missing"
+  | "database_token_not_jwt";
+
+export function tursoCloudConfigurationIssue(
+  rawUrl: string | undefined,
+  rawToken: string | undefined,
+): TursoConfigurationIssue | null {
+  const url = normalizeTursoCredential(rawUrl);
+  const token = normalizeTursoCredential(rawToken);
+  if (!url) return "database_url_missing";
+
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return "database_url_invalid";
+  }
+
+  if (!(parsed.protocol === "libsql:" || parsed.protocol === "https:")) {
+    return "database_url_invalid";
+  }
+  if (!/^[a-z0-9.-]+\\.turso\\.io$/i.test(parsed.hostname)
+      || parsed.hostname === "turso.io" || parsed.hostname.startsWith("api.")) {
+    return "database_host_not_turso";
+  }
+  if (parsed.username || parsed.password || parsed.port ||
+      (parsed.pathname && parsed.pathname !== "/") || parsed.search || parsed.hash) {
+    return "database_url_has_unexpected_parts";
+  }
+  if (!token) return "database_token_missing";
+  if (!/^eyJ[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+$/.test(token)) {
+    return "database_token_not_jwt";
+  }
+  return null;
+}
