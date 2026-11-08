@@ -1,4 +1,5 @@
 import "server-only";
+import { normalizeTursoCredential } from "@/lib/tursoConfig";
 import { createClient, type Client, type InValue, type Row } from "@libsql/client";
 import { randomUUID } from "crypto";
 import { RanchError } from "@/lib/errors";
@@ -15,8 +16,8 @@ let client: Client | null = null;
 export function getTurso() {
   if (client) return client;
 
-  const url = process.env.TURSO_DATABASE_URL;
-  const authToken = process.env.TURSO_AUTH_TOKEN;
+  const url = normalizeTursoCredential(process.env.TURSO_DATABASE_URL);
+  const authToken = normalizeTursoCredential(process.env.TURSO_AUTH_TOKEN);
 
   const local = !process.env.VERCEL && process.env.RANCH_ALLOW_LOCAL_DB === "true" && url?.startsWith("file:");
   if (!url || (!authToken && !local)) {
