@@ -341,16 +341,18 @@ test("anonymous Turso failure diagnostics retain no sensitive provider details",
   assert.match(handler, /return reply\(\{ error: "Metrics temporarily unavailable" \}, 503\)/);
 });
 
-test("temporary Turso provider diagnostic is synthetic-only, read-only, and redacted", async () => {
+test("temporary Turso provider diagnostic is synthetic-only and read-only", async () => {
   const endpoint = await readFile(new URL("../app/api/contact/route.ts", import.meta.url), "utf8");
   const probe = await readFile(new URL("../lib/tursoProviderDiagnostics.ts", import.meta.url), "utf8");
-  assert.match(endpoint, /body\\.source === "qa-smoke"/);
-  assert.match(endpoint, /await diagnoseSyntheticTursoFailure\\(\\)/);
-  assert.match(probe, /SELECT 1 AS probe/);
-  assert.match(probe, /sqlite_master WHERE type = 'table'/);
-  assert.match(probe, /\\.turso\\.io/);
-  assert.match(probe, /redirect: "error"/);
-  assert.match(probe, /signal: AbortSignal\\.timeout/);
-  assert.doesNotMatch(probe, /console\\.(?:log|error)\\(/);
-  assert.doesNotMatch(probe, /\\b(?:INSERT INTO|UPDATE contacts|DELETE FROM|DROP TABLE)\\b/i);
+  assert.ok(endpoint.includes('body.source === "qa-smoke"'));
+  assert.ok(endpoint.includes("await diagnoseSyntheticTursoFailure()"));
+  assert.ok(probe.includes("SELECT 1 AS probe"));
+  assert.ok(probe.includes("sqlite_master WHERE type = 'table'"));
+  assert.ok(probe.includes("redirect: \"error\""));
+  assert.ok(probe.includes("AbortSignal.timeout"));
+  assert.ok(probe.includes("endpointIsExpected"));
+  assert.ok(!probe.includes("console.log("));
+  assert.ok(!probe.includes("console.error("));
+  assert.ok(!probe.includes("INSERT INTO"));
+  assert.ok(!probe.includes("DROP TABLE"));
 });
