@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getTurso, logContact } from "@/lib/turso";
 import { tursoCredentialFlags } from "@/lib/tursoConfig";
+import { diagnoseSyntheticTursoFailure } from "@/lib/tursoProviderDiagnostics";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -76,6 +77,12 @@ export async function POST(req: NextRequest) {
       : "database_operation_failed";
     const code = cause && typeof cause === "object" && "code" in cause
       ? String(cause.code).replace(/[^A-Z0-9_-]/gi, "").slice(0, 48) : "none";
+    if (body.source === "qa-smoke") {
+      // This is an owner-initiated synthetic diagnostic only. It performs at
+      // most two additional read-only SQL queries on the expected Turso host.
+      const diagnosis = await diagnoseSyntheticTursoFailure();
+      console.error("JDS synthetic Turso provider diagnosis", diagnosis);
+    }
     console.error("Anonymous call-tap metrics unavailable", {
       kind, code, stage, httpStatus,
       credentialShape: tursoCredentialFlags({
