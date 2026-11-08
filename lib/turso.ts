@@ -1,5 +1,5 @@
 import "server-only";
-import { normalizeTursoCredential } from "@/lib/tursoConfig";
+import { normalizeTursoCredential, tursoCloudConfigurationIssue } from "@/lib/tursoConfig";
 import { createClient, type Client, type InValue, type Row } from "@libsql/client";
 import { randomUUID } from "crypto";
 import { RanchError } from "@/lib/errors";
@@ -21,7 +21,13 @@ export function getTurso() {
 
   const local = !process.env.VERCEL && process.env.RANCH_ALLOW_LOCAL_DB === "true" && url?.startsWith("file:");
   if (!url || (!authToken && !local)) {
-    throw new Error("Turso requires TURSO_DATABASE_URL and TURSO_AUTH_TOKEN");
+    throw new Error("TURSO_CONFIG_required_configuration_missing");
+  }
+
+  if (!local) {
+    const issue = tursoCloudConfigurationIssue(url, authToken);
+    // Only a fixed issue code is emitted. Never embed URLs, tokens or hosts.
+    if (issue) throw new Error(`TURSO_CONFIG_${issue}`);
   }
 
   client = createClient({ url, ...(local ? {} : { authToken }) });
