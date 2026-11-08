@@ -64,8 +64,9 @@ export function tursoCloudConfigurationIssue(
   if (!(parsed.protocol === "libsql:" || parsed.protocol === "https:")) {
     return "database_url_invalid";
   }
-  if (!/^[a-z0-9.-]+\\.turso\\.io$/i.test(parsed.hostname)
-      || parsed.hostname === "turso.io" || parsed.hostname.startsWith("api.")) {
+  const hostname = parsed.hostname.toLowerCase();
+  if (!hostname.endsWith(".turso.io") || hostname === ".turso.io" ||
+      hostname.startsWith("api.") || !/^[a-z0-9.-]+$/.test(hostname)) {
     return "database_host_not_turso";
   }
   if (parsed.username || parsed.password || parsed.port ||
@@ -73,7 +74,9 @@ export function tursoCloudConfigurationIssue(
     return "database_url_has_unexpected_parts";
   }
   if (!token) return "database_token_missing";
-  if (!/^eyJ[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+$/.test(token)) {
+  const segments = token.split(".");
+  if (segments.length !== 3 || !segments[0].startsWith("eyJ") ||
+      !segments.every(segment => segment.length > 0 && /^[A-Za-z0-9_-]+$/.test(segment))) {
     return "database_token_not_jwt";
   }
   return null;
