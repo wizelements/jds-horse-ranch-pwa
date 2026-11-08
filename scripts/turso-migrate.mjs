@@ -1,8 +1,9 @@
 import { readFile } from "node:fs/promises";
 import { createClient } from "@libsql/client";
+import { normalizeTursoCredential } from "../lib/tursoConfig.ts";
 
-const url = process.env.TURSO_DATABASE_URL;
-const authToken = process.env.TURSO_AUTH_TOKEN;
+const url = normalizeTursoCredential(process.env.TURSO_DATABASE_URL);
+const authToken = normalizeTursoCredential(process.env.TURSO_AUTH_TOKEN);
 
 const local = !process.env.VERCEL && process.env.RANCH_ALLOW_LOCAL_DB === "true" && url?.startsWith("file:");
 if (!url || (!authToken && !local)) {
