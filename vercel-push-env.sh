@@ -11,8 +11,8 @@ echo ""
 declare -A env_vars=(
     ["NEXT_PUBLIC_SUPABASE_URL"]="https://example-project.supabase.co"
     ["NEXT_PUBLIC_SUPABASE_ANON_KEY"]="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4YW1wbGUtcHJvamVjdCIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNjc3NzY4NDAwLCJleHAiOjE5OTMzNDQ0MDB9.example-key"
-    ["ADMIN_PASSWORD_HASH"]="5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8"
-    ["SESSION_TOKEN_SECRET"]="temporary-dev-secret-key-change-in-production"
+    ["ADMIN_PASSWORD_HASH"]="your_hashed_password_here"
+    ["SESSION_TOKEN_SECRET"]="your_random_secret_here"
 )
 
 # Push each variable
