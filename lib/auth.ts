@@ -1,8 +1,8 @@
 import { cookies } from "next/headers";
 import crypto from "crypto";
+import { isUsableSessionSecret } from "@/lib/sessionSecret.mjs";
 
 const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || "";
-const SESSION_TOKEN_SECRET = process.env.SESSION_TOKEN_SECRET || "dev-secret-change-in-prod";
 
 /**
  * Hash a password for storage/comparison
@@ -16,6 +16,11 @@ export function hashPassword(password: string): string {
  * Verify admin password and create session
  */
 export async function loginAdmin(password: string): Promise<boolean> {
+  if (!isUsableSessionSecret(process.env.SESSION_TOKEN_SECRET)) {
+    console.warn("SESSION_TOKEN_SECRET is missing or insecure. Admin access disabled.");
+    return false;
+  }
+
   if (!ADMIN_PASSWORD_HASH) {
     console.warn("ADMIN_PASSWORD_HASH not configured. Admin access disabled.");
     return false;
@@ -54,6 +59,8 @@ export async function loginAdmin(password: string): Promise<boolean> {
  * Verify admin session is valid
  */
 export async function verifyAdminSession(): Promise<boolean> {
+  if (!isUsableSessionSecret(process.env.SESSION_TOKEN_SECRET)) return false;
+
   const cookieStore = await cookies();
   const token = cookieStore.get("admin_session")?.value;
 
